@@ -14,6 +14,10 @@
    Кнопка открытия:  data-popup-btn="data-ИМЯ"  → окну добавляется класс .active
    Закрытие:         .n-popup__close (как в legacy) + клик по фону + Esc
 
+   data-url="…" у кнопки — при открытии окна содержимое ЗАГРУЖАЕТСЯ AJAX-ом (GET) с этого адреса
+   и вставляется в [data-popup-remote] окна (или в .n-popup__content). Имеет приоритет над всем ниже.
+     <button data-popup-btn="data-popup-book" data-url="/tickets/pay?type=30&count=1">Забронировать</button>
+
    Окно бронирования лендинга — [data-popup-book]. Кнопка может передать:
      data-pack="vip|business|personal|table|question" — формат (question — вопрос);
      data-title="Заявка на билет VIP"                 — заголовок формы заявки сайта.
@@ -51,7 +55,42 @@ function init($) {
     $('body').addClass('_noscroll');
     $('html').addClass('aa-popup-open');
     setTimeout(function () { $p.find('.n-popup__close').trigger('focus'); }, 60);
-    if ($p.is('[data-popup-book]')) prepareBook($p, $btn || $());
+    $btn = $btn || $();
+    var url = $.trim($btn.attr('data-url') || '');
+    if (url) loadUrl($p, url, $btn);                        // data-url у кнопки — главнее всего
+    else if ($p.is('[data-popup-book]')) prepareBook($p, $btn);
+  }
+
+  /* data-url: содержимое окна загружается AJAX-ом (GET) с адреса из кнопки.
+     Ответ — готовый HTML (например, Blade-вьюха формы); <script> в нём выполнятся, как при .load().
+     Куда вставляется: [data-popup-remote] окна, а если его нет — .n-popup__content. */
+  function loadUrl($p, url, $btn) {
+    var $target = $p.find('[data-popup-remote]').first();
+    if (!$target.length) $target = $p.find('.n-popup__content').first();
+    if ($p.is('[data-popup-book]')) {                        // прячем нашу форму и заголовок
+      $p.find('[data-book-form], [data-book-done]').prop('hidden', true);
+      $p.find('[data-popup-top]').prop('hidden', true);
+    }
+    var req = ($p.data('aaReq') || 0) + 1;                   // защита от «гонки», если окно открыли повторно
+    $p.data('aaReq', req);
+    $target.prop('hidden', false).html('');
+    var $loader = $p.find('.n-popup__loader').addClass('active');
+    $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: 'html',
+      headers: { 'X-CSRF-TOKEN': csrf() }
+    }).done(function (html) {
+      if ($p.data('aaReq') !== req) return;
+      $target.html(html);
+      $p.trigger('aa:popup-loaded', [url, $btn]);
+    }).fail(function (xhr) {
+      if ($p.data('aaReq') !== req) return;
+      if (window.console) console.warn('[landing] popups.js: не удалось загрузить ' + url + ' (HTTP ' + xhr.status + ')');
+      $target.html('<p class="aa-rform__error">Не удалось загрузить форму. Обновите страницу или попробуйте позже.</p>');
+    }).always(function () {
+      if ($p.data('aaReq') === req) $loader.removeClass('active');
+    });
   }
 
   function closePopup($p) {

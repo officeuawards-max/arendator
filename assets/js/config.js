@@ -88,6 +88,8 @@ window.LANDING_CONFIG = {
    *   (SubscribeController@feedback_form). Задан — форма сайта подгружается в окно так же, как в legacy:
    *   POST { mod_name: 'feed_form', mod_tile: 'Заявка на билет VIP', mod_template: 'white', _token }.
    *   Пусто — в окне наша форма бронирования (лид в Битрикс24 через endpoints.lead, согласия по 152-ФЗ).
+   * ПРИОРИТЕТ: если у кнопки заполнен атрибут data-url="…", окно загружает AJAX-ом (GET) именно этот адрес,
+   *   а feedbackUrl и наша форма не используются. Так у каждой кнопки может быть своя форма/тип билета.
    */
   popup: {
     feedbackUrl: '',   // например '/feedback/feedback'

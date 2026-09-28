@@ -56,7 +56,7 @@
       <a href="#program">Программа</a>
       <a href="#scheme">Места</a>
       <a href="#gallery">Как это было</a>
-      <a href="#packages" data-popup-btn="data-popup-book" data-pack="question" data-title="Вопрос по билетам">Контакты</a>
+      <a href="#packages" data-popup-btn="data-popup-book" data-url="" data-pack="question" data-title="Вопрос по билетам">Контакты</a>
     </nav>
 
     <a class="aa-btn aa-btn--outline aa-btn--sm aa-nav__cta" href="#packages" data-book="">
@@ -354,7 +354,9 @@
      06 · ФОРМАТ УЧАСТИЯ — слайдер из 4 карточек (Business, VIP, Персональный, Стол)
      Сюда ведут ВСЕ ссылки заказа билетов на странице (data-book="…" → прокрутка к нужной карточке).
      Кнопки в карточках открывают всплывающее окно n-popup, как в вёрстке legacy:
-       data-popup-btn="data-popup-book" — какое окно открыть (jQuery, assets/js/popups.js)
+       data-popup-btn="data-popup-book" data-url="" — какое окно открыть (jQuery, assets/js/popups.js)
+       data-url="…" — адрес, с которого окно при открытии загрузит содержимое (AJAX, GET);
+                     пусто — в окне форма из config.js → popup.feedbackUrl или наша форма
        data-pack="vip|business|personal|table|question" — формат, data-title — заголовок формы заявки
      data-show-zone="vip|business|personal" — показывают зону на схеме
      ========================================================= -->
@@ -377,7 +379,7 @@
           <li>Вся программа церемонии</li>
           <li>Welcome-зона и&nbsp;networking</li>
         </ul>
-        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-pack="business" data-title="Заявка на билет Business">Забронировать место</button>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-url="" data-pack="business" data-title="Заявка на билет Business">Забронировать место</button>
         <a class="aa-plan-card__link" href="#scheme" data-show-zone="business">Посмотреть на&nbsp;схеме зала</a>
       </article>
 
@@ -394,7 +396,7 @@
           <li>Вся программа церемонии</li>
           <li>Welcome-зона и&nbsp;networking</li>
         </ul>
-        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-pack="vip" data-title="Заявка на билет VIP">Забронировать VIP-место</button>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-url="" data-pack="vip" data-title="Заявка на билет VIP">Забронировать VIP-место</button>
         <a class="aa-plan-card__link" href="#scheme" data-show-zone="vip">Посмотреть на&nbsp;схеме зала</a>
       </article>
 
@@ -407,7 +409,7 @@
           <li>Вся программа церемонии</li>
           <li>Welcome-зона и&nbsp;networking</li>
         </ul>
-        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-pack="personal" data-title="Заявка на Персональный билет">Забронировать место</button>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-url="" data-pack="personal" data-title="Заявка на Персональный билет">Забронировать место</button>
         <a class="aa-plan-card__link" href="#scheme" data-show-zone="personal">Посмотреть на&nbsp;схеме зала</a>
       </article>
 
@@ -423,8 +425,8 @@
           <li>Welcome-зона и&nbsp;networking</li>
           <li>Персональный менеджер</li>
         </ul>
-        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-pack="table" data-title="Запрос на стол для компании">Отправить запрос</button>
-        <a class="aa-plan-card__link" href="#packages" data-popup-btn="data-popup-book" data-pack="question" data-title="Вопрос по столу для компании">Задать вопрос менеджеру</a>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-url="" data-pack="table" data-title="Запрос на стол для компании">Отправить запрос</button>
+        <a class="aa-plan-card__link" href="#packages" data-popup-btn="data-popup-book" data-url="" data-pack="question" data-title="Вопрос по столу для компании">Задать вопрос менеджеру</a>
       </article>
     </div>
 
@@ -597,7 +599,7 @@
 
 <!-- =========================================================
      ВСПЛЫВАЮЩЕЕ ОКНО БРОНИРОВАНИЯ — стандартный n-popup, как в вёрстке legacy
-     (legacy/tickets/includes/popup/*.blade.php). Открывается кнопками data-popup-btn="data-popup-book".
+     (legacy/tickets/includes/popup/*.blade.php). Открывается кнопками data-popup-btn="data-popup-book" data-url="".
      Содержимое:
        • config.js → popup.feedbackUrl задан (route('feedback.form')) — форма заявки сайта
          подгружается jQuery .load() в #feedback_ajax_book, как в legacy;
