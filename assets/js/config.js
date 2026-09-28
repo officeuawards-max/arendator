@@ -62,7 +62,7 @@ window.LANDING_CONFIG = {
   },
 
   /* ---------- Бронирование → Битрикс24 ----------
-   * Покупки на сайте нет: все кнопки открывают форму бронирования,
+   * Покупки на сайте нет: форма бронирования — во всплывающем окне (см. popup ниже),
    * заявка уходит на наш бэкенд, а он создаёт лид в Битрикс24.
    *
    * POST, FormData:
@@ -80,6 +80,17 @@ window.LANDING_CONFIG = {
    */
   endpoints: {
     lead: '',   // TODO(программист): например '/tickets/lead'
+  },
+
+  /* ---------- Всплывающее окно бронирования (n-popup, как в вёрстке legacy) ----------
+   * Кнопки в карточках «Выберите формат участия» открывают окно [data-popup-book] (assets/js/popups.js, jQuery).
+   * feedbackUrl — адрес формы заявки сайта: route('feedback.form') → '/feedback/feedback'
+   *   (SubscribeController@feedback_form). Задан — форма сайта подгружается в окно так же, как в legacy:
+   *   POST { mod_name: 'feed_form', mod_tile: 'Заявка на билет VIP', mod_template: 'white', _token }.
+   *   Пусто — в окне наша форма бронирования (лид в Битрикс24 через endpoints.lead, согласия по 152-ФЗ).
+   */
+  popup: {
+    feedbackUrl: '',   // например '/feedback/feedback'
   },
 
   /* ---------- Схема зала ----------

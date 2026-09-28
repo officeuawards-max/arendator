@@ -109,7 +109,7 @@
   var timeline = $('[data-timeline]');
   var tlItems = $$('.aa-tl__item');
   var sticky = $('[data-sticky]');
-  var orderSec = $('#order');
+  var packSec = $('#packages');
   var footer = $('.aa-footer');
   var lastY = window.scrollY;
   var ticking = false;
@@ -135,10 +135,11 @@
 
     if (sticky) {
       var past = hero ? y > hero.offsetHeight * 0.8 : y > 600;
-      var inOrder = false, nearEnd = false;
-      if (orderSec) { var orr = orderSec.getBoundingClientRect(); inOrder = orr.top < vh * 0.85 && orr.bottom > 0; }
+      // панель ведёт к форматам участия — у самого блока она не нужна
+      var inPacks = false, nearEnd = false;
+      if (packSec) { var pr = packSec.getBoundingClientRect(); inPacks = pr.top < vh * 0.85 && pr.bottom > vh * 0.15; }
       if (footer) nearEnd = footer.getBoundingClientRect().top < vh;
-      sticky.classList.toggle('is-visible', past && !inOrder && !nearEnd && !activeZoneBar());
+      sticky.classList.toggle('is-visible', past && !inPacks && !nearEnd && !activeZoneBar());
     }
 
     lastY = y;
@@ -274,8 +275,8 @@
 
   /* ------------------------------------------------------------------
      Бронирование → лид в Битрикс24
-     Любая кнопка с data-book="vip|business|personal|table|question"
-     прокручивает к форме (блок «Оформление билета») и выставляет формат. Отправка — POST на endpoints.lead (наш бэкенд),
+     Форма живёт во всплывающем окне [data-popup-book] (открывает popups.js).
+     Кнопки data-book="vip|business|personal|table" ведут к блоку форматов (goPackages). Отправка — POST на endpoints.lead (наш бэкенд),
      бэкенд создаёт лид в Битрикс24 (см. backend/ и README).
      ------------------------------------------------------------------ */
   var bookForm = $('[data-book-form]');
@@ -342,24 +343,36 @@
     $('[data-book-mode]').textContent = isQuestion ? 'Вернуться к бронированию' : 'Просто задать вопрос';
     $('[data-book-submit]').textContent = isQuestion ? 'Отправить вопрос' : 'Забронировать';
   }
-  function setStep(n) { $$('[data-steps] li').forEach(function (li, i) { li.classList.toggle('is-on', i < n); }); }
 
-  // key: vip|business|personal|table — выбрать формат; question — режим вопроса; '' — просто к форме
-  function openBook(key) {
-    if (!bookForm) return;
-    bookForm.hidden = false; bookDone.hidden = true; bookErr.hidden = true;
-    setMode(key === 'question');
-    if (PACK[key]) {
-      var r = bookForm.querySelector('[name="package"][value="' + key + '"]');
-      if (r) r.checked = true;
-    }
-    syncTotal();
-    goal('bookOpen', { package: key || 'any' });
-    var box = $('[data-book-box]');
-    var target = PACK[key] ? $('.aa-order__choice') : box;
-    (target || bookForm).scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
-    if (box) { box.classList.remove('aa-box--flash'); void box.offsetWidth; box.classList.add('aa-box--flash'); }
+  /* Все ссылки заказа билетов (data-book="…") ведут к блоку «Выберите формат участия»:
+     прокрутка к блоку, слайдер докручивается до нужной карточки, карточка подсвечивается.
+     Сама заявка — во всплывающем окне по кнопке в карточке (popups.js). */
+  function goPackages(key) {
+    var sec = $('#packages');
+    if (!sec) return;
+    sec.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    var card = PACK[key] ? $('[data-plan="' + key + '"]', sec) : null;
+    if (!card) return;
+    var track = card.parentNode;
+    track.scrollTo({ left: card.offsetLeft - track.offsetLeft - (parseFloat(getComputedStyle(track).paddingLeft) || 0), behavior: reduceMotion ? 'auto' : 'smooth' });
+    card.classList.remove('is-flash'); void card.offsetWidth; card.classList.add('is-flash');
   }
+
+  // вызывается из popups.js при открытии окна бронирования (наша форма)
+  // pack: vip|business|personal|table — выбрать формат; question — режим вопроса
+  window.aaBooking = {
+    prepare: function (pack) {
+      if (!bookForm) return;
+      bookForm.hidden = false; bookDone.hidden = true; bookErr.hidden = true;
+      setMode(pack === 'question');
+      if (PACK[pack]) {
+        var r = bookForm.querySelector('[name="package"][value="' + pack + '"]');
+        if (r) r.checked = true;
+      }
+      syncTotal();
+      goal('bookOpen', { package: pack || 'any' });
+    }
+  };
 
   // маска телефона +7 (___) ___-__-__
   $$('[data-phone]').forEach(function (inp) {
@@ -432,11 +445,11 @@
 
       var done = function () {
         submit.classList.remove('is-loading');
-        bookForm.hidden = true; bookDone.hidden = false; setStep(3);
+        bookForm.hidden = true; bookDone.hidden = false;
         goal('bookSubmit', { package: fd.get('package') || 'question' });
         bookForm.reset(); gIn.value = 1; setMode(false); syncTotal();
         $('.aa-check--req', bookForm).classList.remove('is-invalid');
-        bookDone.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+        var box = bookDone.closest('.n-popup__container'); if (box) box.scrollTop = 0;
       };
       var fail = function () {
         submit.classList.remove('is-loading');
@@ -460,9 +473,12 @@
     $$('input', bookForm).forEach(function (inp) {
       inp.addEventListener('input', function () { var f = inp.closest('.aa-field'); if (f) f.classList.remove('is-invalid'); });
     });
-    $('[data-book-mode]').addEventListener('click', function () { setMode(!bookForm.classList.contains('is-question')); });
-    bookForm.addEventListener('focusin', function (e) { if (e.target.closest('[data-book-box]')) setStep(2); });
-    $('[data-book-again]').addEventListener('click', function () { bookDone.hidden = true; bookForm.hidden = false; setStep(1); });
+    $('[data-book-mode]').addEventListener('click', function () {
+      var q = !bookForm.classList.contains('is-question');
+      setMode(q);
+      var t = $('[data-popup-title]'); if (t) t.textContent = q ? 'Вопрос по билетам' : 'Бронирование билета';
+    });
+    $('[data-book-again]').addEventListener('click', function () { bookDone.hidden = true; bookForm.hidden = false; });
     bookForm.elements['consent_pd'].addEventListener('change', function () {
       if (this.checked) { $('.aa-check--req', bookForm).classList.remove('is-invalid'); bookErr.hidden = true; }
     });
@@ -782,11 +798,12 @@
     if (b && !b.disabled) {
       e.preventDefault();
       if (nav) { nav.classList.remove('is-open'); if (burger) burger.setAttribute('aria-expanded', 'false'); }
-      openBook(b.getAttribute('data-book'));
+      goPackages(b.getAttribute('data-book'));
     }
   });
 
-  // Прямая ссылка: /tickets#book-vip, #book-business, #book-personal, #book-table, #book-question
+  // Прямая ссылка: /tickets#book-vip, #book-business, #book-personal, #book-table → карточка формата;
+  // #book-question → окно вопроса (popups.js)
   var h = location.hash.match(/^#book-(\w+)/);
-  if (h) setTimeout(function () { openBook(h[1]); }, 400);
+  if (h && h[1] !== 'question') setTimeout(function () { goPackages(h[1]); }, 400);
 })();

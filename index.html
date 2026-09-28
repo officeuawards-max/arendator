@@ -59,10 +59,10 @@
       <a href="#program">Программа</a>
       <a href="#scheme">Места</a>
       <a href="#gallery">Как это было</a>
-      <a href="#order" data-book="question">Контакты</a>
+      <a href="#packages" data-popup-btn="data-popup-book" data-pack="question" data-title="Вопрос по билетам">Контакты</a>
     </nav>
 
-    <a class="aa-btn aa-btn--outline aa-btn--sm aa-nav__cta" href="#order" data-book="">
+    <a class="aa-btn aa-btn--outline aa-btn--sm aa-nav__cta" href="#packages" data-book="">
       Забронировать
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
@@ -344,7 +344,10 @@
 
 <!-- =========================================================
      06 · ФОРМАТ УЧАСТИЯ — слайдер из 4 карточек (Business, VIP, Персональный, Стол)
-     data-book="vip|business|personal|table" — ведут к форме бронирования с выбранным форматом
+     Сюда ведут ВСЕ ссылки заказа билетов на странице (data-book="…" → прокрутка к нужной карточке).
+     Кнопки в карточках открывают всплывающее окно n-popup, как в вёрстке legacy:
+       data-popup-btn="data-popup-book" — какое окно открыть (jQuery, assets/js/popups.js)
+       data-pack="vip|business|personal|table|question" — формат, data-title — заголовок формы заявки
      data-show-zone="vip|business|personal" — показывают зону на схеме
      ========================================================= -->
 <section class="aa-section aa-light aa-packages" id="packages">
@@ -355,7 +358,7 @@
 
     <!-- Слайдер карточек: все форматы в полный рост, в каждой — что включено -->
     <div class="aa-plans" data-slider>
-      <article class="aa-plan-card" data-reveal>
+      <article class="aa-plan-card" data-plan="business" data-reveal>
         <h3 class="aa-plan-card__name">Business</h3>
         <p class="aa-plan-card__price"><span data-price="business">115 500 ₽</span> <small>/ место</small></p>
         <p class="aa-plan-card__zone"><i style="--c:#EEDDB9"></i>Business-зона на&nbsp;схеме</p>
@@ -366,11 +369,11 @@
           <li>Вся программа церемонии</li>
           <li>Welcome-зона и&nbsp;networking</li>
         </ul>
-        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="business">Забронировать место</button>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-pack="business" data-title="Заявка на билет Business">Забронировать место</button>
         <a class="aa-plan-card__link" href="#scheme" data-show-zone="business">Посмотреть на&nbsp;схеме зала</a>
       </article>
 
-      <article class="aa-plan-card aa-plan-card--featured" data-reveal style="--d:.08s">
+      <article class="aa-plan-card aa-plan-card--featured" data-plan="vip" data-reveal style="--d:.08s">
         <span class="aa-plan-card__tag">Рекомендуем</span>
         <h3 class="aa-plan-card__name">VIP</h3>
         <p class="aa-plan-card__price"><span data-price="vip">140 000 ₽</span> <small>/ место</small></p>
@@ -383,11 +386,11 @@
           <li>Вся программа церемонии</li>
           <li>Welcome-зона и&nbsp;networking</li>
         </ul>
-        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="vip">Забронировать VIP-место</button>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-pack="vip" data-title="Заявка на билет VIP">Забронировать VIP-место</button>
         <a class="aa-plan-card__link" href="#scheme" data-show-zone="vip">Посмотреть на&nbsp;схеме зала</a>
       </article>
 
-      <article class="aa-plan-card" data-reveal style="--d:.16s">
+      <article class="aa-plan-card" data-plan="personal" data-reveal style="--d:.16s">
         <h3 class="aa-plan-card__name">Персональный</h3>
         <p class="aa-plan-card__price"><span data-price="personal">49 000 ₽</span> <small>/ место</small></p>
         <p class="aa-plan-card__zone"><i style="--c:#A89378"></i>Персональная зона на&nbsp;схеме</p>
@@ -396,11 +399,11 @@
           <li>Вся программа церемонии</li>
           <li>Welcome-зона и&nbsp;networking</li>
         </ul>
-        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="personal">Забронировать место</button>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-pack="personal" data-title="Заявка на Персональный билет">Забронировать место</button>
         <a class="aa-plan-card__link" href="#scheme" data-show-zone="personal">Посмотреть на&nbsp;схеме зала</a>
       </article>
 
-      <article class="aa-plan-card" data-reveal style="--d:.24s">
+      <article class="aa-plan-card" data-plan="table" data-reveal style="--d:.24s">
         <h3 class="aa-plan-card__name">Стол для компании</h3>
         <p class="aa-plan-card__price">По&nbsp;запросу</p>
         <p class="aa-plan-card__zone"><i style="--c:transparent"></i>Для команды, партнёров и&nbsp;клиентов</p>
@@ -412,8 +415,8 @@
           <li>Welcome-зона и&nbsp;networking</li>
           <li>Персональный менеджер</li>
         </ul>
-        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="table">Отправить запрос</button>
-        <a class="aa-plan-card__link" href="#order" data-book="question">Задать вопрос менеджеру</a>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-popup-btn="data-popup-book" data-pack="table" data-title="Запрос на стол для компании">Отправить запрос</button>
+        <a class="aa-plan-card__link" href="#packages" data-popup-btn="data-popup-book" data-pack="question" data-title="Вопрос по столу для компании">Задать вопрос менеджеру</a>
       </article>
     </div>
 
@@ -559,126 +562,11 @@
         <div><b data-seats-left="business">—</b><small>в&nbsp;Business-зоне</small></div>
       </div>
       <p class="aa-seatsbox__text" data-seats-text>Места в&nbsp;VIP- и&nbsp;Business-зонах разбирают первыми — часть зала уже забронирована.</p>
-      <a class="aa-btn aa-btn--gold aa-btn--block" href="#scheme">Выбрать место</a>
+      <a class="aa-btn aa-btn--gold aa-btn--block" href="#packages" data-book="">Забронировать</a>
     </div>
   </div>
 </section>
 
-<!-- =========================================================
-     11 · ОФОРМЛЕНИЕ БИЛЕТА — бронирование, без оплаты на сайте
-     Заявка → endpoints.lead (config.js) → лид в Битрикс24.
-     Любая кнопка data-book="vip|business|personal|table|question" прокручивает сюда
-     и выставляет формат (question — режим «Задать вопрос»).
-     ========================================================= -->
-<section class="aa-section aa-light aa-order" id="order">
-  <div class="aa-container">
-    <div class="aa-order__head">
-      <h2 class="aa-h2" data-split>Оформление билета</h2>
-      <ol class="aa-steps" data-steps>
-        <li class="is-on"><b>1</b>Формат</li>
-        <li><b>2</b>Контакты</li>
-        <li><b>3</b>Подтверждение</li>
-      </ol>
-    </div>
-
-    <form class="aa-rform" data-book-form novalidate>
-      <input type="hidden" name="intent" value="booking">
-      <input type="hidden" name="source" value="tickets-landing">
-      <!-- антиспам: поле должно остаться пустым -->
-      <input type="text" name="website" class="aa-rform__hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-
-      <div class="aa-order__grid">
-        <div class="aa-box aa-order__choice" data-reveal>
-          <p class="aa-box__title">Ваш выбор</p>
-          <fieldset class="aa-packs">
-            <legend class="aa-visually-hidden">Формат участия</legend>
-            <label class="aa-pack"><input type="radio" name="package" value="vip" checked><span><i style="--c:#D4AE6A"></i><b>VIP</b><small data-price="vip">140 000 ₽</small></span></label>
-            <label class="aa-pack"><input type="radio" name="package" value="business"><span><i style="--c:#EEDDB9"></i><b>Business</b><small data-price="business">115 500 ₽</small></span></label>
-            <label class="aa-pack"><input type="radio" name="package" value="personal"><span><i style="--c:#A89378"></i><b>Персональный</b><small data-price="personal">49 000 ₽</small></span></label>
-            <label class="aa-pack"><input type="radio" name="package" value="table"><span><i style="--c:transparent"></i><b>Стол для компании</b><small>по&nbsp;запросу</small></span></label>
-          </fieldset>
-
-          <div class="aa-gcount">
-            <span class="aa-gcount__label">Количество гостей</span>
-            <div class="aa-stepper">
-              <button type="button" data-guests="-1" aria-label="Меньше гостей">−</button>
-              <input name="guests" id="bookGuests" type="text" inputmode="numeric" value="1" aria-label="Количество гостей">
-              <button type="button" data-guests="1" aria-label="Больше гостей">+</button>
-            </div>
-          </div>
-          <div class="aa-total">
-            <span>Ориентировочно</span>
-            <b data-book-total>140 000 ₽</b>
-          </div>
-          <p class="aa-total__note" data-book-total-note>1 × 140 000 ₽</p>
-        </div>
-
-        <div class="aa-box" data-book-box data-reveal style="--d:.1s">
-          <div class="aa-form__mode">
-            <p class="aa-box__title" data-book-title>Контактные данные</p>
-            <button type="button" data-book-mode>Просто задать вопрос</button>
-          </div>
-
-          <div class="aa-rform__grid">
-            <label class="aa-field">
-              <input name="name" id="bookName" type="text" required autocomplete="name" placeholder=" ">
-              <span>ФИО *</span>
-            </label>
-            <label class="aa-field">
-              <input name="phone" id="bookPhone" type="tel" required autocomplete="tel" placeholder=" " data-phone>
-              <span>Телефон *</span>
-            </label>
-            <label class="aa-field">
-              <input name="email" id="bookEmail" type="email" required autocomplete="email" placeholder=" ">
-              <span>Email *</span>
-            </label>
-            <label class="aa-field">
-              <input name="company" id="bookCompany" type="text" autocomplete="organization" placeholder=" ">
-              <span>Компания</span>
-            </label>
-            <label class="aa-field aa-field--full">
-              <input name="position" id="bookPosition" type="text" autocomplete="organization-title" placeholder=" ">
-              <span>Должность</span>
-            </label>
-            <label class="aa-field aa-field--full">
-              <textarea name="comment" id="bookComment" rows="2" placeholder=" "></textarea>
-              <span>Комментарий</span>
-            </label>
-          </div>
-
-          <!--
-            152-ФЗ (ред. 156-ФЗ, с 01.09.2025): согласие на обработку ПД — отдельным действием и отдельным документом.
-            Галочки НЕ проставлены заранее. Согласие на рассылки (ст. 18 38-ФЗ «О рекламе») — отдельно и необязательно.
-          -->
-          <div class="aa-consents">
-            <label class="aa-check aa-check--req">
-              <input type="checkbox" name="consent_pd" id="bookConsentPd" value="1" required>
-              <i></i>
-              <span>Даю <a href="legal/consent.html" target="_blank" rel="noopener">согласие на&nbsp;обработку персональных данных</a>&nbsp;*</span>
-            </label>
-            <label class="aa-check">
-              <input type="checkbox" name="consent_ads" id="bookConsentAds" value="1">
-              <i></i>
-              <span>Согласен получать <a href="legal/consent-ads.html" target="_blank" rel="noopener">новости и&nbsp;предложения Arendator Awards</a> — необязательно</span>
-            </label>
-            <p class="aa-consents__note">Как мы обращаемся с&nbsp;данными — в&nbsp;<a href="legal/privacy.html" target="_blank" rel="noopener">Политике обработки персональных данных</a>. Данные хранятся на&nbsp;серверах в&nbsp;России. * — обязательно для отправки заявки.</p>
-          </div>
-
-          <p class="aa-rform__error" data-book-error hidden></p>
-          <button class="aa-btn aa-btn--gold aa-btn--block aa-btn--lg" type="submit" data-book-submit>Забронировать</button>
-          <p class="aa-rform__fine">Оплата на&nbsp;сайте не&nbsp;нужна. Менеджер свяжется с&nbsp;вами, подтвердит бронь и&nbsp;пришлёт документы.</p>
-        </div>
-      </div>
-    </form>
-
-    <div class="aa-box aa-rform__done" data-book-done hidden>
-      <div class="aa-rform__check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-      <h3>Спасибо! Заявка отправлена</h3>
-      <p>Менеджер свяжется с&nbsp;вами в&nbsp;ближайшее время и&nbsp;подтвердит бронь.</p>
-      <button class="aa-btn aa-btn--outline" type="button" data-book-again>Отправить ещё одну заявку</button>
-    </div>
-  </div>
-</section>
 
 </main>
 
@@ -700,6 +588,131 @@
   </div>
 </footer>
 
+<!-- =========================================================
+     ВСПЛЫВАЮЩЕЕ ОКНО БРОНИРОВАНИЯ — стандартный n-popup, как в вёрстке legacy
+     (legacy/tickets/includes/popup/*.blade.php). Открывается кнопками data-popup-btn="data-popup-book".
+     Содержимое:
+       • config.js → popup.feedbackUrl задан (route('feedback.form')) — форма заявки сайта
+         подгружается jQuery .load() в #feedback_ajax_book, как в legacy;
+       • пусто — наша форма бронирования (лид в Битрикс24 через endpoints.lead).
+     ========================================================= -->
+<div class="n-popup aa-popup" data-popup-book role="dialog" aria-modal="true" aria-labelledby="aaPopupTitle">
+  <div class="n-popup__container aa-light">
+    <div class="n-popup__loader">
+      <div class="cssload-spinner"></div>
+    </div>
+    <button type="button" class="n-popup__close" aria-label="Закрыть">
+      <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.83984 1.83887L10.6787 10.6777M10.6787 10.6777L19.5175 19.5165M10.6787 10.6777L19.5175 1.83887M10.6787 10.6777L1.83984 19.5165" stroke="currentColor" stroke-width="3"/></svg>
+    </button>
+    <div class="n-popup__content">
+      <div class="n-popup__top" data-popup-top>
+        <div class="n-popup__title" id="aaPopupTitle" data-popup-title>Бронирование билета</div>
+      </div>
+
+      <!-- сюда jQuery подгружает форму заявки сайта (popup.feedbackUrl) -->
+      <div class="modal-body" id="feedback_ajax_book" data-popup-remote hidden></div>
+
+      <form class="aa-rform" data-book-form novalidate>
+        <input type="hidden" name="intent" value="booking">
+        <input type="hidden" name="source" value="tickets-landing">
+        <!-- антиспам: поле должно остаться пустым -->
+        <input type="text" name="website" class="aa-rform__hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+        <div class="aa-order__grid">
+          <div class="aa-box aa-order__choice">
+            <p class="aa-box__title">Ваш выбор</p>
+            <fieldset class="aa-packs">
+              <legend class="aa-visually-hidden">Формат участия</legend>
+              <label class="aa-pack"><input type="radio" name="package" value="vip" checked><span><i style="--c:#D4AE6A"></i><b>VIP</b><small data-price="vip">140 000 ₽</small></span></label>
+              <label class="aa-pack"><input type="radio" name="package" value="business"><span><i style="--c:#EEDDB9"></i><b>Business</b><small data-price="business">115 500 ₽</small></span></label>
+              <label class="aa-pack"><input type="radio" name="package" value="personal"><span><i style="--c:#A89378"></i><b>Персональный</b><small data-price="personal">49 000 ₽</small></span></label>
+              <label class="aa-pack"><input type="radio" name="package" value="table"><span><i style="--c:transparent"></i><b>Стол для компании</b><small>по&nbsp;запросу</small></span></label>
+            </fieldset>
+
+            <div class="aa-gcount">
+              <span class="aa-gcount__label">Количество гостей</span>
+              <div class="aa-stepper">
+                <button type="button" data-guests="-1" aria-label="Меньше гостей">−</button>
+                <input name="guests" id="bookGuests" type="text" inputmode="numeric" value="1" aria-label="Количество гостей">
+                <button type="button" data-guests="1" aria-label="Больше гостей">+</button>
+              </div>
+            </div>
+            <div class="aa-total">
+              <span>Ориентировочно</span>
+              <b data-book-total>140 000 ₽</b>
+            </div>
+            <p class="aa-total__note" data-book-total-note>1 × 140 000 ₽</p>
+          </div>
+
+          <div class="aa-box" data-book-box>
+            <div class="aa-form__mode">
+              <p class="aa-box__title" data-book-title>Контактные данные</p>
+              <button type="button" data-book-mode>Просто задать вопрос</button>
+            </div>
+
+            <div class="aa-rform__grid">
+              <label class="aa-field">
+                <input name="name" id="bookName" type="text" required autocomplete="name" placeholder=" ">
+                <span>ФИО *</span>
+              </label>
+              <label class="aa-field">
+                <input name="phone" id="bookPhone" type="tel" required autocomplete="tel" placeholder=" " data-phone>
+                <span>Телефон *</span>
+              </label>
+              <label class="aa-field">
+                <input name="email" id="bookEmail" type="email" required autocomplete="email" placeholder=" ">
+                <span>Email *</span>
+              </label>
+              <label class="aa-field">
+                <input name="company" id="bookCompany" type="text" autocomplete="organization" placeholder=" ">
+                <span>Компания</span>
+              </label>
+              <label class="aa-field aa-field--full">
+                <input name="position" id="bookPosition" type="text" autocomplete="organization-title" placeholder=" ">
+                <span>Должность</span>
+              </label>
+              <label class="aa-field aa-field--full">
+                <textarea name="comment" id="bookComment" rows="2" placeholder=" "></textarea>
+                <span>Комментарий</span>
+              </label>
+            </div>
+
+            <!--
+              152-ФЗ (ред. 156-ФЗ, с 01.09.2025): согласие на обработку ПД — отдельным действием и отдельным документом.
+              Галочки НЕ проставлены заранее. Согласие на рассылки (ст. 18 38-ФЗ «О рекламе») — отдельно и необязательно.
+            -->
+            <div class="aa-consents">
+              <label class="aa-check aa-check--req">
+                <input type="checkbox" name="consent_pd" id="bookConsentPd" value="1" required>
+                <i></i>
+                <span>Даю <a href="legal/consent.html" target="_blank" rel="noopener">согласие на&nbsp;обработку персональных данных</a>&nbsp;*</span>
+              </label>
+              <label class="aa-check">
+                <input type="checkbox" name="consent_ads" id="bookConsentAds" value="1">
+                <i></i>
+                <span>Согласен получать <a href="legal/consent-ads.html" target="_blank" rel="noopener">новости и&nbsp;предложения Arendator Awards</a> — необязательно</span>
+              </label>
+              <p class="aa-consents__note">Как мы обращаемся с&nbsp;данными — в&nbsp;<a href="legal/privacy.html" target="_blank" rel="noopener">Политике обработки персональных данных</a>. Данные хранятся на&nbsp;серверах в&nbsp;России. * — обязательно для отправки заявки.</p>
+            </div>
+
+            <p class="aa-rform__error" data-book-error hidden></p>
+            <button class="aa-btn aa-btn--gold aa-btn--block aa-btn--lg" type="submit" data-book-submit>Забронировать</button>
+            <p class="aa-rform__fine">Оплата на&nbsp;сайте не&nbsp;нужна. Менеджер свяжется с&nbsp;вами, подтвердит бронь и&nbsp;пришлёт документы.</p>
+          </div>
+        </div>
+      </form>
+
+      <div class="aa-rform__done" data-book-done hidden>
+        <div class="aa-rform__check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+        <h3>Спасибо! Заявка отправлена</h3>
+        <p>Менеджер свяжется с&nbsp;вами в&nbsp;ближайшее время и&nbsp;подтвердит бронь.</p>
+        <button class="aa-btn aa-btn--outline" type="button" data-book-again>Отправить ещё одну заявку</button>
+        <button class="aa-btn aa-btn--gold n-popup__close-btn" type="button">Закрыть</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Закреплённая панель внизу: появляется после первого экрана -->
 <div class="aa-sticky" data-sticky>
   <div class="aa-container aa-sticky__inner">
@@ -707,8 +720,8 @@
     <span class="aa-sticky__name">Arendator Awards 2026</span>
     <span class="aa-sticky__meta">8 октября · Москва</span>
     <span class="aa-sticky__price">Билеты от<b data-price="personal">49 000 ₽</b></span>
-    <a class="aa-btn aa-btn--gold aa-btn--sm" href="#scheme">
-      Выбрать место
+    <a class="aa-btn aa-btn--gold aa-btn--sm" href="#packages" data-book="">
+      Забронировать
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </a>
   </div>
@@ -720,5 +733,9 @@
 <script src="assets/js/consent.js"></script>
 <script src="assets/js/seating.js"></script>
 <script src="assets/js/main.js" defer></script>
+<!-- jQuery — только для отдельной страницы. В layout сайта (layouts.default) jQuery 3.4.1 уже подключён: эту строку НЕ переносить. -->
+<script src="assets/js/vendor/jquery-3.4.1.min.js"></script>
+<!-- всплывающие окна n-popup (jQuery, логика как в legacy/tickets) -->
+<script src="assets/js/popups.js"></script>
 </body>
 </html>

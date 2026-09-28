@@ -404,15 +404,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 80px; }
 .aa-seatsbox__text { font-size: 14.5px; color: rgba(243, 236, 223, .85); margin: 10px 0 18px; }
 
 /* ==========================================================================
-   11 · ОФОРМЛЕНИЕ БИЛЕТА (бронирование → Битрикс24)
+   ФОРМА БРОНИРОВАНИЯ (во всплывающем окне n-popup; бронирование → Битрикс24)
    ========================================================================== */
-.aa-order__head { display: flex; align-items: center; justify-content: space-between; gap: 24px 40px; flex-wrap: wrap; margin-bottom: 28px; }
-.aa-order__head .aa-h2 { text-align: left; }
-.aa-steps { display: flex; align-items: center; gap: 12px; flex: 1; max-width: 640px; justify-content: flex-end; }
-.aa-steps li { display: flex; align-items: center; gap: 10px; font-size: 14.5px; color: var(--ink-2); white-space: nowrap; }
-.aa-steps li + li::before { content: ""; width: clamp(24px, 6vw, 90px); height: 1px; background: rgba(168, 132, 75, .5); margin-right: 2px; }
-.aa-steps b { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; border: 1.5px solid var(--gold-3); color: var(--gold-3); }
-.aa-steps li.is-on b { background: #3A2E1C; border-color: #3A2E1C; color: #F5E7CB; }
 
 .aa-order__grid { display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr); gap: 20px; align-items: start; }
 .aa-box { border-radius: var(--radius); background: var(--cream-2); border: 1px solid #E6DAC6; padding: 24px; box-shadow: 0 20px 44px -36px rgba(60, 40, 10, .5); }
@@ -647,7 +640,6 @@ html.aa-cookie-open .aa-sticky, html.aa-cookie-open .aa-seatbar { transform: tra
   .aa-gallery__grid { grid-auto-rows: 44vw; gap: 8px; }
   .aa-review { flex-basis: 88%; }
   .aa-timer { gap: 8px; }
-  .aa-steps { display: none; }
   .aa-rform__grid { grid-template-columns: 1fr; }
   .aa-sticky__name, .aa-sticky .aa-logo-mark__t { display: none; }
   .aa-sticky__inner { height: 64px; gap: 12px; }
@@ -716,3 +708,50 @@ html.aa-cookie-open .aa-sticky, html.aa-cookie-open .aa-seatbar { transform: tra
 /* ---------- значки-стрелки (вместо символов ← → ↓, которых нет в Roboto) ---------- */
 .aa-arr { display: inline-block; width: 1em; height: 1em; vertical-align: -.14em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .aa-cookie__key svg { width: 15px; height: 15px; display: block; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ==========================================================================
+   ВСПЛЫВАЮЩИЕ ОКНА n-popup — классы и поведение как в вёрстке legacy
+   (legacy/tickets/includes/popup/*.blade.php): окно .n-popup, открыто — .active.
+   Оформление — под макет лендинга. Правила ограничены .aa, стили сайта не задевают.
+   ========================================================================== */
+.aa .n-popup {
+  position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center;
+  padding: 24px 16px; background: rgba(8, 7, 6, .74); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  opacity: 0; visibility: hidden; transition: opacity .4s var(--ease), visibility 0s linear .4s;
+}
+.aa .n-popup.active { opacity: 1; visibility: visible; transition: opacity .4s var(--ease), visibility 0s; }
+.aa .n-popup__container {
+  position: relative; width: min(980px, 100%); max-height: calc(100vh - 48px); max-height: calc(100dvh - 48px); overflow-y: auto; overscroll-behavior: contain;
+  border-radius: 14px; background: var(--cream); color: var(--ink); padding: 34px 32px 30px;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .8);
+  transform: translateY(24px) scale(.98); transition: transform .55s var(--ease);
+}
+.aa .n-popup.active .n-popup__container { transform: none; }
+.aa .n-popup__close {
+  position: absolute; top: 14px; right: 14px; z-index: 3; width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--ink-muted); transition: background .3s, color .3s, transform .4s var(--ease);
+}
+.aa .n-popup__close:hover { background: rgba(0, 0, 0, .06); color: var(--ink); transform: rotate(90deg); }
+.aa .n-popup__close svg { width: 17px; height: 17px; }
+.aa .n-popup__top { margin-bottom: 20px; padding-right: 48px; }
+.aa .n-popup__title { font-size: clamp(22px, 2.4vw, 28px); font-weight: 700; letter-spacing: .03em; text-transform: uppercase; line-height: 1.2; }
+.aa .n-popup__loader { display: none; position: absolute; inset: 0; z-index: 2; align-items: center; justify-content: center; background: rgba(243, 237, 227, .85); border-radius: inherit; }
+.aa .n-popup__loader.active { display: flex; }
+.aa .cssload-spinner { width: 38px; height: 38px; border-radius: 50%; border: 2px solid rgba(168, 132, 75, .25); border-top-color: var(--gold-3); animation: aaSpin .9s linear infinite; }
+@keyframes aaSpin { to { transform: rotate(360deg); } }
+.aa .n-popup .aa-order__grid { grid-template-columns: minmax(0, 330px) minmax(0, 1fr); }
+.aa .n-popup .aa-box { box-shadow: none; }
+.aa .n-popup .aa-rform__done { padding: 24px 0 8px; }
+.aa .n-popup .aa-rform__done .aa-btn { margin: 6px 4px 0; }
+.aa .n-popup [data-popup-remote] { min-height: 160px; }
+body._noscroll, html.aa-popup-open body { overflow: hidden; }
+html.aa-popup-open .aa-sticky, html.aa-popup-open .aa-seatbar { transform: translateY(200%) !important; }
+@media (max-width: 960px) { .aa .n-popup .aa-order__grid { grid-template-columns: 1fr; } }
+@media (max-width: 720px) {
+  .aa .n-popup { padding: 0; align-items: flex-end; }
+  .aa .n-popup__container { max-height: 94vh; max-height: 94dvh; border-radius: 16px 16px 0 0; padding: 26px 16px 22px; transform: translateY(40px); }
+}
+
+/* подсветка карточки формата, к которой привела ссылка заказа */
+.aa-plan-card.is-flash { animation: planFlash 1.6s var(--ease); }
+@keyframes planFlash { 0%, 100% { box-shadow: 0 18px 36px -30px rgba(60, 40, 10, .45); } 30% { box-shadow: 0 0 0 3px rgba(205, 166, 106, .75), 0 24px 50px -28px rgba(120, 80, 20, .6); } }
