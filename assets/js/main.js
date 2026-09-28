@@ -308,93 +308,70 @@
     if (e.key === 'Escape') { var m = $('.aa-modal.is-open'); if (m) closeModal(m); }
   });
 
-  /* Вставка HTML с выполнением <script> (для формы оплаты) */
-  function injectHTML(container, html) {
-    if (window.jQuery) { window.jQuery(container).html(html); return; }
-    container.innerHTML = html;
-    var scripts = $$('script', container);
-    (function next(i) {
-      if (i >= scripts.length) return;
-      var old = scripts[i], s = document.createElement('script');
-      Array.prototype.slice.call(old.attributes).forEach(function (a) { s.setAttribute(a.name, a.value); });
-      if (old.src) { s.onload = s.onerror = function () { next(i + 1); }; }
-      else { s.textContent = old.textContent; }
-      old.parentNode.replaceChild(s, old);
-      if (!old.src) next(i + 1);
-    })(0);
-  }
-
-  /* ---------- Купить билет → попап с формой оплаты ---------- */
-  var buyModal = $('#buyModal');
-  var buyBox = $('#popupBuyForm');
-
-  // table — выбранный стол из схемы (необязательно). В бэкенд уходит его ID из config.seating.tableIds
-  // (ID стола в БД, как в старой схеме), а если соответствия нет — номер стола.
-  function tableParam(table) {
-    if (!table) return '';
-    var ids = (CFG.seating && CFG.seating.tableIds) || {};
-    return ids[table.n] != null ? ids[table.n] : table.n;
-  }
-
-  function openBuy(key, btn, table) {
-    var t = (CFG.tickets || {})[key] || {};
-    goal('buyClick', { package: key, table: table ? table.n : '' });
-    openModal(buyModal);
-
-    if (CFG.demo || !t.ticketId) {
-      buyBox.innerHTML =
-        '<div class="aa-demo-note">' +
-          '<h3>Оформление билета</h3>' +
-          (table ? '<p><b>Стол ' + table.n + '</b> · ' + ((window.SEATING.zones[table.zone] || {}).name || '') + '</p>' : '') +
-          '<p>Здесь откроется форма оплаты с сайта (<code>payment.blade.php</code>).</p>' +
-          '<p>Чтобы подключить: в <code>assets/js/config.js</code> укажите <code>tickets.' + key + '.ticketId</code> ' +
-          'и выключите <code>demo</code>. Форма загрузится с адреса <code>' + (CFG.endpoints && CFG.endpoints.payForm || '/tickets/pay') + '?type=ID&amp;count=1&amp;table=' + (table ? tableParam(table) : '') + '</code>.</p>' +
-        '</div>';
-      return;
-    }
-
-    var url = (CFG.endpoints.payForm || '/tickets/pay') +
-      '?type=' + encodeURIComponent(t.ticketId) + '&count=1&table=' + encodeURIComponent(tableParam(table));
-
-    buyModal.classList.add('is-loading');
-    if (btn) btn.classList.add('is-loading');
-    fetch(url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
-      .then(function (html) { injectHTML(buyBox, html); })
-      .catch(function () {
-        buyBox.innerHTML = '<div class="aa-demo-note"><h3>Не удалось загрузить форму</h3>' +
-          '<p>Попробуйте ещё раз или оставьте заявку — менеджер оформит билет вручную.</p></div>';
-      })
-      .then(function () {
-        buyModal.classList.remove('is-loading');
-        if (btn) btn.classList.remove('is-loading');
-      });
-  }
-
-  /* ---------- Запрос (Стол / вопрос) ---------- */
-  var reqModal = $('#requestModal');
-  var reqForm = $('[data-request-form]');
-  var reqDone = $('[data-request-done]');
-  var reqErr = $('[data-request-error]');
-  var REQ_TEXT = {
-    table:    { eyebrow: '[ Стол ]',   title: 'Запрос на стол',     sub: 'Оставьте контакты — менеджер свяжется с вами и пришлёт условия, рассадку и стоимость.' },
-    question: { eyebrow: '[ Вопрос ]', title: 'Остались вопросы?', sub: 'Оставьте контакты — менеджер ответит и поможет с оформлением.' }
+  /* ------------------------------------------------------------------
+     Бронирование → лид в Битрикс24
+     Любая кнопка с data-book="vip|business|personal|table|question"
+     открывает одну форму. Отправка — POST на endpoints.lead (наш бэкенд),
+     бэкенд создаёт лид в Битрикс24 (см. backend/ и README).
+     ------------------------------------------------------------------ */
+  var bookModal = $('#bookModal');
+  var bookForm = $('[data-book-form]');
+  var bookDone = $('[data-book-done]');
+  var bookErr = $('[data-book-error]');
+  var PACK = {
+    vip:      'VIP билет',
+    business: 'Бизнес',
+    personal: 'Персональный билет',
+    table:    'Стол'
   };
+  var fmtRub = function (n) { return new Intl.NumberFormat('ru-RU').format(n) + ' ₽'; };
 
-  function openRequest(key, table) {
-    var txt = REQ_TEXT[key] || REQ_TEXT.question;
-    $('[data-request-eyebrow]').textContent = table ? '[ Стол ' + table.n + ' ]' : txt.eyebrow;
-    $('[data-request-title]').textContent = table ? 'Забронировать стол ' + table.n : txt.title;
-    $('[data-request-sub]').textContent = table
-      ? ((window.SEATING.zones[table.zone] || {}).name || '') + (table.cap ? ', до ' + table.cap + ' гостей' : '') + '. Оставьте контакты — менеджер подтвердит бронь и пришлёт условия.'
-      : txt.sub;
-    reqForm.elements['package'].value = key;
-    reqForm.elements['table'].value = table ? table.n : '';
-    var t = (CFG.tickets || {})[key];
-    reqForm.elements['type_id'].value = t && t.ticketId ? t.ticketId : '';
-    reqForm.hidden = false; reqDone.hidden = true; reqErr.hidden = true;
-    goal('requestOpen', { package: key });
-    openModal(reqModal);
+  // UTM-метки: запоминаем на время визита, чтобы менеджер в Битриксе видел источник
+  var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+  var utm = {};
+  try { utm = JSON.parse(sessionStorage.getItem('aa_utm') || '{}'); } catch (e) {}
+  var qs = new URLSearchParams(location.search);
+  if (UTM_KEYS.some(function (k) { return qs.get(k); })) {
+    utm = {};
+    UTM_KEYS.forEach(function (k) { if (qs.get(k)) utm[k] = qs.get(k); });
+    try { sessionStorage.setItem('aa_utm', JSON.stringify(utm)); } catch (e) {}
+  }
+
+  // ID посетителя в Метрике — чтобы связать лид с визитом (сквозная аналитика)
+  var ymClientId = '';
+  try {
+    var an = CFG.analytics || {};
+    if (typeof window.ym === 'function' && an.metrikaId) window.ym(an.metrikaId, 'getClientID', function (id) { ymClientId = id; });
+  } catch (e) {}
+
+  function packPrice(key) { var t = (CFG.tickets || {})[key]; return t && t.price ? t.price : null; }
+
+  function syncTotal() {
+    if (!bookForm) return;
+    var key = (bookForm.querySelector('[name="package"]:checked') || {}).value;
+    var guests = parseInt(bookForm.elements['guests'].value, 10) || 1;
+    var price = packPrice(key);
+    $('[data-book-total]').textContent = price ? fmtRub(price * guests) : 'по запросу';
+    $('[data-book-total-note]').textContent = price ? guests + ' × ' + fmtRub(price) : 'менеджер пришлёт условия';
+  }
+
+  function openBook(key) {
+    var isQuestion = key === 'question';
+    bookForm.hidden = false; bookDone.hidden = true; bookErr.hidden = true;
+    bookForm.classList.toggle('is-question', isQuestion);
+    $('[data-book-eyebrow]').textContent = isQuestion ? '[ Вопрос ]' : '[ Бронирование ]';
+    $('[data-book-title]').textContent = isQuestion ? 'Остались вопросы?' : key === 'table' ? 'Запрос на стол' : 'Забронировать билет';
+    $('[data-book-sub]').textContent = isQuestion
+      ? 'Оставьте контакты — менеджер ответит и поможет подобрать формат.'
+      : 'Оставьте контакты — менеджер свяжется с вами, подтвердит бронь и пришлёт документы.';
+    bookForm.elements['intent'].value = isQuestion ? 'question' : 'booking';
+    if (!isQuestion && PACK[key]) {
+      var r = bookForm.querySelector('[name="package"][value="' + key + '"]');
+      if (r) r.checked = true;
+    }
+    syncTotal();
+    goal('bookOpen', { package: key });
+    openModal(bookModal);
   }
 
   // маска телефона +7 (___) ___-__-__
@@ -415,42 +392,65 @@
     });
   });
 
-  if (reqForm) {
-    reqForm.addEventListener('submit', function (e) {
+  if (bookForm) {
+    // количество гостей
+    var gIn = bookForm.elements['guests'];
+    $$('[data-guests]', bookForm).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var v = (parseInt(gIn.value, 10) || 1) + parseInt(b.getAttribute('data-guests'), 10);
+        gIn.value = Math.max(1, Math.min(50, v));
+        syncTotal();
+      });
+    });
+    gIn.addEventListener('input', function () {
+      var v = parseInt(gIn.value.replace(/\D/g, ''), 10);
+      gIn.value = isNaN(v) ? '' : Math.max(1, Math.min(50, v));
+      syncTotal();
+    });
+    gIn.addEventListener('blur', function () { if (!gIn.value) { gIn.value = 1; syncTotal(); } });
+    $$('[name="package"]', bookForm).forEach(function (r) { r.addEventListener('change', syncTotal); });
+
+    bookForm.addEventListener('submit', function (e) {
       e.preventDefault();
       var ok = true;
-      $$('input[required]', reqForm).forEach(function (inp) {
+      $$('input[required]', bookForm).forEach(function (inp) {
         var bad = inp.type === 'checkbox' ? !inp.checked : !inp.checkValidity() || (inp.name === 'phone' && inp.value.replace(/\D/g, '').length < 11);
         var field = inp.closest('.aa-field');
         if (field) field.classList.toggle('is-invalid', bad);
         if (bad) ok = false;
       });
-      if (!ok) { reqErr.textContent = 'Проверьте обязательные поля и согласие на обработку данных.'; reqErr.hidden = false; return; }
-      if (reqForm.elements['website'].value) return; // бот
+      if (!ok) { bookErr.textContent = 'Заполните имя, телефон и email и отметьте согласие на обработку данных.'; bookErr.hidden = false; return; }
+      if (bookForm.elements['website'].value) return; // бот
 
-      reqErr.hidden = true;
-      var submit = $('button[type=submit]', reqForm);
+      bookErr.hidden = true;
+      var submit = $('button[type=submit]', bookForm);
       submit.classList.add('is-loading');
+
+      var fd = new FormData(bookForm);
+      if (bookForm.elements['intent'].value === 'question') { fd.delete('package'); fd.delete('guests'); }
+      Object.keys(utm).forEach(function (k) { fd.append(k, utm[k]); });
+      fd.append('page', location.href.split('#')[0]);
+      fd.append('referrer', document.referrer || '');
+      if (ymClientId) fd.append('ym_client_id', ymClientId);
 
       var done = function () {
         submit.classList.remove('is-loading');
-        reqForm.hidden = true; reqDone.hidden = false;
-        goal('requestSubmit', { package: reqForm.elements['package'].value });
-        reqForm.reset();
+        bookForm.hidden = true; bookDone.hidden = false;
+        goal('bookSubmit', { package: fd.get('package') || 'question' });
+        bookForm.reset(); gIn.value = 1;
       };
       var fail = function () {
         submit.classList.remove('is-loading');
-        reqErr.textContent = 'Не удалось отправить заявку. Попробуйте ещё раз.';
-        reqErr.hidden = false;
+        bookErr.textContent = 'Не удалось отправить заявку. Проверьте интернет и попробуйте ещё раз.';
+        bookErr.hidden = false;
       };
 
-      var endpoint = CFG.endpoints && CFG.endpoints.request;
+      var endpoint = CFG.endpoints && CFG.endpoints.lead;
       if (!endpoint) { // демо-режим: бэкенд не подключён
-        console.info('[landing] endpoints.request не задан — заявка не отправлена (демо).', Object.fromEntries(new FormData(reqForm)));
+        console.info('[landing] endpoints.lead не задан — заявка не отправлена (демо).', Object.fromEntries(fd));
         setTimeout(done, 700);
         return;
       }
-      var fd = new FormData(reqForm);
       var token = ($('meta[name="csrf-token"]') || {}).content || '';
       if (token) fd.append('_token', token);
       fetch(endpoint, {
@@ -458,21 +458,23 @@
         headers: { 'X-Requested-With': 'XMLHttpRequest', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' }
       }).then(function (r) { if (!r.ok) throw new Error(r.status); done(); }).catch(fail);
     });
-    $$('input', reqForm).forEach(function (inp) {
+    $$('input', bookForm).forEach(function (inp) {
       inp.addEventListener('input', function () { var f = inp.closest('.aa-field'); if (f) f.classList.remove('is-invalid'); });
     });
   }
 
   /* ------------------------------------------------------------------
-     Схема зала: отрисовка столов из seating.js и выбор стола
+     Схема зала — только просмотр.
+     Столы рисуются из seating.js. Клик или наведение показывает зону (цвет),
+     стоимость и сколько гостей за столом. Выбрать конкретный стол нельзя —
+     кнопка ведёт к бронированию формата (зоны).
      ------------------------------------------------------------------ */
   var SEAT = window.SEATING || { zones: {}, tables: [], labels: [] };
   var SCFG = CFG.seating || {};
   var plan = $('[data-plan]');
-  var picked = null;           // выбранный стол (объект из SEAT.tables)
+  var active = null;           // стол, по которому кликнули (только для подсветки и справки)
   var seatFilter = 'all';
-  var fmt = function (n) { return new Intl.NumberFormat('ru-RU').format(n) + ' ₽'; };
-  var capText = function (t) { return t.cap ? 'до ' + t.cap + ' чел' : 'уточняйте у менеджера'; };
+  var guestsText = function (t) { return t.cap ? 'до ' + t.cap + ' гостей' : 'уточняйте у менеджера'; };
 
   function svgEl(tag, attrs, text) {
     var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -499,7 +501,7 @@
       var g = svgEl('g', {
         'class': 'aa-t' + (t.booked ? ' is-booked' : ''),
         'data-table': t.n, tabindex: t.booked ? -1 : 0, role: 'button',
-        'aria-label': 'Стол ' + t.n + (t.booked ? ', забронирован' : ', ' + (zone ? zone.name : '') + ', ' + capText(t))
+        'aria-label': t.booked ? 'Забронировано' : (zone ? zone.name : '') + ', ' + guestsText(t)
       });
       var cx, cy, shape, ring;
       if (t.c) {
@@ -512,7 +514,6 @@
         shape = svgEl('rect', { x: r[0], y: r[1], width: r[2], height: r[3] });
         ring = svgEl('rect', { x: r[0] - 3.5, y: r[1] - 3.5, width: r[2] + 7, height: r[3] + 7, rx: 3 });
         if (tr) { shape.setAttribute('transform', tr); ring.setAttribute('transform', tr); }
-        // центр (для подписи и подсказки)
         var a = (t.rot ? t.rot[4] : 0) * Math.PI / 180, hx = r[2] / 2, hy = r[3] / 2;
         cx = r[0] + hx * Math.cos(a) - hy * Math.sin(a);
         cy = r[1] + hx * Math.sin(a) + hy * Math.cos(a);
@@ -523,15 +524,8 @@
       var num = svgEl('text', { 'class': 'aa-t__num', x: cx, y: cy + 0.5 }, t.n);
       if (t.rot) num.setAttribute('transform', 'rotate(' + t.rot[4] + ' ' + cx + ' ' + cy + ')');
       g.appendChild(shape); g.appendChild(ring); g.appendChild(num);
-      t._el = g; t._c = [cx, cy];
+      t._el = g;
       gt.appendChild(g);
-    });
-
-    // свободные столы по зонам — в фильтрах
-    Object.keys(SEAT.zones).forEach(function (z) {
-      var free = SEAT.tables.filter(function (t) { return t.zone === z && !t.booked; }).length;
-      var el = $('[data-free="' + z + '"]');
-      if (el) el.textContent = free;
     });
     applyFilter(seatFilter);
   }
@@ -552,8 +546,9 @@
   function showTip(t) {
     if (!tip || !t) return;
     var zone = SEAT.zones[t.zone];
-    tip.innerHTML = '<b>Стол ' + t.n + '</b>' +
-      '<small>' + (t.booked ? 'Забронирован' : (zone ? zone.name : '') + ' · ' + capText(t)) + '</small>';
+    var price = zone && packPrice(zone.ticket);
+    tip.innerHTML = t.booked ? '<b>Забронировано</b>' :
+      '<b>' + (zone ? zone.name : '') + (price ? ' · ' + fmtRub(price) : '') + '</b><small>' + guestsText(t) + ' за столом</small>';
     var r = t._el.getBoundingClientRect(), pb = planBox.getBoundingClientRect();
     tip.style.left = (r.left + r.width / 2 - pb.left) + 'px';
     tip.style.top = (r.top - pb.top) + 'px';
@@ -561,33 +556,33 @@
   }
   function hideTip() { if (tip) tip.hidden = true; }
 
-  // выбор стола
+  // справка по столу: цвет → формат, цена, сколько гостей
   var seatbar = $('[data-seatbar]');
-  function pick(t) {
+  function inspect(t) {
     if (!t || t.booked) return;
-    picked = t;
-    SEAT.tables.forEach(function (x) { x._el && x._el.classList.toggle('is-picked', x === t); });
+    active = t;
+    SEAT.tables.forEach(function (x) { x._el && x._el.classList.toggle('is-active', x === t); });
     var zone = SEAT.zones[t.zone] || {};
-    var ticket = (CFG.tickets || {})[zone.ticket] || {};
+    var price = packPrice(zone.ticket);
     $('[data-pick-empty]').hidden = true;
     var full = $('[data-pick-full]');
     full.hidden = false;
     full.style.animation = 'none'; void full.offsetWidth; full.style.animation = '';
     $('[data-pick-dot]').style.setProperty('--c', zone.color || '#fff');
     $('[data-pick-zone]').textContent = zone.name || '';
-    $('[data-pick-num]').textContent = t.n;
-    $('[data-pick-cap]').textContent = capText(t);
-    $('[data-pick-pack]').textContent = zone.ticket === 'vip' ? 'VIP билет' : zone.ticket === 'business' ? 'Бизнес' : 'Персональный билет';
-    $('[data-pick-price]').textContent = ticket.price ? fmt(ticket.price) + ' / гость' : 'по запросу';
+    $('[data-pick-price]').textContent = price ? fmtRub(price) : 'по запросу';
+    $('[data-pick-cap]').textContent = guestsText(t);
+    $('[data-pick-inc]').textContent = zone.includes || '—';
+    $$('[data-seat-book]').forEach(function (b) { b.setAttribute('data-book', zone.ticket); });
     if (seatbar) {
-      $('[data-seatbar-title]', seatbar).textContent = 'Стол ' + t.n;
-      $('[data-seatbar-meta]', seatbar).textContent = (zone.name || '') + ' · ' + capText(t) + (ticket.price ? ' · ' + fmt(ticket.price) : '');
+      $('[data-seatbar-title]', seatbar).textContent = (zone.name || '') + (price ? ' · ' + fmtRub(price) : '');
+      $('[data-seatbar-meta]', seatbar).textContent = guestsText(t) + ' за столом';
     }
     syncSeatbar();
   }
-  function unpick() {
-    picked = null;
-    SEAT.tables.forEach(function (x) { x._el && x._el.classList.remove('is-picked'); });
+  function closeInspect() {
+    active = null;
+    SEAT.tables.forEach(function (x) { x._el && x._el.classList.remove('is-active'); });
     $('[data-pick-empty]').hidden = false;
     $('[data-pick-full]').hidden = true;
     syncSeatbar();
@@ -597,15 +592,16 @@
     var sec = $('#scheme');
     var r = sec ? sec.getBoundingClientRect() : { top: 1, bottom: 0 };
     var inView = r.top < window.innerHeight * 0.7 && r.bottom > window.innerHeight * 0.4;
-    seatbar.classList.toggle('is-visible', !!picked && inView);
-    if (sticky && picked && inView) sticky.classList.remove('is-visible');
+    seatbar.classList.toggle('is-visible', !!active && inView);
+    if (sticky && active && inView) sticky.classList.remove('is-visible');
   }
   window.addEventListener('scroll', function () { requestAnimationFrame(syncSeatbar); }, { passive: true });
 
+  var dragMoved = false;
   if (plan) {
     drawPlan();
 
-    // статусы столов с бэкенда (необязательно): GET → { "booked": ["702", "703", …] }
+    // необязательно: занятые столы с бэкенда. GET → { "booked": ["702", "703", …] }
     if (SCFG.statusUrl) {
       fetch(SCFG.statusUrl, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
         .then(function (r) { return r.ok ? r.json() : null; })
@@ -613,20 +609,20 @@
           if (!d || !d.booked) return;
           var set = d.booked.map(String);
           SEAT.tables.forEach(function (t) { t.booked = set.indexOf(t.n) !== -1; });
-          if (picked && picked.booked) unpick();
+          if (active && active.booked) closeInspect();
           drawPlan();
-          if (picked) pick(picked);
+          if (active) inspect(active);
         }).catch(function () {});
     }
 
     plan.addEventListener('click', function (e) {
       var g = e.target.closest('.aa-t');
       if (!g || dragMoved) return;
-      pick(byNum(g.getAttribute('data-table')));
+      inspect(byNum(g.getAttribute('data-table')));
     });
     plan.addEventListener('keydown', function (e) {
       var g = e.target.closest && e.target.closest('.aa-t');
-      if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); pick(byNum(g.getAttribute('data-table'))); }
+      if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); inspect(byNum(g.getAttribute('data-table'))); }
     });
     plan.addEventListener('pointerover', function (e) {
       var g = e.target.closest('.aa-t');
@@ -644,22 +640,11 @@
     $$('[data-filter]').forEach(function (b) {
       b.addEventListener('click', function () { applyFilter(b.getAttribute('data-filter')); });
     });
-    $$('[data-seat-clear]').forEach(function (b) { b.addEventListener('click', unpick); });
-    $$('[data-seat-buy]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        if (!picked) return;
-        var zone = SEAT.zones[picked.zone] || {};
-        openBuy(zone.ticket, b, picked);
-      });
-    });
-    $$('[data-seat-request]').forEach(function (b) {
-      b.addEventListener('click', function () { if (picked) openRequest('table', picked); });
-    });
+    $$('[data-seat-clear]').forEach(function (b) { b.addEventListener('click', closeInspect); });
   }
 
   // масштаб и перетаскивание схемы
   var vp = $('[data-plan-viewport]');
-  var dragMoved = false;
   if (vp && plan) {
     var Z = [1, 1.5, 2.2, 3], zi = 0;
     var zoomBtns = $$('[data-zoom]');
@@ -670,7 +655,7 @@
       vp.style.setProperty('--z', Z[zi]);
       vp.classList.toggle('is-zoomed', zi > 0);
       zoomBtns[0].disabled = zi === 0; zoomBtns[1].disabled = zi === Z.length - 1;
-      plan.style.transition = 'none';   // пересчёт скролла сразу, без анимации высоты
+      plan.style.transition = 'none';
       vp.scrollLeft = cx * vp.scrollWidth - vp.clientWidth / 2;
       vp.scrollTop = cy * vp.scrollHeight - vp.clientHeight / 2;
       requestAnimationFrame(function () { plan.style.transition = ''; });
@@ -679,7 +664,6 @@
     zoomBtns.forEach(function (b) { b.addEventListener('click', function () { setZoom(zi + parseInt(b.getAttribute('data-zoom'), 10)); }); });
     setZoom(0);
 
-    // перетаскивание мышью (на телефоне — нативная прокрутка пальцем)
     var sx, sy, sl, st, down = false;
     vp.addEventListener('pointerdown', function (e) {
       if (e.pointerType !== 'mouse' || zi === 0) return;
@@ -699,13 +683,11 @@
 
   /* ---------- делегирование кликов ---------- */
   document.addEventListener('click', function (e) {
-    var b = e.target.closest('[data-buy]');
-    if (b) { e.preventDefault(); openBuy(b.getAttribute('data-buy'), b); return; }
-    var r = e.target.closest('[data-request]');
-    if (r) { e.preventDefault(); openRequest(r.getAttribute('data-request')); }
+    var b = e.target.closest('[data-book]');
+    if (b) { e.preventDefault(); openBook(b.getAttribute('data-book')); }
   });
 
-  // Прямая ссылка на пакет: /tickets#buy-vip, #request-table
-  var h = location.hash.match(/^#(buy|request)-(\w+)/);
-  if (h) setTimeout(function () { h[1] === 'buy' ? openBuy(h[2]) : openRequest(h[2]); }, 400);
+  // Прямая ссылка: /tickets#book-vip, #book-business, #book-personal, #book-table, #book-question
+  var h = location.hash.match(/^#book-(\w+)/);
+  if (h) setTimeout(function () { openBook(h[1]); }, 400);
 })();

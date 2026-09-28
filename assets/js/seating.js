@@ -3,6 +3,9 @@
  *  СХЕМА РАССАДКИ — данные
  *  Перенесено 1:1 с утверждённой схемы (координаты в пикселях картинки 714×1280).
  *
+ *  Схема только для просмотра: гость видит цвет (формат), цену и «до N чел»,
+ *  выбрать конкретный стол нельзя.
+ *
  *  Чтобы поменять статус стола — поменяйте booked: true/false
  *  (или отдавайте список занятых столов с бэкенда — см. config.js → seating).
  *
@@ -19,9 +22,9 @@
 window.SEATING = {
 
   zones: {
-    vip:      { name: 'ВИП',                 color: '#ADC898', ticket: 'vip' },
-    business: { name: 'Бизнес',              color: '#E8A0A5', ticket: 'business' },
-    personal: { name: 'Персональные билеты', color: '#FEF1AF', ticket: 'personal' },
+    vip:      { name: 'ВИП',                 color: '#ADC898', ticket: 'vip',      includes: 'Банкет, закреплённый официант, безлимитный алкоголь' },
+    business: { name: 'Бизнес',              color: '#E8A0A5', ticket: 'business', includes: 'Фуршет, алкоголь за баром' },
+    personal: { name: 'Персональные билеты', color: '#FEF1AF', ticket: 'personal', includes: 'Место в зале на церемонии' },
   },
 
   tables: [
