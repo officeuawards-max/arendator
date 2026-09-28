@@ -250,22 +250,23 @@
         </div>
 
         <div class="aa-seat__viewport" data-plan-viewport>
-          <svg class="aa-plan" viewBox="15 100 630 1090" role="img" aria-label="Схема рассадки зала" data-plan>
+          <svg class="aa-plan" viewBox="95 58 1100 652" role="img" aria-label="Схема рассадки зала" data-plan>
             <defs>
               <linearGradient id="aaStageGrad" x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0" stop-color="#F1DDB3"/>
                 <stop offset="1" stop-color="#C39A58"/>
               </linearGradient>
             </defs>
+            <g data-plan-rot>
       <!-- welcome-зона -->
       <path class="aa-plan__welcome" d="M157,115 H522 L540,146 H558 V258 H605 V500 L593,516 L470,512 L430,495 L360,448 L300,386 L239,322 L192,305 L150,327 H90 V257 H142 V260 H157 Z"/>
-      <text class="aa-plan__zone" x="320" y="195" text-anchor="middle">ЗОНА WELCOME</text>
-      <text class="aa-plan__zone" x="408" y="428" text-anchor="middle" transform="rotate(27 408 428)">ЗОНА WELCOME</text>
+      <text class="aa-plan__zone" x="320" y="195" text-anchor="middle" data-upright>ЗОНА WELCOME</text>
+      <text class="aa-plan__zone aa-plan__only-v" x="408" y="428" text-anchor="middle" transform="rotate(27 408 428)">ЗОНА WELCOME</text>
 
       <!-- бар -->
       <path class="aa-plan__bar" d="M294,296 L349,256 H410 L460,297 L521,364 L522,398 L505,409 Z"/>
       <path class="aa-plan__thin" d="M306,300 L350,265 H407 L452,299 L513,370 L512,396 L500,400 Z"/>
-      <text class="aa-plan__big" x="412" y="321" text-anchor="middle">БАР</text>
+      <text class="aa-plan__big" x="412" y="321" text-anchor="middle" dominant-baseline="middle" data-upright>БАР</text>
 
       <!-- стены -->
       <path class="aa-plan__wall" d="M157,260 V115 H522 L540,146 H558 V258 H605 V500 L593,516 V727 L605,750 V1060 H571 V1138 H278 V1106 L158,1084 V669 H130 V659"/>
@@ -291,6 +292,7 @@
             <!-- подписи «до N чел» и столы — из seating.js -->
             <g data-plan-labels></g>
             <g data-plan-tables></g>
+            </g>
           </svg>
         </div>
         <div class="aa-plan-tip" data-plan-tip hidden></div>
@@ -342,7 +344,7 @@
 </section>
 
 <!-- =========================================================
-     06 · ФОРМАТ УЧАСТИЯ
+     06 · ФОРМАТ УЧАСТИЯ — слайдер из 4 карточек (Business, VIP, Персональный, Стол)
      data-book="vip|business|personal|table" — ведут к форме бронирования с выбранным форматом
      data-show-zone="vip|business|personal" — показывают зону на схеме
      ========================================================= -->
@@ -352,54 +354,73 @@
       <h2 class="aa-h2" data-split>Выберите формат участия</h2>
     </div>
 
-    <div class="aa-plans">
+    <!-- Слайдер карточек: все форматы в полный рост, в каждой — что включено -->
+    <div class="aa-plans" data-slider>
       <article class="aa-plan-card" data-reveal>
         <h3 class="aa-plan-card__name">Business</h3>
         <p class="aa-plan-card__price"><span data-price="business">115 500 ₽</span> <small>/ место</small></p>
+        <p class="aa-plan-card__zone"><i style="--c:#EEDDB9"></i>Business-зона на&nbsp;схеме</p>
         <ul class="aa-checks">
-          <li>Business-зона</li>
+          <li>Место за&nbsp;столом в&nbsp;Business-зоне</li>
           <li>Фуршет</li>
           <li>Алкоголь за&nbsp;баром</li>
           <li>Вся программа церемонии</li>
-          <li>Networking</li>
+          <li>Welcome-зона и&nbsp;networking</li>
         </ul>
         <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="business">Забронировать место</button>
         <a class="aa-plan-card__link" href="#scheme" data-show-zone="business">Посмотреть на&nbsp;схеме зала</a>
       </article>
 
-      <article class="aa-plan-card aa-plan-card--featured" data-reveal style="--d:.12s">
+      <article class="aa-plan-card aa-plan-card--featured" data-reveal style="--d:.08s">
         <span class="aa-plan-card__tag">Рекомендуем</span>
         <h3 class="aa-plan-card__name">VIP</h3>
         <p class="aa-plan-card__price"><span data-price="vip">140 000 ₽</span> <small>/ место</small></p>
+        <p class="aa-plan-card__zone"><i style="--c:#D4AE6A"></i>VIP-зона на&nbsp;схеме</p>
         <ul class="aa-checks">
-          <li>VIP-зона, приоритетное расположение</li>
+          <li>Приоритетное расположение ближе к&nbsp;сцене</li>
           <li>Место за&nbsp;столом, банкет</li>
           <li>Закреплённый официант</li>
           <li>Безлимитный алкоголь</li>
           <li>Вся программа церемонии</li>
-          <li>Networking</li>
+          <li>Welcome-зона и&nbsp;networking</li>
         </ul>
         <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="vip">Забронировать VIP-место</button>
         <a class="aa-plan-card__link" href="#scheme" data-show-zone="vip">Посмотреть на&nbsp;схеме зала</a>
       </article>
+
+      <article class="aa-plan-card" data-reveal style="--d:.16s">
+        <h3 class="aa-plan-card__name">Персональный</h3>
+        <p class="aa-plan-card__price"><span data-price="personal">49 000 ₽</span> <small>/ место</small></p>
+        <p class="aa-plan-card__zone"><i style="--c:#A89378"></i>Персональная зона на&nbsp;схеме</p>
+        <ul class="aa-checks">
+          <li>Место в&nbsp;зале на&nbsp;церемонии</li>
+          <li>Вся программа церемонии</li>
+          <li>Welcome-зона и&nbsp;networking</li>
+        </ul>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="personal">Забронировать место</button>
+        <a class="aa-plan-card__link" href="#scheme" data-show-zone="personal">Посмотреть на&nbsp;схеме зала</a>
+      </article>
+
+      <article class="aa-plan-card" data-reveal style="--d:.24s">
+        <h3 class="aa-plan-card__name">Стол для компании</h3>
+        <p class="aa-plan-card__price">По&nbsp;запросу</p>
+        <p class="aa-plan-card__zone"><i style="--c:transparent"></i>Для команды, партнёров и&nbsp;клиентов</p>
+        <ul class="aa-checks">
+          <li>Отдельный стол для вашей компании</li>
+          <li>Количество мест — под вашу команду</li>
+          <li>Питание и&nbsp;напитки — по&nbsp;выбранному формату</li>
+          <li>Вся программа церемонии</li>
+          <li>Welcome-зона и&nbsp;networking</li>
+          <li>Персональный менеджер</li>
+        </ul>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="table">Отправить запрос</button>
+        <a class="aa-plan-card__link" href="#order" data-book="question">Задать вопрос менеджеру</a>
+      </article>
     </div>
 
-    <div class="aa-plans-extra">
-      <div class="aa-plan-mini" data-reveal>
-        <div class="aa-plan-mini__body">
-          <p class="aa-plan-mini__name">Персональный</p>
-          <p class="aa-plan-mini__meta">Место в&nbsp;зале на&nbsp;церемонии</p>
-        </div>
-        <span class="aa-plan-mini__price" data-price="personal">49 000 ₽</span>
-        <button class="aa-btn aa-btn--outline aa-btn--sm" type="button" data-book="personal">Забронировать</button>
-      </div>
-      <div class="aa-plan-mini" data-reveal style="--d:.12s">
-        <div class="aa-plan-mini__body">
-          <p class="aa-plan-mini__name">Стол для компании</p>
-          <p class="aa-plan-mini__meta">Условия и&nbsp;стоимость — по&nbsp;запросу</p>
-        </div>
-        <button class="aa-btn aa-btn--outline aa-btn--sm" type="button" data-book="table">Запрос</button>
-      </div>
+    <div class="aa-slider-nav">
+      <button type="button" aria-label="Предыдущий формат" data-slide="-1"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <button type="button" aria-label="Следующий формат" data-slide="1"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
     </div>
   </div>
 </section>

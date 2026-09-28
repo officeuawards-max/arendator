@@ -689,3 +689,32 @@ html.aa-cookie-open .aa-sticky, html.aa-cookie-open .aa-seatbar { transform: tra
 .aa-light .aa-btn--outline { color: var(--gold-3); border-color: var(--gold-3); background: rgba(205, 166, 106, .08); }
 .aa-light .aa-btn--outline:hover { background: var(--gold-grad); color: var(--on-gold); border-color: transparent; }
 .aa-plan-mini .aa-btn { flex-shrink: 0; }
+
+/* ---------- схема горизонтально (компьютер, планшет) ---------- */
+.aa-seat { grid-template-columns: minmax(0, 1fr) 290px; }
+.aa-seat__viewport.is-h { height: auto; aspect-ratio: 1100 / 652; }
+.aa-plan.is-h { width: calc(100% * var(--z)); height: auto; transition: width .5s var(--ease); }
+.aa-plan.is-h .aa-plan__only-v { display: none; }
+.aa-plan.is-h .aa-plan__cap text { font-size: 8.6px; }
+@media (max-width: 1100px) { .aa-seat { grid-template-columns: 1fr; } .aa-seat__side { position: static; display: grid; grid-template-columns: 1fr 1fr; align-items: start; } }
+@media (max-width: 720px) { .aa-seat__side { display: flex; } }
+
+/* ---------- форматы участия: слайдер карточек в полный рост ---------- */
+.aa-plans {
+  display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+  padding: 18px 4px 36px; margin: -18px -4px -36px; justify-content: flex-start;
+}
+.aa-plans::-webkit-scrollbar { display: none; }
+.aa-plans .aa-plan-card { flex: 0 0 calc((100% - 48px) / 3); scroll-snap-align: start; }
+.aa-plans .aa-plan-card:hover { transform: none; }
+.aa-plan-card__zone { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 13.5px; color: var(--ink-muted); }
+.aa-plan-card__zone i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 1px rgba(0, 0, 0, .18); flex-shrink: 0; }
+.aa-packages .aa-slider-nav { margin-top: 28px; }
+.aa-light .aa-slider-nav button { border-color: rgba(168, 132, 75, .5); color: var(--gold-3); }
+.aa-light .aa-slider-nav button:hover { background: var(--gold-grad); color: var(--on-gold); }
+@media (max-width: 960px) { .aa-plans .aa-plan-card { flex-basis: calc((100% - 24px) / 2); } }
+@media (max-width: 720px) { .aa-plans { gap: 14px; } .aa-plans .aa-plan-card { flex-basis: 86%; padding: 28px 22px 24px; } }
+.aa-plans { padding: 18px 28px 44px; margin: -18px -28px -44px; scroll-padding-inline: 28px; }
+.aa-plans .aa-plan-card { box-shadow: 0 18px 36px -30px rgba(60, 40, 10, .45); }
+.aa-plans .aa-plan-card--featured { box-shadow: 0 0 0 1px rgba(205, 166, 106, .5), 0 18px 36px -28px rgba(120, 80, 20, .5); }
+@media (max-width: 720px) { .aa-plans { padding: 18px 16px 36px; margin: -18px -16px -36px; scroll-padding-inline: 16px; } }

@@ -192,10 +192,16 @@
   /* ------------------------------------------------------------------
      Слайдер отзывов (нативный scroll-snap + стрелки)
      ------------------------------------------------------------------ */
-  var slider = $('[data-slider]');
-  if (slider) {
-    var navBtns = $$('[data-slide]');
-    var step = function () { var c = $('.aa-review', slider); return c ? c.getBoundingClientRect().width + 18 : 400; };
+  // каждый [data-slider] листается кнопками [data-slide] из своей секции
+  $$('[data-slider]').forEach(function (slider) {
+    var sec = slider.closest('section') || document;
+    var navBtns = $$('[data-slide]', sec);
+    if (navBtns.length < 2) return;
+    var step = function () {
+      var c = slider.firstElementChild;
+      var gap = parseFloat(getComputedStyle(slider).columnGap) || 18;
+      return c ? c.getBoundingClientRect().width + gap : 400;
+    };
     navBtns.forEach(function (b) {
       b.addEventListener('click', function () {
         slider.scrollBy({ left: step() * parseInt(b.getAttribute('data-slide'), 10), behavior: reduceMotion ? 'auto' : 'smooth' });
@@ -205,11 +211,12 @@
       var max = slider.scrollWidth - slider.clientWidth - 2;
       navBtns[0].disabled = slider.scrollLeft <= 2;
       navBtns[1].disabled = slider.scrollLeft >= max;
+      navBtns[0].parentNode.hidden = max <= 0;
     };
     slider.addEventListener('scroll', function () { requestAnimationFrame(sync); }, { passive: true });
     window.addEventListener('resize', sync);
     sync();
-  }
+  });
 
   /* ------------------------------------------------------------------
      Таймер «До церемонии осталось»
@@ -492,15 +499,45 @@
     return el;
   }
 
+  /* Ориентация: на компьютере и планшете — горизонтально, сценой вверх (как на утверждённой
+     картинке), на телефоне — вертикально. Координаты в seating.js — в «вертикальной» системе
+     (картинка 714×1280); горизонталь — это поворот всей схемы на 90°, а надписи
+     поворачиваются обратно, чтобы читались ровно. */
+  var planMQ = window.matchMedia('(max-width: 720px)');
+  var isH = function () { return !planMQ.matches; };
+  var VIEW_V = '15 100 630 1090', VIEW_H = '95 58 1100 652';
+  function orientPlan() {
+    if (!plan) return;
+    var h = isH();
+    plan.setAttribute('viewBox', h ? VIEW_H : VIEW_V);
+    plan.classList.toggle('is-h', h);
+    var vpEl = $('[data-plan-viewport]'); if (vpEl) vpEl.classList.toggle('is-h', h);
+    var rot = $('[data-plan-rot]', plan);
+    if (h) rot.setAttribute('transform', 'translate(0 714) rotate(-90)'); else rot.removeAttribute('transform');
+    $$('[data-upright]', plan).forEach(function (t) {
+      if (h) t.setAttribute('transform', 'rotate(90 ' + t.getAttribute('x') + ' ' + t.getAttribute('y') + ')');
+      else t.removeAttribute('transform');
+    });
+  }
+
   function drawPlan() {
     if (!plan) return;
+    var h = isH();
     var gl = $('[data-plan-labels]', plan), gt = $('[data-plan-tables]', plan);
     gl.textContent = ''; gt.textContent = '';
 
     SEAT.labels.forEach(function (l) {
       var g = svgEl('g', { 'class': 'aa-plan__cap' });
       (l[3] || []).forEach(function (ln) { g.appendChild(svgEl('line', { x1: ln[0], y1: ln[1], x2: ln[2], y2: ln[3] })); });
-      g.appendChild(svgEl('text', { x: l[1], y: l[2] }, l[0]));
+      if (!h || !l[3] || !l[3].length) {
+        g.appendChild(svgEl('text', { x: l[1], y: l[2] }, l[0]));
+      } else {
+        // горизонтально: подпись ровно, у свободного конца выноски
+        var ln = l[3][0], tx = l[1] + 14;
+        var far = Math.abs(ln[0] - tx) <= Math.abs(ln[2] - tx) ? [ln[0], ln[1], ln[2]] : [ln[2], ln[3], ln[0]];
+        var px = far[0] + (far[0] <= far[2] ? -7 : 7), py = far[1];
+        g.appendChild(svgEl('text', { x: px, y: py, 'text-anchor': 'middle', transform: 'rotate(90 ' + px + ' ' + py + ')' }, l[0]));
+      }
       gl.appendChild(g);
     });
 
@@ -532,7 +569,8 @@
       shape.setAttribute('fill', info.color);
       ring.setAttribute('class', 'aa-t__ring');
       var num = svgEl('text', { 'class': 'aa-t__num', x: cx, y: cy + 0.5 }, t.n);
-      if (t.rot) num.setAttribute('transform', 'rotate(' + t.rot[4] + ' ' + cx + ' ' + cy + ')');
+      var na = (t.rot ? t.rot[4] : 0) + (h ? 90 : 0);
+      if (na) num.setAttribute('transform', 'rotate(' + na + ' ' + cx + ' ' + cy + ')');
       g.appendChild(shape); g.appendChild(ring); g.appendChild(num);
       t._el = g;
       gt.appendChild(g);
@@ -638,7 +676,14 @@
 
   var dragMoved = false;
   if (plan) {
+    orientPlan();
     drawPlan();
+    var onOrient = function () {
+      orientPlan(); drawPlan(); hideTip();
+      if (activeZone) selectZone(activeZone);
+      if (typeof setZoom === 'function') setZoom(0);
+    };
+    if (planMQ.addEventListener) planMQ.addEventListener('change', onOrient); else if (planMQ.addListener) planMQ.addListener(onOrient);
 
     // необязательно: столы, где места закончились, с бэкенда. GET → { "booked": ["702", "703", …] }
     if (SCFG.statusUrl) {
