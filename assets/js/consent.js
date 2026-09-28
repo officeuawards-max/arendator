@@ -62,7 +62,51 @@
     window.ym(AN.metrikaId, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: false });
   }
 
-  /* ---------- баннер ---------- */
+  /* ---------- баннер ----------
+   * Шутки про коммерческую недвижимость. Каждый раз — случайный вариант.
+   * Смысл под шуткой всегда один и тот же, простыми словами (строка «По делу»),
+   * а отказ — такая же заметная кнопка «Только необходимые»: так требует честное согласие.
+   */
+  var JOKES = [
+    { t: 'Cookie ищут арендатора',
+      x: 'Небольшие файлы, класс&nbsp;А, отделка «под ключ». Ставка — 0&nbsp;₽ за&nbsp;м², без индексации и&nbsp;арендных каникул.',
+      ok: 'Подписать договор аренды' },
+    { t: '100% заполняемость? Почти',
+      x: 'Необходимые cookie уже заехали. Аналитические ждут одобрения — как арендатор ждёт согласования с&nbsp;управляющей компанией.',
+      ok: 'Одобрить заезд' },
+    { t: 'Лучший cap rate на&nbsp;рынке',
+      x: 'Вложений — ноль, доходность — сайт становится удобнее. Такой объект мы&nbsp;бы и&nbsp;сами взяли в&nbsp;портфель.',
+      ok: 'Инвестировать в&nbsp;cookie' },
+    { t: 'Якорный арендатор этого сайта',
+      x: 'Каждому ТЦ нужен якорь. Наш — cookie: без них не&nbsp;работают формы, а&nbsp;с&nbsp;аналитикой мы понимаем, что вам интересно.',
+      ok: 'Пустить якоря' },
+    { t: 'Сделка без брокера',
+      x: 'Никаких комиссий и&nbsp;LOI на&nbsp;трёх страницах. Одна кнопка — и&nbsp;cookie заезжают. Due diligence уже пройден.',
+      ok: 'Закрыть сделку' },
+    { t: 'Сдаётся: ваш браузер, 0,001&nbsp;м²',
+      x: 'Арендатор надёжный, платит пользой: сайт работает лучше, а&nbsp;мы видим, что нравится гостям премии.',
+      ok: 'Сдать в&nbsp;аренду' }
+  ];
+
+  // печенька-бизнес-центр: шоколадные «окна» и укус при согласии
+  var COOKIE_SVG =
+    '<svg class="aa-cookie__art" viewBox="0 0 64 64" aria-hidden="true">' +
+      '<defs><mask id="aaBite"><rect width="64" height="64" fill="#fff"/>' +
+        '<g class="aa-cookie__bite"><circle cx="56" cy="12" r="9" fill="#000"/><circle cx="50" cy="4" r="6" fill="#000"/><circle cx="61" cy="22" r="6" fill="#000"/></g>' +
+      '</mask></defs>' +
+      '<g mask="url(#aaBite)">' +
+        '<circle cx="32" cy="32" r="28" fill="#C98A45"/><circle cx="32" cy="32" r="24.5" fill="#E0A862"/>' +
+        '<g fill="#5A3217">' +
+          '<rect x="19" y="18" width="6" height="7" rx="1.2"/><rect x="29" y="18" width="6" height="7" rx="1.2"/><rect x="39" y="18" width="6" height="7" rx="1.2"/>' +
+          '<rect x="19" y="29" width="6" height="7" rx="1.2"/><rect x="29" y="29" width="6" height="7" rx="1.2"/><rect x="39" y="29" width="6" height="7" rx="1.2"/>' +
+          '<rect x="19" y="40" width="6" height="7" rx="1.2"/><rect x="39" y="40" width="6" height="7" rx="1.2"/>' +
+          '<path d="M29 47v-7h6v7z"/>' +
+        '</g>' +
+        '<rect class="aa-cookie__lit" x="39" y="18" width="6" height="7" rx="1.2" fill="#FFE39A"/>' +
+      '</g>' +
+      '<g class="aa-cookie__crumbs" fill="#C98A45"><circle cx="58" cy="30" r="1.6"/><circle cx="52" cy="24" r="1.1"/><circle cx="60" cy="36" r="1"/></g>' +
+    '</svg>';
+
   var banner;
   function buildBanner() {
     banner = document.createElement('div');
@@ -70,25 +114,42 @@
     banner.setAttribute('role', 'dialog');
     banner.setAttribute('aria-live', 'polite');
     banner.setAttribute('aria-label', 'Настройки cookie');
-    banner.innerHTML =
-      '<p class="aa-cookie__title">Мы используем cookie</p>' +
-      '<p class="aa-cookie__text">Необходимые — чтобы сайт и формы работали. Аналитические (Яндекс&nbsp;Метрика) — чтобы понимать, ' +
-      'какие разделы полезны. Аналитику включим только с&nbsp;вашего согласия. Подробнее — в&nbsp;' +
-      '<a href="' + legalBase + 'cookies.html">Политике cookie</a>.</p>' +
-      '<div class="aa-cookie__actions">' +
-        '<button type="button" class="aa-btn aa-btn--primary aa-btn--sm" data-cookie="all">Принять все</button>' +
-        '<button type="button" class="aa-btn aa-btn--ghost aa-btn--sm" data-cookie="necessary">Только необходимые</button>' +
-      '</div>';
     (document.querySelector('.aa') || document.body).appendChild(banner);
     banner.addEventListener('click', function (e) {
       var b = e.target.closest('[data-cookie]');
-      if (!b) return;
-      save(b.getAttribute('data-cookie') === 'all');
-      hideBanner();
+      if (!b || banner.classList.contains('is-done')) return;
+      var all = b.getAttribute('data-cookie') === 'all';
+      save(all);
+      // короткая «развязка» шутки, потом баннер уходит
+      banner.classList.add('is-done', all ? 'is-accepted' : 'is-declined');
+      $('.aa-cookie__title', banner).innerHTML = all ? 'Договор подписан' : 'Понимаем, сделка не&nbsp;для всех';
+      $('.aa-cookie__text', banner).innerHTML = all
+        ? 'Ключи переданы, cookie заехали. Аналитику включили.'
+        : 'Остались только необходимые cookie. Аналитика выключена.';
+      setTimeout(hideBanner, 1600);
     });
+  }
+  function $(sel, ctx) { return (ctx || document).querySelector(sel); }
+  function fillBanner() {
+    var j = JOKES[Math.floor(Math.random() * JOKES.length)];
+    banner.classList.remove('is-done', 'is-accepted', 'is-declined');
+    banner.innerHTML =
+      '<div class="aa-cookie__head">' + COOKIE_SVG +
+        '<div><p class="aa-cookie__eyebrow">Объект недели</p><p class="aa-cookie__title">' + j.t + '</p></div>' +
+      '</div>' +
+      '<p class="aa-cookie__text">' + j.x + '</p>' +
+      '<p class="aa-cookie__plain"><b>По делу:</b> необходимые cookie нужны для работы сайта и&nbsp;форм. ' +
+        'Аналитические (Яндекс&nbsp;Метрика) включим, только если нажмёте первую кнопку. ' +
+        'Подробнее — в&nbsp;<a href="' + legalBase + 'cookies.html">Политике cookie</a>.</p>' +
+      '<div class="aa-cookie__actions">' +
+        '<button type="button" class="aa-btn aa-btn--primary aa-btn--sm aa-cookie__yes" data-cookie="all">' +
+          '<span class="aa-cookie__key" aria-hidden="true">🔑</span>' + j.ok + '</button>' +
+        '<button type="button" class="aa-btn aa-btn--ghost aa-btn--sm" data-cookie="necessary">Только необходимые</button>' +
+      '</div>';
   }
   function showBanner() {
     if (!banner) buildBanner();
+    fillBanner();
     banner.hidden = false;
     requestAnimationFrame(function () { banner.classList.add('is-visible'); root.classList.add('aa-cookie-open'); });
   }
