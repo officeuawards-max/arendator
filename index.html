@@ -15,9 +15,8 @@
   <meta property="og:description" content="8 октября 2026, Москва. Церемония награждения и вечерняя программа.">
   <meta property="og:image" content="assets/img/hero.jpg">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Шрифт Manrope лежит локально (assets/fonts): без запросов к Google — IP посетителей не уходит за рубеж -->
+  <link rel="preload" href="assets/fonts/manrope-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/style.css">
 
   <!--
@@ -261,9 +260,9 @@
 </section>
 
 <!-- =========================================================
-     06 · СХЕМА ЗАЛА — только просмотр (выбрать стол нельзя)
-     План зала перенесён 1:1 с утверждённой схемы. Клик по столу показывает
-     стоимость формата (цвета) и сколько гостей за столом.
+     06 · СХЕМА ЗАЛА — только просмотр, выбирается ЗОНА (категория), а не стол.
+     План зала перенесён 1:1 с утверждённой схемы. Клик по любому столу
+     выделяет все столы этого цвета и показывает общую информацию о формате.
      Статичная часть (стены, бар, сцена, вход, легенда) — здесь, в SVG.
      Столы и подписи «до N чел» рисуются из assets/js/seating.js.
      ========================================================= -->
@@ -272,7 +271,7 @@
     <div class="aa-section__head aa-section__head--center">
       <p class="aa-eyebrow" data-reveal>[ Схема зала ]</p>
       <h2 class="aa-h2" data-split>Выберите, где вы хотите быть</h2>
-      <p class="aa-lead aa-scheme__lead" data-reveal>Нажмите на&nbsp;стол, чтобы узнать стоимость и&nbsp;сколько гостей за&nbsp;столом. Цвет стола — это формат участия.</p>
+      <p class="aa-lead aa-scheme__lead" data-reveal>Цвет на&nbsp;схеме — это формат участия. Нажмите на&nbsp;любой стол, чтобы увидеть всю зону, стоимость и&nbsp;что входит.</p>
     </div>
 
     <div class="aa-seat" data-reveal>
@@ -283,6 +282,7 @@
             <button type="button" class="aa-chip" data-filter="vip"><i style="--c:#ADC898"></i>ВИП</button>
             <button type="button" class="aa-chip" data-filter="business"><i style="--c:#E8A0A5"></i>Бизнес</button>
             <button type="button" class="aa-chip" data-filter="personal"><i style="--c:#FEF1AF"></i>Персональные</button>
+            <button type="button" class="aa-chip" data-filter="soldout"><i style="--c:#B9A3E3"></i>Места закончились</button>
           </div>
           <div class="aa-zoom" role="group" aria-label="Масштаб схемы">
             <button type="button" class="aa-zoom__btn" data-zoom="-1" aria-label="Уменьшить">−</button>
@@ -349,13 +349,13 @@
         <div class="aa-pick" data-seat-panel>
           <div class="aa-pick__empty" data-pick-empty>
             <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="9"/><circle cx="24" cy="24" r="19" stroke-dasharray="3 5"/></svg>
-            <p><b>Нажмите на&nbsp;стол на&nbsp;схеме</b>Покажем формат, стоимость и&nbsp;сколько гостей за&nbsp;столом.</p>
+            <p><b>Нажмите на&nbsp;зону на&nbsp;схеме</b>Выделим все места этого формата и&nbsp;покажем стоимость и&nbsp;что входит.</p>
           </div>
           <div class="aa-pick__full" data-pick-full hidden>
             <span class="aa-pick__zone"><i data-pick-dot></i><span data-pick-zone></span></span>
             <p class="aa-pick__title"><span data-pick-price></span><small>за гостя</small></p>
             <dl class="aa-pick__list">
-              <div><dt>За столом</dt><dd data-pick-cap></dd></div>
+              <div><dt>Столы</dt><dd data-pick-cap></dd></div>
               <div><dt>Что входит</dt><dd data-pick-inc></dd></div>
             </dl>
             <button type="button" class="aa-btn aa-btn--primary aa-btn--block" data-seat-book data-book="vip">Забронировать</button>
@@ -363,10 +363,7 @@
           </div>
           <div class="aa-pick__sold" data-pick-sold hidden>
             <span class="aa-soldtag">Аншлаг</span>
-            <p class="aa-pick__title aa-pick__title--sold">Места закончились<small>Все места за&nbsp;этим столом уже забронированы</small></p>
-            <dl class="aa-pick__list">
-              <div><dt>За столом</dt><dd data-sold-cap></dd></div>
-            </dl>
+            <p class="aa-pick__title aa-pick__title--sold">Места закончились<small>Все места в&nbsp;этой зоне уже забронированы. Посмотрите другие форматы — там ещё есть места.</small></p>
             <button type="button" class="aa-btn aa-btn--block aa-btn--disabled" disabled>Бронирование недоступно</button>
             <a class="aa-pick__more" href="#packages" data-seat-clear>Посмотреть свободные форматы&nbsp;→</a>
           </div>
@@ -376,7 +373,7 @@
           <li><i style="--c:#ADC898"></i><div><b>ВИП</b><small>Банкет, закреплённый официант, безлимитный алкоголь</small></div><span>140 000 ₽</span></li>
           <li><i style="--c:#E8A0A5"></i><div><b>Бизнес</b><small>Фуршет, алкоголь за&nbsp;баром</small></div><span>115 500 ₽</span></li>
           <li><i style="--c:#FEF1AF"></i><div><b>Персональные билеты</b><small>Место в&nbsp;зале на&nbsp;церемонии</small></div><span>49 000 ₽</span></li>
-          <li class="aa-zlist__sold"><i style="--c:#B9A3E3"></i><div><b>Места закончились</b><small>Эти столы полностью забронированы</small></div><span class="aa-soldtag">Аншлаг</span></li>
+          <li class="aa-zlist__sold"><i style="--c:#B9A3E3"></i><div><b>Места закончились</b><small>Эта зона полностью забронирована</small></div><span class="aa-soldtag">Аншлаг</span></li>
         </ul>
       </aside>
     </div>
@@ -712,7 +709,14 @@
   <div class="aa-container aa-footer__inner">
     <a class="aa-nav__logo" href="https://aawards.ru/"><span class="aa-nav__logo-text"><b>Arendator</b> Awards</span></a>
     <p class="aa-footer__copy">© Arendator Awards, 2026. Федеральная премия в&nbsp;области коммерческой недвижимости.</p>
-    <a class="aa-footer__link" href="/docs/privacy_policy.pdf" target="_blank" rel="noopener">Политика обработки персональных данных</a>
+    <nav class="aa-footer__docs" aria-label="Документы">
+      <a href="legal/privacy.html">Политика обработки персональных данных</a>
+      <a href="legal/consent.html">Согласие на&nbsp;обработку персональных данных</a>
+      <a href="legal/consent-ads.html">Согласие на&nbsp;рассылки</a>
+      <a href="legal/cookies.html">Политика cookie</a>
+      <button type="button" data-cookie-settings>Настройки cookie</button>
+    </nav>
+    <p class="aa-footer__op">Оператор персональных данных: <span data-op="shortName" class="aa-fill">[наименование оператора]</span>, ИНН&nbsp;<span data-op="inn" class="aa-fill">[ИНН]</span>, ОГРН&nbsp;<span data-op="ogrn" class="aa-fill">[ОГРН]</span>. Вопросы о&nbsp;данных: <span data-op="email" class="aa-fill">[email]</span></p>
   </div>
 </footer>
 
@@ -800,11 +804,23 @@
           </label>
         </div>
 
-        <label class="aa-check">
-          <input type="checkbox" name="pol_agree" id="bookAgree" value="1" required checked>
-          <i></i>
-          <span>Я согласен с&nbsp;положением об&nbsp;<a href="/docs/privacy_policy.pdf" target="_blank" rel="noopener">обработке персональных данных</a></span>
-        </label>
+        <!--
+          152-ФЗ (ред. 156-ФЗ, с 01.09.2025): согласие на обработку ПД — отдельным действием и отдельным документом.
+          Галочки НЕ проставлены заранее. Согласие на рассылки (ст. 18 38-ФЗ «О рекламе») — отдельно и необязательно.
+        -->
+        <div class="aa-consents">
+          <label class="aa-check aa-check--req">
+            <input type="checkbox" name="consent_pd" id="bookConsentPd" value="1" required>
+            <i></i>
+            <span>Даю <a href="legal/consent.html" target="_blank" rel="noopener">согласие на&nbsp;обработку персональных данных</a> *</span>
+          </label>
+          <label class="aa-check">
+            <input type="checkbox" name="consent_ads" id="bookConsentAds" value="1">
+            <i></i>
+            <span>Согласен получать <a href="legal/consent-ads.html" target="_blank" rel="noopener">новости и&nbsp;предложения Arendator Awards</a> — необязательно</span>
+          </label>
+          <p class="aa-consents__note">Как мы обращаемся с&nbsp;данными — в&nbsp;<a href="legal/privacy.html" target="_blank" rel="noopener">Политике обработки персональных данных</a>. Данные хранятся на&nbsp;серверах в&nbsp;России. * — обязательно для отправки заявки.</p>
+        </div>
 
         <p class="aa-rform__error" data-book-error hidden></p>
         <button class="aa-btn aa-btn--primary aa-btn--block aa-btn--lg" type="submit">Отправить заявку</button>
@@ -824,6 +840,7 @@
 </div><!-- /.aa -->
 
 <script src="assets/js/config.js"></script>
+<script src="assets/js/consent.js"></script>
 <script src="assets/js/seating.js"></script>
 <script src="assets/js/main.js" defer></script>
 </body>

@@ -4,6 +4,18 @@
    шрифт Manrope. Сектора зала: красный / зелёный / жёлтый (по ТЗ).
    ========================================================================== */
 
+/* Шрифт Manrope (OFL) хранится локально — без запросов к Google Fonts */
+@font-face {
+  font-family: 'Manrope'; font-style: normal; font-display: swap; font-weight: 200 800;
+  src: url('../fonts/manrope-cyrillic-wght-normal.woff2') format('woff2-variations'), url('../fonts/manrope-cyrillic-wght-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Manrope'; font-style: normal; font-display: swap; font-weight: 200 800;
+  src: url('../fonts/manrope-latin-wght-normal.woff2') format('woff2-variations'), url('../fonts/manrope-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /*
    Все классы — с префиксом aa-, базовые сбросы — внутри обёртки .aa.
    Поэтому лендинг можно вставить в layout основного сайта (Bootstrap) без конфликтов:
@@ -394,15 +406,15 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 .aa-t { cursor: pointer; outline: none; transition: opacity .45s var(--ease); }
 .aa-t__shape { transition: stroke-width .3s var(--ease), filter .3s var(--ease); stroke: transparent; stroke-width: 0; }
 .aa-t__num { fill: #1A1A1A; font-size: 11px; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
-.aa-t__ring { fill: none; stroke: var(--blue); stroke-width: 0; opacity: 0; transition: opacity .3s var(--ease), stroke-width .3s var(--ease); pointer-events: none; }
-.aa-t:hover .aa-t__ring, .aa-t:focus-visible .aa-t__ring { opacity: .55; stroke-width: 2.5; }
-.aa-t.is-active .aa-t__ring { opacity: 1; stroke-width: 3; animation: ring 1.8s var(--ease) infinite; }
-@keyframes ring { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .45; } }
-/* «Места закончились» — фиолетовые столы: можно нажать для справки, бронировать нельзя */
-.aa-t.is-booked { cursor: help; }
+/* подсветка целой зоны: при наведении — мягко, при выборе — ярко */
+.aa-t__ring { fill: none; stroke: var(--blue); stroke-width: 0; opacity: 0; transition: opacity .35s var(--ease), stroke-width .35s var(--ease); pointer-events: none; }
+.aa-t.is-hover .aa-t__ring, .aa-t:focus-visible .aa-t__ring { opacity: .45; stroke-width: 2; }
+.aa-t.is-zone .aa-t__ring { opacity: 1; stroke-width: 2.6; animation: ring 2.2s var(--ease) infinite; }
+@keyframes ring { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .4; } }
+/* «Места закончились» — фиолетовые столы */
 .aa-t.is-booked .aa-t__ring { stroke: #7B5FC7; }
-.aa-plan.has-filter .aa-t:not(.is-match) { opacity: .18; }
-.aa-plan.has-filter .aa-plan__cap { opacity: .35; transition: opacity .4s; }
+.aa-plan.has-zone .aa-t:not(.is-zone) { opacity: .2; }
+.aa-plan.has-zone .aa-plan__cap { opacity: .35; transition: opacity .4s; }
 
 .aa-plan-tip {
   position: absolute; z-index: 5; pointer-events: none; transform: translate(-50%, calc(-100% - 12px));
@@ -635,9 +647,15 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 
 /* ---------- футер ---------- */
 .aa-footer { border-top: 1px solid var(--line); padding: 40px 0 48px; }
-.aa-footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 13px; color: var(--dim); }
-.aa-footer__link { text-decoration: underline; text-underline-offset: 3px; transition: color .3s; }
-.aa-footer__link:hover { color: #fff; }
+.aa-footer__inner { display: grid; grid-template-columns: auto 1fr; gap: 14px 40px; align-items: center; font-size: 13px; color: var(--dim); }
+.aa-footer__copy { justify-self: end; text-align: right; }
+.aa-footer__docs { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.aa-footer__docs a, .aa-footer__docs button { color: var(--muted); font-size: 13px; text-decoration: underline; text-decoration-color: rgba(255, 255, 255, .2); text-underline-offset: 3px; transition: color .3s, text-decoration-color .3s; }
+.aa-footer__docs a:hover, .aa-footer__docs button:hover { color: #fff; text-decoration-color: currentColor; }
+.aa-footer__op { grid-column: 1 / -1; font-size: 12px; line-height: 1.6; }
+
+/* незаполненные реквизиты оператора — видно, что нужно заполнить */
+.aa-fill:not(.is-filled) { color: #F2C94C; background: rgba(242, 201, 76, .08); border-bottom: 1px dashed rgba(242, 201, 76, .6); padding: 0 3px; border-radius: 3px; }
 
 /* ---------- мобильная плавающая кнопка ---------- */
 .aa-sticky-cta { display: none; }
@@ -746,6 +764,12 @@ html.aa-modal-lock, html.aa-modal-lock body { overflow: hidden; }
 .aa-check input:checked + i::after { transform: rotate(-45deg) translate(1px, -1px) scale(1); }
 .aa-check input:focus-visible + i { outline: 2px solid var(--blue-hi); outline-offset: 2px; }
 .aa-check a { text-decoration: underline; text-underline-offset: 2px; color: var(--text); }
+.aa-consents { display: flex; flex-direction: column; gap: 12px; margin: 4px 0 20px; }
+.aa-consents .aa-check { margin-bottom: 0; }
+.aa-consents__note { font-size: 12.5px; color: var(--dim); line-height: 1.5; }
+.aa-consents__note a { color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.aa-check.is-invalid i { border-color: var(--error); box-shadow: 0 0 0 3px rgba(255, 107, 114, .18); }
+.aa-check.is-invalid span { color: #FFB3B7; }
 .aa-rform__error { color: var(--error); font-size: 14px; margin: -8px 0 16px; }
 .aa-rform__done { text-align: center; padding: 24px 0 8px; }
 .aa-rform__done h3 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin-top: 24px; }
@@ -896,3 +920,59 @@ html.aa-modal-lock, html.aa-modal-lock body { overflow: hidden; }
   .aa-marquee__track { animation: none; flex-wrap: wrap; width: auto; justify-content: center; }
   .aa-marquee { -webkit-mask-image: none; mask-image: none; }
 }
+
+/* ==========================================================================
+   COOKIE-БАННЕР
+   ========================================================================== */
+.aa-cookie {
+  position: fixed; left: 20px; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 150;
+  width: min(440px, calc(100vw - 32px)); padding: 22px 22px 20px;
+  border-radius: var(--radius); background: rgba(18, 20, 28, .94); border: 1px solid var(--line-2);
+  backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .9);
+  opacity: 0; transform: translateY(20px); transition: opacity .6s var(--ease), transform .7s var(--ease);
+}
+.aa-cookie.is-visible { opacity: 1; transform: none; }
+.aa-cookie__title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.aa-cookie__text { font-size: 13.5px; color: var(--muted); line-height: 1.55; }
+.aa-cookie__text a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; }
+.aa-cookie__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+html.aa-cookie-open .aa-sticky-cta, html.aa-cookie-open .aa-seatbar { transform: translateY(200%) !important; }
+@media (max-width: 720px) {
+  .aa-cookie { left: 12px; right: 12px; width: auto; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); padding: 18px; }
+  .aa-cookie__actions .aa-btn { flex: 1 1 auto; }
+  .aa-footer__inner { grid-template-columns: 1fr; }
+  .aa-footer__copy { justify-self: start; text-align: left; }
+}
+
+/* ==========================================================================
+   ЮРИДИЧЕСКИЕ СТРАНИЦЫ (legal/*.html)
+   ========================================================================== */
+.aa-doc-top { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--line); background: rgba(7, 8, 11, .85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.aa-doc-top .aa-container { display: flex; align-items: center; justify-content: space-between; gap: 16px; height: 64px; }
+.aa-doc-top a.aa-doc-back { font-size: 14px; color: var(--muted); transition: color .3s; }
+.aa-doc-top a.aa-doc-back:hover { color: #fff; }
+.aa-doc { max-width: 780px; margin: 0 auto; padding: clamp(40px, 7vw, 88px) var(--gutter) 80px; }
+.aa-doc__meta { font-size: 13px; color: var(--dim); margin-bottom: 18px; letter-spacing: .02em; }
+.aa-doc h1 { font-size: clamp(30px, 4.4vw, 48px); line-height: 1.08; letter-spacing: -.03em; font-weight: 800; text-wrap: balance; }
+.aa-doc__lead { font-size: 17px; color: var(--muted); margin-top: 18px; line-height: 1.6; }
+.aa-doc h2 { font-size: 21px; font-weight: 700; letter-spacing: -.01em; margin: 44px 0 14px; padding-top: 22px; border-top: 1px solid var(--line); }
+.aa-doc h3 { font-size: 16px; font-weight: 700; margin: 22px 0 8px; }
+.aa-doc p, .aa-doc li { font-size: 15.5px; line-height: 1.7; color: rgba(255, 255, 255, .84); max-width: 70ch; }
+.aa-doc p + p { margin-top: 12px; }
+.aa-doc ul, .aa-doc ol { padding-left: 22px; margin: 10px 0; }
+.aa-doc ul { list-style: disc; }
+.aa-doc ol { list-style: decimal; }
+.aa-doc li + li { margin-top: 6px; }
+.aa-doc li::marker { color: var(--blue-hi); }
+.aa-doc a { color: #AEB6FF; text-decoration: underline; text-underline-offset: 3px; }
+.aa-doc strong { color: #fff; }
+.aa-doc__box { margin: 22px 0; padding: 18px 20px; border-radius: var(--radius-sm); background: var(--surface); border: 1px solid var(--line); }
+.aa-doc__box p { font-size: 14.5px; }
+.aa-doc__table { overflow-x: auto; margin: 14px 0; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.aa-doc__table table { width: 100%; min-width: 560px; border-collapse: collapse; font-size: 14px; }
+.aa-doc__table th, .aa-doc__table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.aa-doc__table th { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.aa-doc__table tr:last-child td { border-bottom: 0; }
+.aa-doc__table code { font-size: 13px; color: #CDB9F5; }
+.aa-doc__nav { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line); font-size: 14px; }

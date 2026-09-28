@@ -7,6 +7,28 @@
  */
 window.LANDING_CONFIG = {
 
+  /* ---------- Оператор персональных данных ----------
+   * TODO(юрист/программист): заполнить реквизиты юрлица, которое проводит премию
+   * и принимает заявки. Они автоматически подставятся во все юридические документы
+   * (legal/*.html) и в подвал сайта. Пока поле пустое — на страницах видна
+   * подсвеченная заглушка в [квадратных скобках].
+   */
+  operator: {
+    name:        '',   // полное наименование: Общество с ограниченной ответственностью «…»
+    shortName:   '',   // краткое: ООО «…»
+    inn:         '',
+    ogrn:        '',
+    address:     '',   // юридический адрес
+    email:       '',   // адрес для запросов и отзыва согласия, например privacy@aawards.ru
+    phone:       '',
+    site:        'aawards.ru',
+    rknNumber:   '',   // рег. номер в реестре операторов ПД Роскомнадзора (pd.rkn.gov.ru)
+    crmProcessor:'',   // кто обрабатывает данные по поручению в CRM, например ООО «…» (Битрикс24)
+    hosting:     '',   // хостинг-провайдер сайта, например ООО «…»
+    docsDate:    '28.09.2026',   // дата редакции документов
+    docsVersion: '1.0',          // версия документов — уходит вместе с заявкой как доказательство согласия
+  },
+
   /* ---------- Мероприятие ---------- */
   event: {
     // Старт отсчёта таймера «До церемонии осталось» (время МСК, +03:00).
@@ -32,7 +54,9 @@ window.LANDING_CONFIG = {
    *
    * POST, FormData:
    *   intent (booking|question), package (vip|business|personal|table), guests,
-   *   name, company, position, phone, email, comment, pol_agree,
+   *   name, company, position, phone, email, comment,
+   *   consent_pd (1 — согласие на обработку ПД, обязательно), consent_ads (1 — согласие на рассылки, необязательно),
+   *   consent_version (версия документов), consent_at (время согласия, ISO),
    *   utm_source, utm_medium, utm_campaign, utm_content, utm_term,
    *   page, referrer, ym_client_id, website (антиспам — должно быть пустым)
    * Заголовок X-CSRF-TOKEN берётся из <meta name="csrf-token">.
@@ -61,6 +85,10 @@ window.LANDING_CONFIG = {
    */
   analytics: {
     metrikaId: 47656444,
+    // Яндекс Метрика — аналитические cookie. По 152-ФЗ она должна включаться только после согласия.
+    // true  — лендинг сам подключит счётчик после нажатия «Принять все» (для отдельной страницы).
+    // false — счётчик подключает layout сайта; тогда layout должен дождаться согласия (см. README, «Cookie»).
+    loadMetrika: false,
     goals: {
       bookOpen:   'tickets_book_open',   // открыта форма бронирования
       bookSubmit: 'tickets_book_sent',   // заявка отправлена

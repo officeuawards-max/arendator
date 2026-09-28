@@ -57,7 +57,11 @@ class TicketLeadController extends Controller
             'company'      => 'nullable|string|max:255',
             'position'     => 'nullable|string|max:255',
             'comment'      => 'nullable|string|max:3000',
-            'pol_agree'    => 'accepted',
+            // 152-ФЗ: согласие на обработку ПД обязательно (отдельная галочка), на рассылки — по желанию
+            'consent_pd'      => 'accepted',
+            'consent_ads'     => 'nullable|in:0,1',
+            'consent_version' => 'nullable|string|max:20',
+            'consent_at'      => 'nullable|string|max:40',
             'utm_source'   => 'nullable|string|max:255',
             'utm_medium'   => 'nullable|string|max:255',
             'utm_campaign' => 'nullable|string|max:255',
@@ -77,6 +81,23 @@ class TicketLeadController extends Controller
             ? self::EVENT . ' — вопрос с сайта'
             : self::EVENT . ' — ' . $pack['title'] . ', гостей: ' . $guests;
 
+        // Доказательство согласия (ч. 3 ст. 9 152-ФЗ): время по серверу, IP, браузер, версия документов.
+        // Пишется в отдельный журнал и в лид. Журнал храните на сервере в РФ весь срок обработки данных.
+        $consent = [
+            'at'          => now()->toIso8601String(),
+            'client_at'   => $data['consent_at'] ?? null,
+            'ip'          => $request->ip(),
+            'user_agent'  => mb_substr((string) $request->userAgent(), 0, 500),
+            'version'     => $data['consent_version'] ?? null,
+            'consent_pd'  => true,
+            'consent_ads' => ($data['consent_ads'] ?? '0') === '1',
+            'email'       => $data['email'],
+            'phone'       => $data['phone'],
+            'page'        => $data['page'] ?? null,
+        ];
+        Log::build(['driver' => 'daily', 'path' => storage_path('logs/pd-consents.log'), 'days' => 1100])
+            ->info('pd_consent', $consent);
+
         $comments = array_filter([
             $isQuestion ? 'Тип: вопрос' : 'Формат: ' . $pack['title'],
             $isQuestion ? null : 'Гостей: ' . $guests,
@@ -85,6 +106,8 @@ class TicketLeadController extends Controller
             !empty($data['page']) ? 'Страница: ' . $data['page'] : null,
             !empty($data['referrer']) ? 'Откуда пришёл: ' . $data['referrer'] : null,
             !empty($data['ym_client_id']) ? 'Метрика ClientID: ' . $data['ym_client_id'] : null,
+            'Согласие на обработку ПД: да, ред. ' . ($consent['version'] ?: '—') . ', ' . $consent['at'] . ', IP ' . $consent['ip'],
+            'Согласие на рассылки: ' . ($consent['consent_ads'] ? 'да' : 'нет'),
         ]);
 
         $fields = [

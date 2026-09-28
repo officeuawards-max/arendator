@@ -8,6 +8,8 @@
  *   2. Задать адрес вебхука: переменная окружения BITRIX24_WEBHOOK
  *      или константа ниже (файл тогда не должен попадать в публичный репозиторий).
  *   3. assets/js/config.js → endpoints.lead = '/tickets/lead.php'
+ *   4. Журнал согласий (152-ФЗ, ч. 3 ст. 9): переменная окружения PD_CONSENT_LOG — путь к файлу
+ *      ВНЕ публичной папки сайта, например /var/lib/aawards/pd-consents.log (папка должна быть доступна на запись).
  *
  * Вебхук: Битрикс24 → Разработчикам → Другое → Входящий вебхук, права — только «CRM (crm)».
  */
@@ -22,6 +24,7 @@ const PACKAGES = [
     'table'    => ['title' => 'Стол',               'price' => null],
 ];
 
+date_default_timezone_set('Europe/Moscow');
 header('Content-Type: application/json; charset=utf-8');
 
 function reply(int $code, array $body): void
@@ -29,6 +32,11 @@ function reply(int $code, array $body): void
     http_response_code($code);
     echo json_encode($body, JSON_UNESCAPED_UNICODE);
     exit;
+}
+
+function field_raw(string $serverKey, int $max = 500): string
+{
+    return mb_substr((string) ($_SERVER[$serverKey] ?? ''), 0, $max);
 }
 
 function field(string $key, int $max = 255): string
@@ -55,7 +63,7 @@ $errors = [];
 if ($name === '') $errors[] = 'name';
 if (strlen(preg_replace('/\D/', '', $phone)) < 10) $errors[] = 'phone';
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'email';
-if (empty($_POST['pol_agree'])) $errors[] = 'pol_agree';
+if (field('consent_pd') !== '1') $errors[] = 'consent_pd';          // 152-ФЗ: согласие на обработку ПД обязательно
 if ($intent === 'booking' && !isset(PACKAGES[$package])) $errors[] = 'package';
 if ($errors) reply(422, ['ok' => false, 'errors' => $errors]);
 
@@ -63,6 +71,23 @@ $isQuestion = $intent === 'question';
 $pack   = $isQuestion ? null : PACKAGES[$package];
 $guests = $isQuestion ? null : max(1, min(50, (int) field('guests', 3)));
 $sum    = ($pack && $pack['price']) ? $pack['price'] * $guests : null;
+
+// Доказательство согласия (ч. 3 ст. 9 152-ФЗ): время, IP, браузер, версия документов.
+// Журнал — JSON-строки в файле ВНЕ публичной папки сайта (путь можно задать переменной окружения).
+$consent = [
+    'at'          => date('c'),
+    'client_at'   => field('consent_at', 40),
+    'ip'          => $_SERVER['REMOTE_ADDR'] ?? '',
+    'user_agent'  => field_raw('HTTP_USER_AGENT'),
+    'version'     => field('consent_version', 20),
+    'consent_pd'  => true,
+    'consent_ads' => field('consent_ads') === '1',
+    'email'       => $email,
+    'phone'       => $phone,
+    'page'        => field('page', 1000),
+];
+$logPath = getenv('PD_CONSENT_LOG') ?: __DIR__ . '/../storage/pd-consents.log';
+@file_put_contents($logPath, json_encode($consent, JSON_UNESCAPED_UNICODE) . "\n", FILE_APPEND | LOCK_EX);
 
 $comments = array_filter([
     $isQuestion ? 'Тип: вопрос' : 'Формат: ' . $pack['title'],
@@ -72,6 +97,8 @@ $comments = array_filter([
     field('page', 1000) !== '' ? 'Страница: ' . field('page', 1000) : null,
     field('referrer', 1000) !== '' ? 'Откуда пришёл: ' . field('referrer', 1000) : null,
     field('ym_client_id', 64) !== '' ? 'Метрика ClientID: ' . field('ym_client_id', 64) : null,
+    'Согласие на обработку ПД: да, ред. ' . ($consent['version'] ?: '—') . ', ' . $consent['at'] . ', IP ' . $consent['ip'],
+    'Согласие на рассылки: ' . ($consent['consent_ads'] ? 'да' : 'нет'),
 ]);
 
 $fields = [

@@ -19,6 +19,7 @@
     var a = CFG.analytics || {};
     var name = a.goals && a.goals[key];
     if (!name || !a.metrikaId) return;
+    if (!window.aaConsent || !window.aaConsent.analytics) return;   // без согласия на аналитику — никаких целей (152-ФЗ)
     try { if (typeof window.ym === 'function') window.ym(a.metrikaId, 'reachGoal', name, params || {}); } catch (e) {}
   }
 
@@ -328,21 +329,38 @@
 
   // UTM-метки: запоминаем на время визита, чтобы менеджер в Битриксе видел источник
   var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+  // Метки из адреса берём всегда (они уходят только вместе с заявкой),
+  // а в sessionStorage сохраняем лишь при согласии на аналитические cookie.
   var utm = {};
-  try { utm = JSON.parse(sessionStorage.getItem('aa_utm') || '{}'); } catch (e) {}
+  var hasAnalytics = function () { return !!(window.aaConsent && window.aaConsent.analytics); };
+  if (hasAnalytics()) { try { utm = JSON.parse(sessionStorage.getItem('aa_utm') || '{}'); } catch (e) {} }
   var qs = new URLSearchParams(location.search);
   if (UTM_KEYS.some(function (k) { return qs.get(k); })) {
     utm = {};
     UTM_KEYS.forEach(function (k) { if (qs.get(k)) utm[k] = qs.get(k); });
-    try { sessionStorage.setItem('aa_utm', JSON.stringify(utm)); } catch (e) {}
   }
+  function persistUtm() {
+    try {
+      if (hasAnalytics() && Object.keys(utm).length) sessionStorage.setItem('aa_utm', JSON.stringify(utm));
+      if (!hasAnalytics()) sessionStorage.removeItem('aa_utm');
+    } catch (e) {}
+  }
+  persistUtm();
+  document.addEventListener('aa:consent', persistUtm);
 
   // ID посетителя в Метрике — чтобы связать лид с визитом (сквозная аналитика)
+  // только при согласии на аналитические cookie
   var ymClientId = '';
-  try {
-    var an = CFG.analytics || {};
-    if (typeof window.ym === 'function' && an.metrikaId) window.ym(an.metrikaId, 'getClientID', function (id) { ymClientId = id; });
-  } catch (e) {}
+  function readYmId() {
+    try {
+      var an = CFG.analytics || {};
+      if (window.aaConsent && window.aaConsent.analytics && typeof window.ym === 'function' && an.metrikaId) {
+        window.ym(an.metrikaId, 'getClientID', function (id) { ymClientId = id; });
+      }
+    } catch (e) {}
+  }
+  readYmId();
+  document.addEventListener('aa:consent', function (e) { if (e.detail && e.detail.analytics) setTimeout(readYmId, 1500); else ymClientId = ''; });
 
   function packPrice(key) { var t = (CFG.tickets || {})[key]; return t && t.price ? t.price : null; }
 
@@ -419,7 +437,13 @@
         if (field) field.classList.toggle('is-invalid', bad);
         if (bad) ok = false;
       });
-      if (!ok) { bookErr.textContent = 'Заполните имя, телефон и email и отметьте согласие на обработку данных.'; bookErr.hidden = false; return; }
+      if (!ok) {
+        var pdOk = bookForm.elements['consent_pd'].checked;
+        bookErr.textContent = pdOk ? 'Заполните имя, телефон и email.' : 'Чтобы отправить заявку, отметьте согласие на обработку персональных данных.';
+        bookErr.hidden = false;
+        $('.aa-check--req', bookForm).classList.toggle('is-invalid', !pdOk);
+        return;
+      }
       if (bookForm.elements['website'].value) return; // бот
 
       bookErr.hidden = true;
@@ -428,6 +452,10 @@
 
       var fd = new FormData(bookForm);
       if (bookForm.elements['intent'].value === 'question') { fd.delete('package'); fd.delete('guests'); }
+      // доказательство согласия: версия документов и время (сервер добавит IP и браузер)
+      fd.set('consent_ads', bookForm.elements['consent_ads'].checked ? '1' : '0');
+      fd.append('consent_version', ((CFG.operator || {}).docsVersion) || '');
+      fd.append('consent_at', new Date().toISOString());
       Object.keys(utm).forEach(function (k) { fd.append(k, utm[k]); });
       fd.append('page', location.href.split('#')[0]);
       fd.append('referrer', document.referrer || '');
@@ -438,6 +466,7 @@
         bookForm.hidden = true; bookDone.hidden = false;
         goal('bookSubmit', { package: fd.get('package') || 'question' });
         bookForm.reset(); gIn.value = 1;
+        $('.aa-check--req', bookForm).classList.remove('is-invalid');
       };
       var fail = function () {
         submit.classList.remove('is-loading');
@@ -461,20 +490,34 @@
     $$('input', bookForm).forEach(function (inp) {
       inp.addEventListener('input', function () { var f = inp.closest('.aa-field'); if (f) f.classList.remove('is-invalid'); });
     });
+    bookForm.elements['consent_pd'].addEventListener('change', function () {
+      if (this.checked) { $('.aa-check--req', bookForm).classList.remove('is-invalid'); bookErr.hidden = true; }
+    });
   }
 
   /* ------------------------------------------------------------------
-     Схема зала — только просмотр.
-     Столы рисуются из seating.js. Клик или наведение показывает зону (цвет),
-     стоимость и сколько гостей за столом. Выбрать конкретный стол нельзя —
-     кнопка ведёт к бронированию формата (зоны).
+     Схема зала — только просмотр, выбор ЗОНЫ (не стола).
+     Клик по любому столу выделяет всю зону этого цвета и показывает
+     общую информацию: формат, цена за гостя, что входит, какие столы в зоне.
+     Номер стола нигде не показывается и в заявку не передаётся.
      ------------------------------------------------------------------ */
   var SEAT = window.SEATING || { zones: {}, tables: [], labels: [] };
   var SCFG = CFG.seating || {};
   var plan = $('[data-plan]');
-  var active = null;           // стол, по которому кликнули (только для подсветки и справки)
-  var seatFilter = 'all';
-  var guestsText = function (t) { return t.cap ? 'до ' + t.cap + ' гостей' : 'уточняйте у менеджера'; };
+  var activeZone = null;       // 'vip' | 'business' | 'personal' | 'soldout' | null
+  var zoneOf = function (t) { return t.booked || !t.zone ? 'soldout' : t.zone; };
+  var zoneInfo = function (z) { return z === 'soldout' ? (SEAT.soldout || { name: 'Места закончились', color: '#B9A3E3' }) : (SEAT.zones[z] || {}); };
+
+  // «Столы на 2 и 4 гостя» — общая информация по зоне
+  function zoneCaps(z) {
+    var caps = [];
+    SEAT.tables.forEach(function (t) { if (zoneOf(t) === z && t.cap && caps.indexOf(t.cap) === -1) caps.push(t.cap); });
+    caps.sort(function (a, b) { return a - b; });
+    if (!caps.length) return 'уточняйте у менеджера';
+    var last = caps[caps.length - 1], d = last % 10, h = last % 100;
+    var word = (d >= 1 && d <= 4 && (h < 11 || h > 14)) ? 'гостя' : 'гостей';   // на 2 и 4 гостя, на 6 гостей
+    return 'на ' + (caps.length === 1 ? last : caps.slice(0, -1).join(', ') + ' и ' + last) + ' ' + word;
+  }
 
   function svgEl(tag, attrs, text) {
     var el = document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -496,12 +539,11 @@
     });
 
     SEAT.tables.forEach(function (t) {
-      var zone = SEAT.zones[t.zone];
-      var fill = t.booked || !zone ? ((SEAT.soldout || {}).color || '#B9A3E3') : zone.color;
+      var z = zoneOf(t), info = zoneInfo(z);
       var g = svgEl('g', {
-        'class': 'aa-t' + (t.booked ? ' is-booked' : ''),
-        'data-table': t.n, tabindex: 0, role: 'button',
-        'aria-label': t.booked ? 'Места закончились, бронирование недоступно' : (zone ? zone.name : '') + ', ' + guestsText(t)
+        'class': 'aa-t' + (z === 'soldout' ? ' is-booked' : ''),
+        'data-zone': z, tabindex: 0, role: 'button',
+        'aria-label': info.name + (z === 'soldout' ? ', бронирование недоступно' : '') + '. Показать зону'
       });
       var cx, cy, shape, ring;
       if (t.c) {
@@ -519,7 +561,7 @@
         cy = r[1] + hx * Math.sin(a) + hy * Math.cos(a);
       }
       shape.setAttribute('class', 'aa-t__shape');
-      shape.setAttribute('fill', fill);
+      shape.setAttribute('fill', info.color);
       ring.setAttribute('class', 'aa-t__ring');
       var num = svgEl('text', { 'class': 'aa-t__num', x: cx, y: cy + 0.5 }, t.n);
       if (t.rot) num.setAttribute('transform', 'rotate(' + t.rot[4] + ' ' + cx + ' ' + cy + ')');
@@ -527,73 +569,79 @@
       t._el = g;
       gt.appendChild(g);
     });
-    applyFilter(seatFilter);
+    paintZone();
   }
 
-  function byNum(n) { for (var i = 0; i < SEAT.tables.length; i++) if (SEAT.tables[i].n === String(n)) return SEAT.tables[i]; return null; }
-
-  function applyFilter(f) {
-    seatFilter = f;
+  // подсветка: выбранная зона (или зона под курсором) — яркая, остальные приглушены
+  var hoverZone = null;
+  function paintZone() {
     if (!plan) return;
-    plan.classList.toggle('has-filter', f !== 'all');
-    SEAT.tables.forEach(function (t) { t._el && t._el.classList.toggle('is-match', t.zone === f && !t.booked); });
-    $$('[data-filter]').forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-filter') === f); });
+    var z = activeZone;
+    plan.classList.toggle('has-zone', !!z);
+    SEAT.tables.forEach(function (t) {
+      if (!t._el) return;
+      var tz = zoneOf(t);
+      t._el.classList.toggle('is-zone', tz === z);
+      t._el.classList.toggle('is-hover', !!hoverZone && tz === hoverZone && tz !== z);
+    });
+    $$('[data-filter]').forEach(function (b) { b.classList.toggle('is-on', b.getAttribute('data-filter') === (z || 'all')); });
   }
 
-  // подсказка при наведении
+  // подсказка при наведении — про зону, без номера стола
   var tip = $('[data-plan-tip]');
   var planBox = $('.aa-seat__plan');
-  function showTip(t) {
-    if (!tip || !t) return;
-    var zone = SEAT.zones[t.zone];
-    var price = zone && packPrice(zone.ticket);
-    tip.innerHTML = t.booked ? '<b>Места закончились</b><small>Бронирование недоступно</small>' :
-      '<b>' + (zone ? zone.name : '') + (price ? ' · ' + fmtRub(price) : '') + '</b><small>' + guestsText(t) + ' за столом</small>';
-    var r = t._el.getBoundingClientRect(), pb = planBox.getBoundingClientRect();
+  function showTip(g) {
+    if (!tip || !g) return;
+    var z = g.getAttribute('data-zone'), info = zoneInfo(z);
+    var price = z === 'soldout' ? null : packPrice(info.ticket);
+    tip.innerHTML = z === 'soldout'
+      ? '<b>Места закончились</b><small>Бронирование недоступно</small>'
+      : '<b>' + info.name + (price ? ' · ' + fmtRub(price) : '') + '</b><small>' + (price ? 'за гостя · ' : '') + 'нажмите, чтобы выделить зону</small>';
+    var r = g.getBoundingClientRect(), pb = planBox.getBoundingClientRect();
     tip.style.left = (r.left + r.width / 2 - pb.left) + 'px';
     tip.style.top = (r.top - pb.top) + 'px';
     tip.hidden = false;
   }
   function hideTip() { if (tip) tip.hidden = true; }
 
-  // справка по столу: цвет → формат, цена, сколько гостей
+  // выбор зоны → общая информация
   var seatbar = $('[data-seatbar]');
-  function inspect(t) {
-    if (!t) return;
-    active = t;
-    SEAT.tables.forEach(function (x) { x._el && x._el.classList.toggle('is-active', x === t); });
+  function selectZone(z) {
+    if (!z || z === 'all') { closeInspect(); return; }
+    activeZone = z;
+    paintZone();
+    var info = zoneInfo(z);
     $('[data-pick-empty]').hidden = true;
-    if (t.booked) { showSold(t); return; }
+    if (z === 'soldout') { showSold(); return; }
     $('[data-pick-sold]').hidden = true;
-    if (seatbar) { $('[data-seatbar] [data-seat-book]').hidden = false; $('[data-seatbar-sold]').hidden = true; }
-    var zone = SEAT.zones[t.zone] || {};
-    var price = packPrice(zone.ticket);
-    $('[data-pick-empty]').hidden = true;
+    var price = packPrice(info.ticket);
     var full = $('[data-pick-full]');
     full.hidden = false;
     full.style.animation = 'none'; void full.offsetWidth; full.style.animation = '';
-    $('[data-pick-dot]').style.setProperty('--c', zone.color || '#fff');
-    $('[data-pick-zone]').textContent = zone.name || '';
+    $('[data-pick-dot]').style.setProperty('--c', info.color || '#fff');
+    $('[data-pick-zone]').textContent = info.name || '';
     $('[data-pick-price]').textContent = price ? fmtRub(price) : 'по запросу';
-    $('[data-pick-cap]').textContent = guestsText(t);
-    $('[data-pick-inc]').textContent = zone.includes || '—';
-    $$('[data-seat-book]').forEach(function (b) { b.setAttribute('data-book', zone.ticket); });
+    $('[data-pick-cap]').textContent = zoneCaps(z);
+    $('[data-pick-inc]').textContent = info.includes || '—';
+    $$('[data-seat-book]').forEach(function (b) { b.setAttribute('data-book', info.ticket); });
     if (seatbar) {
-      $('[data-seatbar-title]', seatbar).textContent = (zone.name || '') + (price ? ' · ' + fmtRub(price) : '');
-      $('[data-seatbar-meta]', seatbar).textContent = guestsText(t) + ' за столом';
+      $('[data-seatbar-title]', seatbar).textContent = (info.name || '') + (price ? ' · ' + fmtRub(price) : '');
+      $('[data-seatbar-meta]', seatbar).textContent = 'Столы ' + zoneCaps(z);
+      $('[data-seatbar] [data-seat-book]').hidden = false;
+      $('[data-seatbar-sold]').hidden = true;
     }
     syncSeatbar();
   }
-  // стол, где места закончились: красивая заглушка, бронировать нельзя
-  function showSold(t) {
+
+  // зона, где места закончились
+  function showSold() {
     $('[data-pick-full]').hidden = true;
     var sold = $('[data-pick-sold]');
     sold.hidden = false;
     sold.style.animation = 'none'; void sold.offsetWidth; sold.style.animation = '';
-    $('[data-sold-cap]').textContent = guestsText(t);
     if (seatbar) {
       $('[data-seatbar-title]', seatbar).textContent = 'Места закончились';
-      $('[data-seatbar-meta]', seatbar).textContent = guestsText(t) + ' за столом';
+      $('[data-seatbar-meta]', seatbar).textContent = 'Аншлаг в этой зоне';
       $('[data-seatbar] [data-seat-book]').hidden = true;
       $('[data-seatbar-sold]').hidden = false;
     }
@@ -601,9 +649,9 @@
   }
 
   function closeInspect() {
-    active = null;
+    activeZone = null;
+    paintZone();
     $('[data-pick-sold]').hidden = true;
-    SEAT.tables.forEach(function (x) { x._el && x._el.classList.remove('is-active'); });
     $('[data-pick-empty]').hidden = false;
     $('[data-pick-full]').hidden = true;
     syncSeatbar();
@@ -613,8 +661,8 @@
     var sec = $('#scheme');
     var r = sec ? sec.getBoundingClientRect() : { top: 1, bottom: 0 };
     var inView = r.top < window.innerHeight * 0.7 && r.bottom > window.innerHeight * 0.4;
-    seatbar.classList.toggle('is-visible', !!active && inView);
-    if (sticky && active && inView) sticky.classList.remove('is-visible');
+    seatbar.classList.toggle('is-visible', !!activeZone && inView);
+    if (sticky && activeZone && inView) sticky.classList.remove('is-visible');
   }
   window.addEventListener('scroll', function () { requestAnimationFrame(syncSeatbar); }, { passive: true });
 
@@ -622,7 +670,7 @@
   if (plan) {
     drawPlan();
 
-    // необязательно: занятые столы с бэкенда. GET → { "booked": ["702", "703", …] }
+    // необязательно: столы, где места закончились, с бэкенда. GET → { "booked": ["702", "703", …] }
     if (SCFG.statusUrl) {
       fetch(SCFG.statusUrl, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
         .then(function (r) { return r.ok ? r.json() : null; })
@@ -631,34 +679,39 @@
           var set = d.booked.map(String);
           SEAT.tables.forEach(function (t) { t.booked = set.indexOf(t.n) !== -1; });
           drawPlan();
-          if (active) inspect(active);
+          if (activeZone) selectZone(activeZone);
         }).catch(function () {});
     }
 
     plan.addEventListener('click', function (e) {
       var g = e.target.closest('.aa-t');
       if (!g || dragMoved) return;
-      inspect(byNum(g.getAttribute('data-table')));
+      var z = g.getAttribute('data-zone');
+      z === activeZone ? closeInspect() : selectZone(z);
     });
     plan.addEventListener('keydown', function (e) {
       var g = e.target.closest && e.target.closest('.aa-t');
-      if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); inspect(byNum(g.getAttribute('data-table'))); }
+      if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectZone(g.getAttribute('data-zone')); }
     });
     plan.addEventListener('pointerover', function (e) {
       var g = e.target.closest('.aa-t');
-      if (g && e.pointerType !== 'touch') showTip(byNum(g.getAttribute('data-table')));
+      if (!g || e.pointerType === 'touch') return;
+      hoverZone = g.getAttribute('data-zone'); paintZone(); showTip(g);
     });
-    plan.addEventListener('pointerout', function (e) { if (e.target.closest('.aa-t')) hideTip(); });
+    plan.addEventListener('pointerout', function (e) {
+      if (!e.target.closest('.aa-t')) return;
+      hoverZone = null; paintZone(); hideTip();
+    });
     var lastPointer = 'mouse';
     plan.addEventListener('pointerdown', function (e) { lastPointer = e.pointerType; });
     plan.addEventListener('focusin', function (e) {
       var g = e.target.closest('.aa-t');
-      if (g && lastPointer !== 'touch') showTip(byNum(g.getAttribute('data-table')));
+      if (g && lastPointer !== 'touch') showTip(g);
     });
     plan.addEventListener('focusout', hideTip);
 
     $$('[data-filter]').forEach(function (b) {
-      b.addEventListener('click', function () { applyFilter(b.getAttribute('data-filter')); });
+      b.addEventListener('click', function () { selectZone(b.getAttribute('data-filter')); });
     });
     $$('[data-seat-clear]').forEach(function (b) { b.addEventListener('click', closeInspect); });
   }
