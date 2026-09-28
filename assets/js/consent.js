@@ -115,7 +115,7 @@
     banner.setAttribute('role', 'dialog');
     banner.setAttribute('aria-live', 'polite');
     banner.setAttribute('aria-label', 'Уведомление об использовании файлов cookie');
-    (document.querySelector('.aa') || document.body).appendChild(banner);
+    (document.querySelector('.aa-portal') || document.querySelector('.aa') || document.body).appendChild(banner);
     banner.addEventListener('click', function (e) {
       var b = e.target.closest('[data-cookie]');
       if (!b || banner.classList.contains('is-done')) return;

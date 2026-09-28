@@ -22,6 +22,26 @@
     try { if (typeof window.ym === 'function') window.ym(a.metrikaId, 'reachGoal', name, params || {}); } catch (e) {}
   }
 
+  /* ------------------------------------------------------------------
+     «Портал» для закреплённых элементов: окно бронирования, нижняя панель,
+     мобильная панель схемы и cookie-баннер переносятся в <div class="aa aa-portal">
+     в конце <body>. На сайте лендинг стоит внутри <div class="page" id="panel">:
+     если у этого блока есть transform/filter (мобильное меню и т. п.), position: fixed
+     внутри него привязывается к блоку, а не к экрану, — окна «уезжают». В портале этого нет.
+     ------------------------------------------------------------------ */
+  (function () {
+    var portal = document.querySelector('.aa-portal');
+    if (!portal) {
+      portal = document.createElement('div');
+      portal.className = 'aa aa-portal';
+      document.body.appendChild(portal);
+    }
+    ['[data-popup-book]', '[data-sticky]', '[data-seatbar]'].forEach(function (sel) {
+      var el = document.querySelector('.aa:not(.aa-portal) ' + sel);
+      if (el) portal.appendChild(el);
+    });
+  })();
+
   var fmtRub = function (n) { return new Intl.NumberFormat('ru-RU').format(n) + ' ₽'; };
   function packPrice(key) { var t = (CFG.tickets || {})[key]; return t && t.price ? t.price : null; }
 
@@ -765,7 +785,11 @@
       zi = Math.max(0, Math.min(Z.length - 1, next));
       vp.style.setProperty('--z', Z[zi]);
       vp.classList.toggle('is-zoomed', zi > 0);
-      zoomBtns[0].disabled = zi === 0; zoomBtns[1].disabled = zi === Z.length - 1;
+      // кнопки ищем по назначению (data-zoom="-1" / "1"), а не по порядку в разметке
+      zoomBtns.forEach(function (zb) {
+        var dir = parseInt(zb.getAttribute('data-zoom'), 10);
+        zb.disabled = dir < 0 ? zi === 0 : zi === Z.length - 1;
+      });
       plan.style.transition = 'none';
       vp.scrollLeft = cx * vp.scrollWidth - vp.clientWidth / 2;
       vp.scrollTop = cy * vp.scrollHeight - vp.clientHeight / 2;
@@ -804,6 +828,11 @@
 
   // Прямая ссылка: /tickets#book-vip, #book-business, #book-personal, #book-table → карточка формата;
   // #book-question → окно вопроса (popups.js)
-  var h = location.hash.match(/^#book-(\w+)/);
-  if (h && h[1] !== 'question') setTimeout(function () { goPackages(h[1]); }, 400);
+  function onBookHash(delay) {
+    var h = location.hash.match(/^#book-(\w+)/);
+    if (h && h[1] !== 'question') setTimeout(function () { goPackages(h[1]); }, delay);
+  }
+  onBookHash(400);
+  // ссылка на #book-… со страницы, которая уже открыта (без перезагрузки)
+  window.addEventListener('hashchange', function () { onBookHash(0); });
 })();

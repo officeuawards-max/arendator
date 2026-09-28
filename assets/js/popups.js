@@ -25,9 +25,19 @@
    Для совместимости оставлена legacy-кнопка покупки: класс .ticket-buy-button + data-id
    грузит /tickets/pay?type=ID&count=1 в #popupBuyForm (окно [data-buy-form] из legacy).
    ========================================================================== */
-(function ($) {
+(function () {
   'use strict';
-  if (!$) { if (window.console) console.warn('[landing] popups.js: нет jQuery — окна не откроются'); return; }
+
+  // jQuery на сайте подключается в конце layouts.default. Если этот файл оказался выше —
+  // ждём jQuery (до 15 секунд), а не падаем молча.
+  var tries = 0;
+  (function waitForJQuery() {
+    if (window.jQuery) return init(window.jQuery);
+    if (++tries > 150) { if (window.console) console.warn('[landing] popups.js: нет jQuery — окна не откроются'); return; }
+    setTimeout(waitForJQuery, 100);
+  })();
+
+function init($) {
 
   var CFG = window.LANDING_CONFIG || {};
   var P = CFG.popup || {};
@@ -111,12 +121,14 @@
   });
 
   // прямая ссылка …/tickets#book-question — сразу открыть окно вопроса
-  $(function () {
-    if (location.hash === '#book-question') {
-      var $q = $('[data-popup-btn="data-popup-book"][data-pack="question"]').first();
-      if ($q.length) setTimeout(function () { $q.trigger('click'); }, 400);
-    }
-  });
+  function onQuestionHash(delay) {
+    if (location.hash !== '#book-question') return;
+    var $q = $('[data-popup-btn="data-popup-book"][data-pack="question"]').first();
+    if ($q.length) setTimeout(function () { $q.trigger('click'); }, delay);
+  }
+  $(function () { onQuestionHash(400); });
+  $(window).on('hashchange', function () { onQuestionHash(0); });
 
   window.aaPopup = { open: function (sel, $btn) { openPopup($(sel).first(), $btn); }, close: function (sel) { closePopup($(sel || '.n-popup.active')); } };
-})(window.jQuery);
+}
+})();
