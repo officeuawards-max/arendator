@@ -261,129 +261,123 @@
 </section>
 
 <!-- =========================================================
-     06 · СХЕМА ЗАЛА
-     Схема — инлайн-SVG с легендой (сектора кликабельны → ведут к пакету).
-     Если дизайнер пришлёт готовую картинку — см. README, «Схема зала».
+     06 · СХЕМА ЗАЛА — выбор стола
+     План зала перенесён 1:1 с утверждённой схемы.
+     Статичная часть (стены, бар, сцена, вход, легенда) — здесь, в SVG.
+     Столы и подписи «до N чел» рисуются из assets/js/seating.js.
      ========================================================= -->
 <section class="aa-section aa-scheme" id="scheme">
   <div class="aa-container">
     <div class="aa-section__head aa-section__head--center">
       <p class="aa-eyebrow" data-reveal>[ Схема зала ]</p>
       <h2 class="aa-h2" data-split>Выберите, где вы хотите быть</h2>
+      <p class="aa-lead aa-scheme__lead" data-reveal>Нажмите на свободный стол — покажем зону, вместимость и стоимость. Белые столы уже забронированы.</p>
     </div>
 
-    <div class="aa-scheme__wrap" data-reveal>
-      <div class="aa-scheme__map">
-        <svg class="aa-hall" viewBox="0 0 800 560" role="img" aria-label="Схема зала с секторами">
-          <defs>
-            <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="8" stroke="currentColor" stroke-width="1" opacity=".18"/>
-            </pattern>
-            <radialGradient id="stageGlow" cx="50%" cy="0%" r="70%">
-              <stop offset="0" stop-color="#2A3CFF" stop-opacity=".55"/>
-              <stop offset="1" stop-color="#2A3CFF" stop-opacity="0"/>
-            </radialGradient>
-          </defs>
+    <div class="aa-seat" data-reveal>
+      <div class="aa-seat__plan">
+        <div class="aa-seat__tools">
+          <div class="aa-chips" role="group" aria-label="Показать зону" data-seat-filters>
+            <button type="button" class="aa-chip is-on" data-filter="all">Все зоны</button>
+            <button type="button" class="aa-chip" data-filter="vip"><i style="--c:#ADC898"></i>ВИП <span data-free="vip"></span></button>
+            <button type="button" class="aa-chip" data-filter="business"><i style="--c:#E8A0A5"></i>Бизнес <span data-free="business"></span></button>
+            <button type="button" class="aa-chip" data-filter="personal"><i style="--c:#FEF1AF"></i>Персональные <span data-free="personal"></span></button>
+          </div>
+          <div class="aa-zoom" role="group" aria-label="Масштаб схемы">
+            <button type="button" class="aa-zoom__btn" data-zoom="-1" aria-label="Уменьшить">−</button>
+            <button type="button" class="aa-zoom__btn" data-zoom="1" aria-label="Увеличить">+</button>
+          </div>
+        </div>
 
-          <!-- контур зала -->
-          <rect class="aa-hall__room" x="10" y="10" width="780" height="540" rx="18"/>
-          <ellipse cx="400" cy="70" rx="330" ry="170" fill="url(#stageGlow)"/>
+        <div class="aa-seat__viewport" data-plan-viewport>
+          <svg class="aa-plan" viewBox="15 105 690 1150" role="img" aria-label="Схема рассадки зала" data-plan>
+            <!-- welcome-зона -->
+            <path class="aa-plan__welcome" d="M157,115 H522 L540,146 H558 V258 H605 V500 L593,516 L470,512 L430,495 L360,448 L300,386 L239,322 L192,305 L150,327 H90 V257 H142 V260 H157 Z"/>
+            <text class="aa-plan__zone" x="320" y="195" text-anchor="middle">ЗОНА WELCOME</text>
+            <text class="aa-plan__zone" x="408" y="428" text-anchor="middle" transform="rotate(27 408 428)">ЗОНА WELCOME</text>
 
-          <!-- сцена -->
-          <g class="aa-hall__stage">
-            <rect x="220" y="28" width="360" height="58" rx="10"/>
-            <text x="400" y="63">СЦЕНА</text>
-          </g>
+            <!-- бар -->
+            <path class="aa-plan__bar" d="M294,296 L349,256 H410 L460,297 L521,364 L522,398 L505,409 Z"/>
+            <path class="aa-plan__thin" d="M306,300 L350,265 H407 L452,299 L513,370 L512,396 L500,400 Z"/>
+            <text class="aa-plan__big" x="412" y="321" text-anchor="middle">БАР</text>
 
-          <!-- VIP · красный сектор -->
-          <g class="aa-hall__sector" data-sector="vip" tabindex="0" role="button" aria-label="VIP — красный сектор">
-            <rect class="aa-hall__zone" x="130" y="112" width="540" height="152" rx="14"/>
-            <g class="aa-hall__tables">
-              <circle cx="190" cy="152" r="17"/><circle cx="265" cy="152" r="17"/><circle cx="340" cy="152" r="17"/>
-              <circle cx="460" cy="152" r="17"/><circle cx="535" cy="152" r="17"/><circle cx="610" cy="152" r="17"/>
-              <circle cx="227" cy="228" r="17"/><circle cx="302" cy="228" r="17"/>
-              <circle cx="498" cy="228" r="17"/><circle cx="573" cy="228" r="17"/>
+            <!-- стены -->
+            <path class="aa-plan__wall" d="M157,260 V115 H522 L540,146 H558 V258 H605 V500 L593,516 V727 L605,750 V1060 H571 V1138 H278 V1106 L158,1084 V669 H130 V659"/>
+            <path class="aa-plan__wall" d="M157,260 H142 V257 H90 V327 H150 L192,305 L239,322 L234,398 L202,437 V524 L170,549 H82"/>
+            <path class="aa-plan__wall" d="M157,327 V402 H82 V560 H137 V602"/>
+            <path class="aa-plan__thin" d="M191,316 L226,332 L219,422 L199,441 M175,536 L191,523"/>
+
+            <!-- колонна -->
+            <circle class="aa-plan__wall" cx="198" cy="568" r="14"/>
+            <circle class="aa-plan__thin" cx="198" cy="568" r="10"/>
+
+            <!-- вход -->
+            <rect class="aa-plan__wall" x="130" y="602" width="170" height="57"/>
+            <path class="aa-plan__arrow" d="M152,631 H178 M172,626 L178,631 L172,636"/>
+            <text class="aa-plan__big aa-plan__big--sm" x="233" y="637" text-anchor="middle">ВХОД</text>
+            <path class="aa-plan__arrow" d="M269,600 V585 M264,590 L269,585 L274,590"/>
+
+            <!-- сцена -->
+            <path class="aa-plan__wall" d="M456,548 L457,536 H562 V552 H548 V705 H536 V717 H464 V704 H456 Z"/>
+            <rect class="aa-plan__thin" x="467" y="550" width="41" height="159"/>
+            <path class="aa-plan__thin" d="M462,553 H475 M462,557 H475 M462,561 H475 M462,565 H475"/>
+            <text class="aa-plan__stage" x="487" y="630" text-anchor="middle" transform="rotate(90 487 630)">СЦЕНА</text>
+
+            <!-- подписи «до N чел» и столы — из seating.js -->
+            <g data-plan-labels></g>
+            <g data-plan-tables></g>
+
+            <!-- легенда (как на утверждённой схеме) -->
+            <g class="aa-plan__legend">
+              <circle cx="46" cy="1113" r="14" fill="#FEF1AF"/>
+              <text x="75" y="1110">Персональные</text><text x="75" y="1121">билеты</text>
+              <circle cx="46" cy="1153" r="14" fill="#ADC898"/>
+              <text x="75" y="1156">ВИП</text>
+              <circle cx="46" cy="1195" r="14" fill="#E8A0A5"/>
+              <text x="75" y="1198">БИЗНЕС</text>
+              <circle cx="46" cy="1238" r="13.5" fill="#F4F4F4" stroke="#222" stroke-width="1.6"/>
+              <text x="75" y="1241">Забронировано</text>
             </g>
-            <text class="aa-hall__label" x="400" y="190">VIP</text>
-          </g>
-
-          <!-- Бизнес · зелёный сектор -->
-          <g class="aa-hall__sector" data-sector="business" tabindex="0" role="button" aria-label="Бизнес — зелёный сектор">
-            <rect class="aa-hall__zone" x="130" y="284" width="540" height="118" rx="14"/>
-            <g class="aa-hall__tables aa-hall__tables--sm">
-              <circle cx="180" cy="318" r="9"/><circle cx="240" cy="318" r="9"/><circle cx="300" cy="318" r="9"/>
-              <circle cx="500" cy="318" r="9"/><circle cx="560" cy="318" r="9"/><circle cx="620" cy="318" r="9"/>
-              <circle cx="210" cy="368" r="9"/><circle cx="270" cy="368" r="9"/><circle cx="330" cy="368" r="9"/>
-              <circle cx="470" cy="368" r="9"/><circle cx="530" cy="368" r="9"/><circle cx="590" cy="368" r="9"/>
-            </g>
-            <text class="aa-hall__label" x="400" y="350">БИЗНЕС</text>
-          </g>
-
-          <!-- Персональный · жёлтый сектор -->
-          <g class="aa-hall__sector" data-sector="personal" tabindex="0" role="button" aria-label="Персональный билет — жёлтый сектор">
-            <rect class="aa-hall__zone" x="130" y="422" width="540" height="84" rx="14"/>
-            <g class="aa-hall__seats">
-              <rect x="160" y="436" width="150" height="9" rx="4.5"/><rect x="490" y="436" width="150" height="9" rx="4.5"/>
-              <rect x="160" y="456" width="150" height="9" rx="4.5"/><rect x="490" y="456" width="150" height="9" rx="4.5"/>
-              <rect x="160" y="476" width="150" height="9" rx="4.5"/><rect x="490" y="476" width="150" height="9" rx="4.5"/>
-            </g>
-            <text class="aa-hall__label" x="400" y="466">ПЕРСОНАЛЬНЫЙ</text>
-          </g>
-
-          <!-- бары -->
-          <g class="aa-hall__bar">
-            <rect x="34" y="284" width="72" height="118" rx="12"/>
-            <text x="70" y="348">БАР</text>
-          </g>
-          <g class="aa-hall__bar">
-            <rect x="694" y="284" width="72" height="118" rx="12"/>
-            <text x="730" y="348">БАР</text>
-          </g>
-
-          <!-- вход -->
-          <g class="aa-hall__entry">
-            <path d="M372 540h56"/>
-            <text x="400" y="530">ВХОД</text>
-          </g>
-        </svg>
+          </svg>
+        </div>
+        <div class="aa-plan-tip" data-plan-tip hidden></div>
         <p class="aa-scheme__note">* Схема является ориентировочной и&nbsp;может быть изменена</p>
       </div>
 
-      <ul class="aa-legend" aria-label="Легенда схемы">
-        <li class="aa-legend__item" data-sector="vip" tabindex="0">
-          <span class="aa-legend__dot" style="--c:var(--red)"></span>
-          <div>
-            <b>Красный сектор — VIP</b>
-            <small>Банкет, закреплённый официант, безлимитный алкоголь</small>
+      <aside class="aa-seat__side">
+        <div class="aa-pick" data-seat-panel>
+          <div class="aa-pick__empty" data-pick-empty>
+            <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="9"/><circle cx="24" cy="24" r="19" stroke-dasharray="3 5"/></svg>
+            <p><b>Выберите стол на&nbsp;схеме</b>Нажмите на&nbsp;цветной стол — здесь появятся зона, вместимость и&nbsp;стоимость.</p>
           </div>
-          <span class="aa-legend__price">140 000 ₽</span>
-        </li>
-        <li class="aa-legend__item" data-sector="business" tabindex="0">
-          <span class="aa-legend__dot" style="--c:var(--green)"></span>
-          <div>
-            <b>Зелёный сектор — Бизнес</b>
-            <small>Фуршет, алкоголь за&nbsp;баром</small>
+          <div class="aa-pick__full" data-pick-full hidden>
+            <span class="aa-pick__zone"><i data-pick-dot></i><span data-pick-zone></span></span>
+            <h3 class="aa-pick__title">Стол <span data-pick-num></span></h3>
+            <dl class="aa-pick__list">
+              <div><dt>Вместимость</dt><dd data-pick-cap></dd></div>
+              <div><dt>Формат</dt><dd data-pick-pack></dd></div>
+              <div><dt>Стоимость</dt><dd data-pick-price></dd></div>
+            </dl>
+            <button type="button" class="aa-btn aa-btn--primary aa-btn--block" data-seat-buy>Купить билет за этот стол</button>
+            <button type="button" class="aa-btn aa-btn--outline aa-btn--block" data-seat-request>Забронировать стол целиком</button>
+            <button type="button" class="aa-pick__reset" data-seat-clear>Сбросить выбор</button>
           </div>
-          <span class="aa-legend__price">115 500 ₽</span>
-        </li>
-        <li class="aa-legend__item" data-sector="personal" tabindex="0">
-          <span class="aa-legend__dot" style="--c:var(--yellow)"></span>
-          <div>
-            <b>Жёлтый сектор — Персональный</b>
-            <small>Место в&nbsp;зале на&nbsp;церемонии</small>
-          </div>
-          <span class="aa-legend__price">49 000 ₽</span>
-        </li>
-        <li class="aa-legend__item aa-legend__item--static">
-          <span class="aa-legend__dot aa-legend__dot--stage"></span>
-          <div><b>Сцена</b></div>
-        </li>
-        <li class="aa-legend__item aa-legend__item--static">
-          <span class="aa-legend__dot aa-legend__dot--bar"></span>
-          <div><b>Бар</b></div>
-        </li>
-      </ul>
+        </div>
+
+        <ul class="aa-zlist">
+          <li><i style="--c:#ADC898"></i><div><b>ВИП</b><small>Банкет, закреплённый официант, безлимитный алкоголь</small></div><span>140 000 ₽</span></li>
+          <li><i style="--c:#E8A0A5"></i><div><b>Бизнес</b><small>Фуршет, алкоголь за&nbsp;баром</small></div><span>115 500 ₽</span></li>
+          <li><i style="--c:#FEF1AF"></i><div><b>Персональные билеты</b><small>Место в&nbsp;зале на&nbsp;церемонии</small></div><span>49 000 ₽</span></li>
+          <li><i class="is-booked"></i><div><b>Забронировано</b><small>Стол уже занят</small></div></li>
+        </ul>
+      </aside>
     </div>
+  </div>
+
+  <!-- мобильная панель выбранного стола -->
+  <div class="aa-seatbar" data-seatbar>
+    <div><small data-seatbar-meta></small><b data-seatbar-title></b></div>
+    <button type="button" class="aa-btn aa-btn--primary aa-btn--sm" data-seat-buy>Купить</button>
   </div>
 </section>
 
@@ -411,7 +405,7 @@
         </header>
         <ul class="aa-card__list">
           <li><span>Еда</span><b>Банкет</b></li>
-          <li><span>Сектор</span><b><i class="aa-sdot" style="--c:var(--red)"></i>Красный</b></li>
+          <li><span>Сектор</span><b><i class="aa-sdot" style="--c:var(--green)"></i>Зелёный</b></li>
           <li><span>Обслуживание</span><b>Закреплённый официант</b></li>
           <li><span>Алкоголь</span><b>Безлимит</b></li>
         </ul>
@@ -428,7 +422,7 @@
         </header>
         <ul class="aa-card__list">
           <li><span>Еда</span><b>Фуршет</b></li>
-          <li><span>Сектор</span><b><i class="aa-sdot" style="--c:var(--green)"></i>Зелёный</b></li>
+          <li><span>Сектор</span><b><i class="aa-sdot" style="--c:var(--red)"></i>Красный</b></li>
           <li><span>Обслуживание</span><b class="is-no">Нет</b></li>
           <li><span>Алкоголь</span><b>За баром</b></li>
         </ul>
@@ -498,8 +492,8 @@
             </tr>
             <tr>
               <th scope="row">Сектор</th>
-              <td class="is-featured"><i class="aa-sdot" style="--c:var(--red)"></i>Красный</td>
-              <td><i class="aa-sdot" style="--c:var(--green)"></i>Зелёный</td>
+              <td class="is-featured"><i class="aa-sdot" style="--c:var(--green)"></i>Зелёный</td>
+              <td><i class="aa-sdot" style="--c:var(--red)"></i>Красный</td>
               <td><i class="aa-sdot" style="--c:var(--yellow)"></i>Жёлтый</td>
             </tr>
             <tr>
@@ -759,6 +753,7 @@
 
         <input type="hidden" name="package" value="table">
         <input type="hidden" name="type_id" value="">
+        <input type="hidden" name="table" value="">
         <input type="hidden" name="source" value="tickets-landing">
         <!-- антиспам: поле должно остаться пустым -->
         <input type="text" name="website" class="aa-rform__hp" tabindex="-1" autocomplete="off">
@@ -809,6 +804,7 @@
 </div><!-- /.aa -->
 
 <script src="assets/js/config.js"></script>
+<script src="assets/js/seating.js"></script>
 <script src="assets/js/main.js" defer></script>
 </body>
 </html>

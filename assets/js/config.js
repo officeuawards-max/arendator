@@ -26,14 +26,29 @@ window.LANDING_CONFIG = {
     personal: { ticketId: null, price: 49000 },
   },
 
+  /* ---------- Схема рассадки ----------
+   * Сами столы, их координаты, зоны и вместимость — в assets/js/seating.js.
+   */
+  seating: {
+    // Необязательно: адрес, который отдаёт занятые столы, чтобы схема обновлялась сама.
+    // Формат ответа (JSON): { "booked": ["702", "703", "401"] }
+    // Пусто — статусы берутся из seating.js (поле booked).
+    statusUrl: '',
+
+    // Соответствие «номер стола на схеме → ID стола в БД» (таблица столов старой схемы).
+    // Этот ID уходит в /tickets/pay?…&table=ID. Если соответствия нет — уходит номер стола.
+    // Пример: { '205': 1034, '206': 1035 }
+    tableIds: {},
+  },
+
   /* ---------- Эндпоинты бэкенда (Laravel) ---------- */
   endpoints: {
     // Форма оформления билета (payment.blade.php). Грузится AJAX-ом в попап.
-    // Итоговый URL: payForm + '?type=ID&count=1&table='
+    // Итоговый URL: payForm + '?type=ID&count=1&table=ID_СТОЛА' (стол — если выбран на схеме)
     payForm: '/tickets/pay',
 
     // Куда отправлять форму «Запрос» (пакет «Стол» и «Остались вопросы?»).
-    // POST, FormData: name, company, position, phone, email, comment, package, type_id, source.
+    // POST, FormData: name, company, phone, email, comment, package, type_id, table, source.
     // Заголовок X-CSRF-TOKEN берётся из <meta name="csrf-token">.
     // TODO(программист): указать роут, который принимает заявку (или оставить пустым для демо).
     request: '',
