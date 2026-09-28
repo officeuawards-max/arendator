@@ -336,8 +336,8 @@
               <text x="75" y="1156">ВИП</text>
               <circle cx="46" cy="1195" r="14" fill="#E8A0A5"/>
               <text x="75" y="1198">БИЗНЕС</text>
-              <circle cx="46" cy="1238" r="13.5" fill="#F4F4F4" stroke="#222" stroke-width="1.6"/>
-              <text x="75" y="1241">Забронировано</text>
+              <circle cx="46" cy="1238" r="14" fill="#B9A3E3"/>
+              <text x="75" y="1235">Места</text><text x="75" y="1246">закончились</text>
             </g>
           </svg>
         </div>
@@ -361,13 +361,22 @@
             <button type="button" class="aa-btn aa-btn--primary aa-btn--block" data-seat-book data-book="vip">Забронировать</button>
             <button type="button" class="aa-pick__reset" data-seat-clear>Закрыть</button>
           </div>
+          <div class="aa-pick__sold" data-pick-sold hidden>
+            <span class="aa-soldtag">Аншлаг</span>
+            <p class="aa-pick__title aa-pick__title--sold">Места закончились<small>Все места за&nbsp;этим столом уже забронированы</small></p>
+            <dl class="aa-pick__list">
+              <div><dt>За столом</dt><dd data-sold-cap></dd></div>
+            </dl>
+            <button type="button" class="aa-btn aa-btn--block aa-btn--disabled" disabled>Бронирование недоступно</button>
+            <a class="aa-pick__more" href="#packages" data-seat-clear>Посмотреть свободные форматы&nbsp;→</a>
+          </div>
         </div>
 
         <ul class="aa-zlist">
           <li><i style="--c:#ADC898"></i><div><b>ВИП</b><small>Банкет, закреплённый официант, безлимитный алкоголь</small></div><span>140 000 ₽</span></li>
           <li><i style="--c:#E8A0A5"></i><div><b>Бизнес</b><small>Фуршет, алкоголь за&nbsp;баром</small></div><span>115 500 ₽</span></li>
           <li><i style="--c:#FEF1AF"></i><div><b>Персональные билеты</b><small>Место в&nbsp;зале на&nbsp;церемонии</small></div><span>49 000 ₽</span></li>
-          <li><i class="is-booked"></i><div><b>Забронировано</b><small>Места уже заняты</small></div></li>
+          <li class="aa-zlist__sold"><i style="--c:#B9A3E3"></i><div><b>Места закончились</b><small>Эти столы полностью забронированы</small></div><span class="aa-soldtag">Аншлаг</span></li>
         </ul>
       </aside>
     </div>
@@ -377,6 +386,7 @@
   <div class="aa-seatbar" data-seatbar>
     <div><small data-seatbar-meta></small><b data-seatbar-title></b></div>
     <button type="button" class="aa-btn aa-btn--primary aa-btn--sm" data-seat-book data-book="vip">Забронировать</button>
+    <span class="aa-soldtag" data-seatbar-sold hidden>Недоступно</span>
   </div>
 </section>
 

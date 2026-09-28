@@ -398,9 +398,9 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 .aa-t:hover .aa-t__ring, .aa-t:focus-visible .aa-t__ring { opacity: .55; stroke-width: 2.5; }
 .aa-t.is-active .aa-t__ring { opacity: 1; stroke-width: 3; animation: ring 1.8s var(--ease) infinite; }
 @keyframes ring { 0%, 100% { stroke-opacity: 1; } 50% { stroke-opacity: .45; } }
-.aa-t.is-booked { cursor: not-allowed; }
-.aa-t.is-booked .aa-t__shape { fill: #F4F4F4; stroke: #222; stroke-width: 1.6; }
-.aa-t.is-booked:hover .aa-t__ring { opacity: 0; }
+/* «Места закончились» — фиолетовые столы: можно нажать для справки, бронировать нельзя */
+.aa-t.is-booked { cursor: help; }
+.aa-t.is-booked .aa-t__ring { stroke: #7B5FC7; }
 .aa-plan.has-filter .aa-t:not(.is-match) { opacity: .18; }
 .aa-plan.has-filter .aa-plan__cap { opacity: .35; transition: opacity .4s; }
 
@@ -438,7 +438,26 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 .aa-zlist li { display: grid; grid-template-columns: 14px 1fr auto; gap: 14px; align-items: center; padding: 14px 18px; }
 .aa-zlist li + li { border-top: 1px solid var(--line); }
 .aa-zlist i { width: 14px; height: 14px; border-radius: 50%; background: var(--c); }
-.aa-zlist i.is-booked { background: #F4F4F4; box-shadow: inset 0 0 0 1.5px #222, 0 0 0 1px rgba(255, 255, 255, .5); }
+.aa-zlist__sold { background: linear-gradient(90deg, rgba(185, 163, 227, .08), transparent 70%); }
+
+/* метка «Аншлаг» */
+.aa-soldtag {
+  display: inline-flex; align-items: center; gap: 7px; align-self: flex-start; white-space: nowrap;
+  padding: 5px 12px 5px 10px; border-radius: 999px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: #E4D9FF; background: rgba(185, 163, 227, .14); border: 1px solid rgba(185, 163, 227, .45);
+}
+.aa-soldtag::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #B9A3E3; box-shadow: 0 0 10px #B9A3E3; }
+.aa-pick__sold { display: flex; flex-direction: column; gap: 10px; animation: pickIn .6s var(--ease); }
+.aa-pick__title--sold {
+  font-size: 30px; line-height: 1.05; margin-top: 6px;
+  background: linear-gradient(100deg, #fff 20%, #CDB9F5 70%, #B9A3E3); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.aa-pick__title--sold small { -webkit-text-fill-color: var(--muted); color: var(--muted); font-size: 14px; line-height: 1.45; }
+.aa-btn--disabled, .aa-btn--disabled:hover { background: rgba(185, 163, 227, .1); color: #B8ABD6; border: 1px dashed rgba(185, 163, 227, .45); cursor: not-allowed; box-shadow: none; transform: none; }
+.aa-btn--disabled::before { display: none; }
+.aa-pick__more { align-self: center; font-size: 14px; font-weight: 600; color: #CDB9F5; margin-top: 4px; transition: color .3s; }
+.aa-pick__more:hover { color: #fff; }
 .aa-zlist b { display: block; font-size: 14px; font-weight: 600; }
 .aa-zlist small { display: block; font-size: 12.5px; color: var(--muted); line-height: 1.4; margin-top: 2px; }
 .aa-zlist span { font-size: 14px; font-weight: 700; white-space: nowrap; }

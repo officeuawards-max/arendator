@@ -497,11 +497,11 @@
 
     SEAT.tables.forEach(function (t) {
       var zone = SEAT.zones[t.zone];
-      var fill = t.booked || !zone ? '#F4F4F4' : zone.color;
+      var fill = t.booked || !zone ? ((SEAT.soldout || {}).color || '#B9A3E3') : zone.color;
       var g = svgEl('g', {
         'class': 'aa-t' + (t.booked ? ' is-booked' : ''),
-        'data-table': t.n, tabindex: t.booked ? -1 : 0, role: 'button',
-        'aria-label': t.booked ? 'Забронировано' : (zone ? zone.name : '') + ', ' + guestsText(t)
+        'data-table': t.n, tabindex: 0, role: 'button',
+        'aria-label': t.booked ? 'Места закончились, бронирование недоступно' : (zone ? zone.name : '') + ', ' + guestsText(t)
       });
       var cx, cy, shape, ring;
       if (t.c) {
@@ -547,7 +547,7 @@
     if (!tip || !t) return;
     var zone = SEAT.zones[t.zone];
     var price = zone && packPrice(zone.ticket);
-    tip.innerHTML = t.booked ? '<b>Забронировано</b>' :
+    tip.innerHTML = t.booked ? '<b>Места закончились</b><small>Бронирование недоступно</small>' :
       '<b>' + (zone ? zone.name : '') + (price ? ' · ' + fmtRub(price) : '') + '</b><small>' + guestsText(t) + ' за столом</small>';
     var r = t._el.getBoundingClientRect(), pb = planBox.getBoundingClientRect();
     tip.style.left = (r.left + r.width / 2 - pb.left) + 'px';
@@ -559,9 +559,13 @@
   // справка по столу: цвет → формат, цена, сколько гостей
   var seatbar = $('[data-seatbar]');
   function inspect(t) {
-    if (!t || t.booked) return;
+    if (!t) return;
     active = t;
     SEAT.tables.forEach(function (x) { x._el && x._el.classList.toggle('is-active', x === t); });
+    $('[data-pick-empty]').hidden = true;
+    if (t.booked) { showSold(t); return; }
+    $('[data-pick-sold]').hidden = true;
+    if (seatbar) { $('[data-seatbar] [data-seat-book]').hidden = false; $('[data-seatbar-sold]').hidden = true; }
     var zone = SEAT.zones[t.zone] || {};
     var price = packPrice(zone.ticket);
     $('[data-pick-empty]').hidden = true;
@@ -580,8 +584,25 @@
     }
     syncSeatbar();
   }
+  // стол, где места закончились: красивая заглушка, бронировать нельзя
+  function showSold(t) {
+    $('[data-pick-full]').hidden = true;
+    var sold = $('[data-pick-sold]');
+    sold.hidden = false;
+    sold.style.animation = 'none'; void sold.offsetWidth; sold.style.animation = '';
+    $('[data-sold-cap]').textContent = guestsText(t);
+    if (seatbar) {
+      $('[data-seatbar-title]', seatbar).textContent = 'Места закончились';
+      $('[data-seatbar-meta]', seatbar).textContent = guestsText(t) + ' за столом';
+      $('[data-seatbar] [data-seat-book]').hidden = true;
+      $('[data-seatbar-sold]').hidden = false;
+    }
+    syncSeatbar();
+  }
+
   function closeInspect() {
     active = null;
+    $('[data-pick-sold]').hidden = true;
     SEAT.tables.forEach(function (x) { x._el && x._el.classList.remove('is-active'); });
     $('[data-pick-empty]').hidden = false;
     $('[data-pick-full]').hidden = true;
@@ -609,7 +630,6 @@
           if (!d || !d.booked) return;
           var set = d.booked.map(String);
           SEAT.tables.forEach(function (t) { t.booked = set.indexOf(t.n) !== -1; });
-          if (active && active.booked) closeInspect();
           drawPlan();
           if (active) inspect(active);
         }).catch(function () {});
