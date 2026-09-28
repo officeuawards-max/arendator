@@ -211,7 +211,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 }
 .aa-hero__media { position: absolute; inset: 0; z-index: -3; }
 .aa-hero__media img {
-  width: 100%; height: 100%; object-fit: cover;
+  width: 100%; height: 100%; object-fit: cover; object-position: 50% 38%;
   transform: scale(1.12); transform-origin: 50% 40%;
   animation: heroZoom 2.8s var(--ease) .1s forwards;
   will-change: transform;
@@ -274,6 +274,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 .aa-about__photos { position: relative; aspect-ratio: 1 / 1.08; }
 .aa-ph { position: absolute; overflow: hidden; border-radius: var(--radius); background: var(--surface); }
 .aa-ph img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease); }
+.aa-ph--a img { object-position: 50% 30%; }
 .aa-ph:hover img { transform: scale(1.05); }
 .aa-ph--a { inset: 0 28% 30% 0; }
 .aa-ph--b { inset: 42% 0 0 36%; box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .8); }
@@ -561,8 +562,8 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 .aa-bento__item img, .aa-bento__item video { width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s var(--ease), filter 1s var(--ease); }
 .aa-bento__item:hover img, .aa-bento__item:hover video { transform: scale(1.06); }
 .aa-bento__item--video { grid-column: span 2; grid-row: span 2; }
-.aa-bento__item--tall { grid-row: span 2; }
-.aa-bento__item--wide { grid-column: span 2; }
+/* кадрирование под конкретные фото */
+.aa-bento__item--portrait img { object-position: 50% 30%; }
 .aa-bento__item figcaption {
   position: absolute; left: 20px; bottom: 18px; padding: 8px 14px; border-radius: 999px;
   font-size: 13px; font-weight: 600; background: rgba(7, 8, 11, .55); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
@@ -590,6 +591,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 84px; }
   background: var(--surface); border: 1px solid var(--line);
 }
 .aa-review__q { width: 34px; height: 26px; fill: var(--blue-hi); }
+.aa-review__ava img { filter: grayscale(1) contrast(1.05); }
 .aa-review__text { font-size: clamp(16px, 1.3vw, 18px); line-height: 1.6; flex: 1; color: rgba(255, 255, 255, .88); }
 .aa-review__author { display: flex; align-items: center; gap: 14px; padding-top: 24px; border-top: 1px solid var(--line); }
 .aa-review__author b { display: block; font-size: 15px; }
@@ -833,7 +835,6 @@ html.aa-modal-lock, html.aa-modal-lock body { overflow: hidden; }
   .aa-reason__num { margin-bottom: 24px; }
   .aa-steps { grid-template-columns: 1fr; }
   .aa-bento { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 42vw; }
-  .aa-bento__item--tall { grid-row: span 1; }
 }
 
 @media (max-width: 720px) {
@@ -869,7 +870,6 @@ html.aa-modal-lock, html.aa-modal-lock body { overflow: hidden; }
 
   .aa-bento { grid-auto-rows: 44vw; gap: 8px; }
   .aa-bento__item--video { grid-column: span 2; grid-row: span 1; }
-  .aa-bento__item--wide { grid-column: span 2; }
 
   .aa-timeline__item { grid-template-columns: 1fr; gap: 8px; padding-left: 28px; }
   .aa-rform__grid { grid-template-columns: 1fr; }
