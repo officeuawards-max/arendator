@@ -68,24 +68,24 @@
    * а отказ — такая же заметная кнопка «Только необходимые»: так требует честное согласие.
    */
   var JOKES = [
-    { t: 'Cookie ищут арендатора',
+    { t: 'Файлы cookie ищут арендатора',
       x: 'Небольшие файлы, класс&nbsp;А, отделка «под ключ». Ставка — 0&nbsp;₽ за&nbsp;м², без индексации и&nbsp;арендных каникул.',
-      ok: 'Подписать договор аренды' },
-    { t: '100% заполняемость? Почти',
+      ok: 'подписать договор аренды' },
+    { t: 'Cookie: 100% заполняемость? Почти',
       x: 'Необходимые cookie уже заехали. Аналитические ждут одобрения — как арендатор ждёт согласования с&nbsp;управляющей компанией.',
-      ok: 'Одобрить заезд' },
-    { t: 'Лучший cap rate на&nbsp;рынке',
+      ok: 'одобрить заезд' },
+    { t: 'Cookie — лучший cap rate на&nbsp;рынке',
       x: 'Вложений — ноль, доходность — сайт становится удобнее. Такой объект мы&nbsp;бы и&nbsp;сами взяли в&nbsp;портфель.',
-      ok: 'Инвестировать в&nbsp;cookie' },
-    { t: 'Якорный арендатор этого сайта',
-      x: 'Каждому ТЦ нужен якорь. Наш — cookie: без них не&nbsp;работают формы, а&nbsp;с&nbsp;аналитикой мы понимаем, что вам интересно.',
-      ok: 'Пустить якоря' },
-    { t: 'Сделка без брокера',
-      x: 'Никаких комиссий и&nbsp;LOI на&nbsp;трёх страницах. Одна кнопка — и&nbsp;cookie заезжают. Due diligence уже пройден.',
-      ok: 'Закрыть сделку' },
-    { t: 'Сдаётся: ваш браузер, 0,001&nbsp;м²',
-      x: 'Арендатор надёжный, платит пользой: сайт работает лучше, а&nbsp;мы видим, что нравится гостям премии.',
-      ok: 'Сдать в&nbsp;аренду' }
+      ok: 'инвестировать' },
+    { t: 'Cookie — якорный арендатор этого сайта',
+      x: 'Каждому ТЦ нужен якорь. Наш — файлы cookie: без них не&nbsp;работают формы, а&nbsp;с&nbsp;аналитикой мы понимаем, что вам интересно.',
+      ok: 'пустить якоря' },
+    { t: 'Cookie: сделка без брокера',
+      x: 'Никаких комиссий и&nbsp;LOI на&nbsp;трёх страницах. Одна кнопка — и&nbsp;файлы cookie заезжают. Due diligence уже пройден.',
+      ok: 'закрыть сделку' },
+    { t: 'Сдаётся под cookie: ваш браузер, 0,001&nbsp;м²',
+      x: 'Арендатор надёжный — файлы cookie платят пользой: сайт работает лучше, а&nbsp;мы видим, что нравится гостям премии.',
+      ok: 'сдать в&nbsp;аренду' }
   ];
 
   // печенька-бизнес-центр: шоколадные «окна» и укус при согласии
@@ -113,7 +113,7 @@
     banner.className = 'aa-cookie';
     banner.setAttribute('role', 'dialog');
     banner.setAttribute('aria-live', 'polite');
-    banner.setAttribute('aria-label', 'Настройки cookie');
+    banner.setAttribute('aria-label', 'Уведомление об использовании файлов cookie');
     (document.querySelector('.aa') || document.body).appendChild(banner);
     banner.addEventListener('click', function (e) {
       var b = e.target.closest('[data-cookie]');
@@ -122,10 +122,10 @@
       save(all);
       // короткая «развязка» шутки, потом баннер уходит
       banner.classList.add('is-done', all ? 'is-accepted' : 'is-declined');
-      $('.aa-cookie__title', banner).innerHTML = all ? 'Договор подписан' : 'Понимаем, сделка не&nbsp;для всех';
+      $('.aa-cookie__title', banner).innerHTML = all ? 'Договор аренды cookie подписан' : 'Понимаем, сделка не&nbsp;для всех';
       $('.aa-cookie__text', banner).innerHTML = all
-        ? 'Ключи переданы, cookie заехали. Аналитику включили.'
-        : 'Остались только необходимые cookie. Аналитика выключена.';
+        ? 'Все файлы cookie приняты: ключи переданы, аналитика включена.'
+        : 'Оставили только необходимые файлы cookie. Аналитика выключена.';
       setTimeout(hideBanner, 1600);
     });
   }
@@ -135,16 +135,20 @@
     banner.classList.remove('is-done', 'is-accepted', 'is-declined');
     banner.innerHTML =
       '<div class="aa-cookie__head">' + COOKIE_SVG +
-        '<div><p class="aa-cookie__eyebrow">Объект недели</p><p class="aa-cookie__title">' + j.t + '</p></div>' +
+        '<div><p class="aa-cookie__eyebrow">Сайт использует файлы cookie</p><p class="aa-cookie__title">' + j.t + '</p></div>' +
       '</div>' +
       '<p class="aa-cookie__text">' + j.x + '</p>' +
       '<p class="aa-cookie__plain"><b>По делу:</b> необходимые cookie нужны для работы сайта и&nbsp;форм. ' +
         'Аналитические (Яндекс&nbsp;Метрика) включим, только если нажмёте первую кнопку. ' +
         'Подробнее — в&nbsp;<a href="' + legalBase + 'cookies.html">Политике cookie</a>.</p>' +
       '<div class="aa-cookie__actions">' +
-        '<button type="button" class="aa-btn aa-btn--primary aa-btn--sm aa-cookie__yes" data-cookie="all">' +
-          '<span class="aa-cookie__key" aria-hidden="true">🔑</span>' + j.ok + '</button>' +
-        '<button type="button" class="aa-btn aa-btn--ghost aa-btn--sm" data-cookie="necessary">Только необходимые</button>' +
+        // кнопки называют действие прямо («Принять все cookie»), шутка — мелкой подписью
+        '<button type="button" class="aa-btn aa-btn--primary aa-cookie__yes" data-cookie="all">' +
+          '<span class="aa-cookie__yes-main"><span class="aa-cookie__key" aria-hidden="true">🔑</span>Принять все cookie</span>' +
+          '<span class="aa-cookie__yes-sub">и&nbsp;' + j.ok + '</span></button>' +
+        '<button type="button" class="aa-btn aa-btn--ghost aa-cookie__no" data-cookie="necessary">' +
+          '<span class="aa-cookie__yes-main">Только необходимые cookie</span>' +
+          '<span class="aa-cookie__yes-sub">без аналитики</span></button>' +
       '</div>';
   }
   function showBanner() {
