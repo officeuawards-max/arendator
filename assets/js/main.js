@@ -339,7 +339,7 @@
     bookForm.classList.toggle('is-question', isQuestion);
     bookForm.elements['intent'].value = isQuestion ? 'question' : 'booking';
     $('[data-book-title]').textContent = isQuestion ? 'Ваш вопрос' : 'Контактные данные';
-    $('[data-book-mode]').textContent = isQuestion ? '← Вернуться к бронированию' : 'Просто задать вопрос';
+    $('[data-book-mode]').textContent = isQuestion ? 'Вернуться к бронированию' : 'Просто задать вопрос';
     $('[data-book-submit]').textContent = isQuestion ? 'Отправить вопрос' : 'Забронировать';
   }
   function setStep(n) { $$('[data-steps] li').forEach(function (li, i) { li.classList.toggle('is-on', i < n); }); }

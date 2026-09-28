@@ -144,7 +144,7 @@
       '<div class="aa-cookie__actions">' +
         // кнопки называют действие прямо («Принять все cookie»), шутка — мелкой подписью
         '<button type="button" class="aa-btn aa-btn--gold aa-cookie__yes" data-cookie="all">' +
-          '<span class="aa-cookie__yes-main"><span class="aa-cookie__key" aria-hidden="true">🔑</span>Принять все cookie</span>' +
+          '<span class="aa-cookie__yes-main"><span class="aa-cookie__key" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.7 12.3 20 3M16 7l3 3M13.5 9.5l2 2"/></svg></span>Принять все cookie</span>' +
           '<span class="aa-cookie__yes-sub">и&nbsp;' + j.ok + '</span></button>' +
         '<button type="button" class="aa-btn aa-btn--ghost aa-cookie__no" data-cookie="necessary">' +
           '<span class="aa-cookie__yes-main">Только необходимые cookie</span>' +
