@@ -785,3 +785,50 @@ html.aa-popup-open .aa-sticky, html.aa-popup-open .aa-seatbar { transform: trans
 }
 /* портал для закреплённых элементов (создаёт main.js): сам по себе не занимает места */
 .aa.aa-portal { background: none; min-height: 0; overflow: visible; }
+
+/* ==========================================================================
+   01 · ПЕРВЫЙ ЭКРАН — афиша целиком + полоса под ней
+   На афише свои надписи: картинку не обрезаем (contain) и ничего на неё не кладём.
+   ========================================================================== */
+.aa-hero--poster { display: block; min-height: 0; padding: 0; align-items: initial; background: #000; }
+.aa-hero__poster { position: relative; overflow: hidden; background: #000; }
+.aa-hero__poster-fill {
+  position: absolute; inset: -40px; background: url('../img/hero-poster-m.jpg') center / cover no-repeat;
+  filter: blur(40px) brightness(.45) saturate(1.2); transform: scale(1.1);
+}
+.aa-hero__poster picture, .aa-hero__poster img { display: block; position: relative; }
+.aa-hero__poster img {
+  width: 100%; height: auto; max-height: min(calc(100vh - 150px), 1100px); max-height: min(calc(100svh - 150px), 1100px); object-fit: contain; margin: 0 auto;
+  /* мягкие края, чтобы афиша растворялась в фоне на широких экранах */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 6%, #000 94%, transparent 100%);
+  opacity: 0; animation: posterIn 1.6s var(--ease) .1s forwards;
+}
+@keyframes posterIn { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
+@media (max-aspect-ratio: 2000/1367) { .aa-hero__poster img { -webkit-mask-image: none; mask-image: none; } }
+
+.aa-hero__bar { position: relative; background: linear-gradient(180deg, #000 0%, var(--bg) 100%); border-bottom: 1px solid var(--line); }
+.aa-hero__bar-inner { display: grid; grid-template-columns: minmax(0, 1.1fr) auto auto; align-items: center; gap: 28px 44px; padding-top: 30px; padding-bottom: 34px; }
+.aa-hero--poster .aa-hero__date { display: none; }
+.aa-hero--poster .aa-hero__lead { margin: 0; font-size: clamp(18px, 1.7vw, 22px); max-width: 360px; }
+.aa-hero--poster .aa-hero__utp { margin: 0; gap: 26px; flex-wrap: nowrap; }
+.aa-hero--poster .aa-hero__actions { margin: 0; flex-direction: column; align-items: stretch; gap: 12px; text-align: center; }
+.aa-hero--poster .aa-hero__actions .aa-btn { min-width: 230px; }
+@media (max-width: 1100px) {
+  .aa-hero__bar-inner { grid-template-columns: 1fr auto; }
+  .aa-hero--poster .aa-hero__utp { grid-column: 1 / -1; grid-row: 2; justify-content: space-between; }
+}
+@media (max-width: 720px) {
+  .aa-hero__poster { padding-top: 64px; }                 /* шапка не ложится на верх афиши */
+  .aa-hero__bar-inner { grid-template-columns: 1fr; gap: 20px; padding-top: 22px; padding-bottom: 30px; }
+  .aa-hero--poster .aa-hero__date { display: block; font-size: 12.5px; }
+  .aa-hero--poster .aa-hero__lead { max-width: none; margin-top: 8px; font-size: 19px; }
+  .aa-hero--poster .aa-hero__utp { grid-row: auto; flex-direction: column; gap: 12px; }
+  .aa-hero--poster .aa-hero__actions .aa-btn { min-width: 0; }
+}
+/* полоса первого экрана видна сразу, мягко проявляется после афиши */
+.aa-hero__bar-inner > * { opacity: 0; animation: heroBarIn 1s var(--ease) forwards; }
+.aa-hero__bar-inner > :nth-child(1) { animation-delay: .5s; }
+.aa-hero__bar-inner > :nth-child(2) { animation-delay: .62s; }
+.aa-hero__bar-inner > :nth-child(3) { animation-delay: .74s; }
+@keyframes heroBarIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }

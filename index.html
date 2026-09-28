@@ -73,24 +73,34 @@
 <main>
 
 <!-- =========================================================
-     01 · ПЕРВЫЙ ЭКРАН
-     Фото → assets/img/hero.jpg (оригинал — originals/hero-stage-show.jpg)
+     01 · ПЕРВЫЙ ЭКРАН — ключевой визуал (афиша) + полоса с преимуществами и кнопками
+     Афиша → assets/img/hero-poster.jpg (телефон — hero-poster-m.jpg), оригинал — originals/hero-poster.jpg.
+     На афише уже есть надписи (название, слоган, дата и место), поэтому ничего поверх неё
+     не кладём: картинка показывается целиком (без обрезки), наш текст — в полосе под ней.
      ========================================================= -->
-<section class="aa-hero" id="top">
-  <div class="aa-hero__media" data-media>
-    <img src="assets/img/hero.jpg" alt="Церемония Arendator Awards: сцена и гости в зале" fetchpriority="high">
+<section class="aa-hero aa-hero--poster" id="top">
+  <!-- заголовок для поисковиков и экранных дикторов: на афише он нарисован -->
+  <h1 class="aa-visually-hidden">Arendator Awards 2026 — искусство производить впечатление. 8 октября, ресторан «Бериот», Новый Арбат, 21, Москва</h1>
+
+  <div class="aa-hero__poster" data-media>
+    <!-- размытая копия той же афиши заполняет края на широких экранах -->
+    <div class="aa-hero__poster-fill" aria-hidden="true"></div>
+    <picture>
+      <source media="(max-width: 720px)" srcset="assets/img/hero-poster-m.jpg">
+      <img src="assets/img/hero-poster.jpg" width="2000" height="1367" fetchpriority="high"
+           alt="Arendator Awards — искусство производить впечатление. 8 октября, ресторан «Бериот», Новый Арбат, 21">
+    </picture>
   </div>
-  <div class="aa-hero__veil" aria-hidden="true"></div>
-  <img class="aa-hero__logo" src="assets/img/logo-mark.svg" alt="" aria-hidden="true" width="48" height="110">
 
-  <div class="aa-container">
-    <div class="aa-hero__content">
-      <!-- Дата и место — из config.js не подставляются, правятся здесь -->
-      <p class="aa-hero__date" data-reveal>8 октября · Москва · Бериот, Новый Арбат,&nbsp;21</p>
-      <h1 class="aa-hero__title" data-split>Arendator Awards 2026</h1>
-      <p class="aa-hero__lead" data-reveal style="--d:.3s">Главный вечер рынка коммерческой недвижимости</p>
+  <div class="aa-hero__bar">
+    <div class="aa-container aa-hero__bar-inner">
+      <div class="aa-hero__intro">
+        <!-- на телефоне надписи афиши мелкие — дата и место дублируются здесь -->
+        <p class="aa-hero__date">8 октября · Москва · Бериот, Новый Арбат,&nbsp;21</p>
+        <p class="aa-hero__lead">Главный вечер рынка коммерческой недвижимости</p>
+      </div>
 
-      <ul class="aa-hero__utp" data-reveal style="--d:.45s">
+      <ul class="aa-hero__utp">
         <li>
           <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="11" cy="10" r="4"/><circle cx="22" cy="11" r="3.2"/><path d="M3 26c0-5 3.6-8 8-8s8 3 8 8M18 19.5c1-.9 2.5-1.5 4-1.5 3.6 0 7 2.4 7 7"/></svg>
           <span>300+<br>гостей</span>
@@ -105,7 +115,7 @@
         </li>
       </ul>
 
-      <div class="aa-hero__actions" data-reveal style="--d:.6s">
+      <div class="aa-hero__actions">
         <a class="aa-btn aa-btn--gold aa-btn--lg" href="#scheme">Выбрать место</a>
         <a class="aa-link" href="#guests">Кто будет на&nbsp;церемонии&nbsp;<svg class="aa-arr" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M4 9l4 4 4-4"/></svg></a>
       </div>

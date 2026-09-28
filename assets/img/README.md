@@ -4,7 +4,8 @@
 
 | Файл на сайте | Где | Оригинал |
 |---|---|---|
-| `hero.jpg` | 01 Первый экран, фон блока 10 «До церемонии осталось» | `originals/hero-stage-show.jpg` — шоу на сцене |
+| `hero-poster.jpg` (2000 px), `hero-poster-m.jpg` (1000 px, телефон) | 01 Первый экран — афиша «Искусство производить впечатление», показывается целиком, без обрезки: на ней свои надписи | `originals/hero-poster.jpg` |
+| `hero.jpg` | Фон блока 10 «До церемонии осталось» | `originals/hero-stage-show.jpg` — шоу на сцене |
 | `about-3.jpg` | 02 Три причины — «Люди» | `originals/guests-trio.jpg` |
 | `gallery-1.jpg` | 02 «Доступ», 08 Галерея | `originals/bar-conversation.jpg` |
 | `about-1.jpg` | 02 «Событие», 08 Галерея | `originals/winners-on-stage.jpg` |
