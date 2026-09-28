@@ -21,7 +21,8 @@
   var VER = OP.docsVersion || '1';
   var root = document.documentElement;
   var legalBase = root.getAttribute('data-legal-base');
-  if (legalBase == null) legalBase = 'legal/';
+  // папка с документами: атрибут <html data-legal-base> (на страницах legal/) → config.js legalBase → 'legal/'
+  if (legalBase == null) legalBase = CFG.legalBase || 'legal/';
 
   /* ---------- реквизиты оператора ---------- */
   function fillOperator() {
