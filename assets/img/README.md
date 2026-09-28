@@ -15,6 +15,8 @@
 
 **Заменить фото:** положите новый файл с тем же именем (JPEG, ширина 1200–2400 px, до ~400 КБ).
 
-**Ещё нужно:** логотип премии `logo.svg` (белый или золотой, для тёмного фона) и логотипы компаний в `logos/` — список имён в разметке блока 03 (`esve.svg`, `stone.svg`, `level-group.svg`, `lemana-pro.svg`, `space1.svg`, `forma.svg`, `valtari.svg`, `donstroy.svg`, `mr.svg`). Пока их нет, выводится название компании.
+**Логотип премии:** `logo.svg` (знак + надпись) и `logo-mark.svg` (только «A») — версии для тёмного фона, прозрачные; исходник заказчика — `originals/logo-source-black.svg`.
+
+**Ещё нужно:** логотипы компаний в `logos/` — список имён в разметке блока 03 (`esve.svg`, `stone.svg`, `level-group.svg`, `lemana-pro.svg`, `space1.svg`, `forma.svg`, `valtari.svg`, `donstroy.svg`, `mr.svg`). Пока их нет, выводится название компании.
 
 Видео для блока 08 берётся с сервера: `https://aawards.ru/videos/apply/aaw_apply_2025.mp4`.
