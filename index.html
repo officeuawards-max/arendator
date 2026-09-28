@@ -4,24 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Билеты на Arendator Awards 2026 — церемония 8 октября, Москва</title>
-  <meta name="description" content="Билеты на церемонию федеральной премии в области коммерческой недвижимости Arendator Awards. 8 октября 2026, Москва. VIP, Бизнес, Стол, Персональный билет.">
-  <meta name="theme-color" content="#07080B">
+  <meta name="description" content="Бронирование билетов на церемонию федеральной премии в области коммерческой недвижимости Arendator Awards. 8 октября 2026, Москва. VIP, Business, Персональный билет, стол для компании.">
+  <meta name="theme-color" content="#0D0C0A">
 
   <!-- TODO(программист): в Blade заменить на  <meta name="csrf-token" content="{{ csrf_token() }}"> -->
   <meta name="csrf-token" content="">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Arendator Awards 2026 — билеты на церемонию">
-  <meta property="og:description" content="8 октября 2026, Москва. Церемония награждения и вечерняя программа.">
+  <meta property="og:title" content="Arendator Awards 2026 — бронирование билетов">
+  <meta property="og:description" content="8 октября 2026, Москва. Главный вечер рынка коммерческой недвижимости.">
   <meta property="og:image" content="assets/img/hero.jpg">
 
-  <!-- Шрифт Manrope лежит локально (assets/fonts): без запросов к Google — IP посетителей не уходит за рубеж -->
-  <link rel="preload" href="assets/fonts/manrope-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- Шрифты Roboto и Playfair Display лежат локально (assets/fonts): без запросов к Google — IP посетителей не уходит за рубеж -->
+  <link rel="preload" href="assets/fonts/roboto-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/playfair-display-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/style.css">
 
   <!--
     Подмена картинок: если файла из assets/img ещё нет — берётся data-alt-src
-    (фото, которые уже лежат на сервере aawards.ru), если нет и его — красивая заглушка.
+    (фото, которые уже лежат на сервере aawards.ru), если нет и его — картинка скрывается.
     Скрипт стоит в <head>, чтобы поймать ошибки загрузки до старта main.js.
   -->
   <script>
@@ -41,28 +42,31 @@
 <!-- .aa — корневая обёртка лендинга. При переносе в Blade копируется всё содержимое от <div class="aa"> до закрывающего </div>. -->
 <div class="aa">
 
-<div class="aa-progress" aria-hidden="true"><span></span></div>
-
 <!-- =========================================================
-     ШАПКА / НАВИГАЦИЯ
+     НАВИГАЦИЯ
      ========================================================= -->
 <header class="aa-nav" data-nav>
   <div class="aa-nav__inner aa-container">
-    <a class="aa-nav__logo" href="https://aawards.ru/" aria-label="Arendator Awards — на главную">
-      <!-- TODO: положить логотип в assets/img/logo.svg (белый) — текстовый логотип скроется сам -->
-      <img src="assets/img/logo.svg" alt="Arendator Awards" class="aa-nav__logo-img" onerror="this.remove()">
-      <span class="aa-nav__logo-text"><b>Arendator</b> Awards</span>
+    <a class="aa-logo-mark" href="https://aawards.ru/" aria-label="Arendator Awards — на главную">
+      <!-- TODO: положить логотип в assets/img/logo.svg (белый/золотой) — текстовый знак скроется сам -->
+      <img src="assets/img/logo.svg" alt="Arendator Awards" onerror="this.remove()">
+      <span class="aa-logo-mark__a" aria-hidden="true">A</span>
+      <span class="aa-logo-mark__t">Arendator<br>Awards</span>
     </a>
 
     <nav class="aa-nav__menu" data-menu>
       <a href="#about">О премии</a>
+      <a href="#guests">Участники</a>
       <a href="#program">Программа</a>
-      <a href="#scheme">Схема зала</a>
-      <a href="#packages">Билеты</a>
-      <a href="#reviews">Отзывы</a>
+      <a href="#scheme">Места</a>
+      <a href="#gallery">Как это было</a>
+      <a href="#order" data-book="question">Контакты</a>
     </nav>
 
-    <a class="aa-btn aa-btn--primary aa-btn--sm aa-nav__cta" href="#packages">Забронировать</a>
+    <a class="aa-btn aa-btn--outline aa-btn--sm aa-nav__cta" href="#order" data-book="">
+      Забронировать
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
 
     <button class="aa-nav__burger" type="button" aria-label="Меню" aria-expanded="false" data-burger>
       <span></span><span></span>
@@ -73,140 +77,110 @@
 <main>
 
 <!-- =========================================================
-     01 · HERO
-     Фото «для шапки» (шоу на сцене) → assets/img/hero.jpg, оригинал — assets/img/originals/hero-stage-show.jpg
-     TODO: стилистика шапки — ждём от Саши
+     01 · ПЕРВЫЙ ЭКРАН
+     Фото → assets/img/hero.jpg (оригинал — originals/hero-stage-show.jpg)
      ========================================================= -->
 <section class="aa-hero" id="top">
-  <div class="aa-hero__media" data-media data-label="Фото для шапки">
-    <img src="assets/img/hero.jpg" alt="Шоу-программа на церемонии Arendator Awards" fetchpriority="high">
+  <div class="aa-hero__media" data-media>
+    <img src="assets/img/hero.jpg" alt="Церемония Arendator Awards: сцена и гости в зале" fetchpriority="high">
   </div>
   <div class="aa-hero__veil" aria-hidden="true"></div>
-  <div class="aa-hero__grain" aria-hidden="true"></div>
 
-  <div class="aa-hero__content aa-container">
-    <p class="aa-eyebrow aa-hero__eyebrow" data-reveal>
-      <span class="aa-dot"></span>8 октября 2026 · Москва
-    </p>
-    <h1 class="aa-hero__title" data-split>
-      Arendator Awards <em>2026</em>
-    </h1>
-    <p class="aa-hero__lead" data-reveal style="--d:.35s">
-      Федеральная премия в&nbsp;области коммерческой недвижимости.
-      Церемония награждения, лучшие проекты года и&nbsp;вечер среди первых лиц рынка.
-    </p>
-    <div class="aa-hero__actions" data-reveal style="--d:.5s">
-      <a class="aa-btn aa-btn--primary aa-btn--lg" href="#packages">
-        Выбрать билет
-        <svg class="aa-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-      </a>
-      <a class="aa-btn aa-btn--ghost aa-btn--lg" href="#scheme">Схема зала</a>
-    </div>
-  </div>
-
-  <div class="aa-hero__bar aa-container" data-reveal style="--d:.7s">
-    <div class="aa-hero__stat"><span class="aa-hero__stat-k">17:00</span><span class="aa-hero__stat-v">сбор гостей</span></div>
-    <div class="aa-hero__stat"><span class="aa-hero__stat-k">300+</span><span class="aa-hero__stat-v">гостей</span></div>
-    <div class="aa-hero__stat"><span class="aa-hero__stat-k">85+</span><span class="aa-hero__stat-v">компаний</span></div>
-    <a class="aa-hero__scroll" href="#about" aria-label="Листать вниз"><span></span></a>
-  </div>
-</section>
-
-<!-- =========================================================
-     02 · О ПРЕМИИ (актуальные фотографии)
-     Фото → assets/img/about-1.jpg (победители), about-2.jpg (терраса), about-3.jpg (круглое)
-     ========================================================= -->
-<section class="aa-section aa-about" id="about">
-  <div class="aa-container aa-about__grid">
-    <div class="aa-about__text">
-      <p class="aa-eyebrow" data-reveal>[ О премии ]</p>
-      <h2 class="aa-h2" data-split>Самое яркое событие рынка коммерческой недвижимости</h2>
-      <p class="aa-lead" data-reveal>
-        Arendator Awards — главная профессиональная премия федерального уровня,
-        которая задаёт ориентиры развития рынка коммерческой недвижимости России.
-        Офисы, ритейл, склады, апарт-отели, управляющие компании и&nbsp;арендаторы — все на&nbsp;одной сцене.
-      </p>
-
-      <dl class="aa-facts">
-        <div class="aa-facts__item" data-reveal style="--d:.05s">
-          <dt class="aa-facts__num"><span data-count="11">11</span>+</dt>
-          <dd>регионов</dd>
-        </div>
-        <div class="aa-facts__item" data-reveal style="--d:.15s">
-          <dt class="aa-facts__num"><span data-count="85">85</span>+</dt>
-          <dd>компаний</dd>
-        </div>
-        <div class="aa-facts__item" data-reveal style="--d:.25s">
-          <dt class="aa-facts__num"><span data-count="300">300</span>+</dt>
-          <dd>гостей</dd>
-        </div>
-      </dl>
-    </div>
-
-    <div class="aa-about__photos">
-      <figure class="aa-ph aa-ph--a" data-media data-label="Фото 1" data-reveal="clip">
-        <img src="assets/img/about-1.jpg" alt="Победители Arendator Awards на сцене с дипломами и статуэтками" loading="lazy">
-      </figure>
-      <figure class="aa-ph aa-ph--b" data-media data-label="Фото 2" data-reveal="clip" style="--d:.15s">
-        <img src="assets/img/about-2.jpg" alt="Гости Arendator Awards на террасе" loading="lazy">
-      </figure>
-      <figure class="aa-ph aa-ph--c" data-media data-label="Фото 3" data-reveal="clip" style="--d:.3s">
-        <img src="assets/img/about-3.jpg" alt="Гости вечерней программы" loading="lazy">
-      </figure>
-    </div>
-  </div>
-</section>
-
-<!-- =========================================================
-     03 · ТРИ ПРИЧИНЫ БЫТЬ НА ARENDATOR AWARDS
-     Тексты — из блока benefits текущего сайта.
-     TODO: сверить формулировки с живой страницей /tickets
-     ========================================================= -->
-<section class="aa-section aa-reasons">
   <div class="aa-container">
-    <div class="aa-section__head">
-      <p class="aa-eyebrow" data-reveal>[ Зачем идти ]</p>
-      <h2 class="aa-h2" data-split>Три причины быть на&nbsp;Arendator&nbsp;Awards</h2>
+    <div class="aa-hero__content">
+      <!-- Дата и место — из config.js не подставляются, правятся здесь -->
+      <p class="aa-hero__date" data-reveal>8 октября · Москва · Бериот, Новый Арбат,&nbsp;21</p>
+      <h1 class="aa-hero__title" data-split>Arendator Awards 2026</h1>
+      <p class="aa-hero__lead" data-reveal style="--d:.3s">Главный вечер рынка коммерческой недвижимости</p>
+
+      <ul class="aa-hero__utp" data-reveal style="--d:.45s">
+        <li>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="11" cy="10" r="4"/><circle cx="22" cy="11" r="3.2"/><path d="M3 26c0-5 3.6-8 8-8s8 3 8 8M18 19.5c1-.9 2.5-1.5 4-1.5 3.6 0 7 2.4 7 7"/></svg>
+          <span>300+<br>гостей</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 28V12l8-5v21M12 28V4h12v24M24 14h4v14M3 28h26M16 9h4M16 14h4M16 19h4M16 24h4"/></svg>
+          <span>Ведущие компании<br>рынка</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3l11 4v8c0 7-4.6 12-11 14C9.6 27 5 22 5 15V7l11-4Z"/><path d="M16 11l1.8 3.7 4 .6-2.9 2.8.7 4L16 20.2l-3.6 1.9.7-4-2.9-2.8 4-.6L16 11Z"/></svg>
+          <span>Закрытая<br>церемония</span>
+        </li>
+      </ul>
+
+      <div class="aa-hero__actions" data-reveal style="--d:.6s">
+        <a class="aa-btn aa-btn--gold aa-btn--lg" href="#scheme">Выбрать место</a>
+        <a class="aa-link" href="#guests">Кто будет на&nbsp;церемонии&nbsp;↓</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     02 · ТРИ ПРИЧИНЫ БЫТЬ НА ARENDATOR AWARDS
+     Фото → assets/img/about-3.jpg, gallery-1.jpg, about-1.jpg
+     ========================================================= -->
+<section class="aa-section aa-light aa-reasons" id="about">
+  <div class="aa-container">
+    <div class="aa-head">
+      <h2 class="aa-h2" data-split>Три причины быть <br>на&nbsp;Arendator&nbsp;Awards</h2>
     </div>
 
-    <ol class="aa-reasons__list">
-      <li class="aa-reason" data-reveal style="--d:0s">
-        <span class="aa-reason__num">01</span>
-        <h3 class="aa-reason__title">Лично познакомиться с&nbsp;топами девелопмента и&nbsp;лидерами мнений</h3>
-        <p class="aa-reason__text">В зале — первые лица девелоперских, управляющих и&nbsp;консалтинговых компаний. Один вечер заменяет десяток встреч.</p>
+    <ul class="aa-reasons__grid">
+      <li class="aa-reason" data-reveal>
+        <div class="aa-reason__head">
+          <span class="aa-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="11" cy="10" r="4"/><circle cx="22" cy="11" r="3.2"/><path d="M3 26c0-5 3.6-8 8-8s8 3 8 8M18 19.5c1-.9 2.5-1.5 4-1.5 3.6 0 7 2.4 7 7"/></svg></span>
+          <div>
+            <h3 class="aa-reason__title">Люди</h3>
+            <p class="aa-reason__text">Руководители крупнейших компаний рынка в&nbsp;одном пространстве</p>
+          </div>
+        </div>
+        <div class="aa-reason__photo" data-media><img src="assets/img/about-3.jpg" alt="Гости Arendator Awards общаются в зале" loading="lazy"></div>
       </li>
       <li class="aa-reason" data-reveal style="--d:.12s">
-        <span class="aa-reason__num">02</span>
-        <h3 class="aa-reason__title">Подробно ознакомиться с&nbsp;лучшими проектами отрасли</h3>
-        <p class="aa-reason__text">Жюри из&nbsp;90+ экспертов назовёт лучшие объекты года — от&nbsp;бизнес-центров до&nbsp;индустриальных хабов.</p>
+        <div class="aa-reason__head">
+          <span class="aa-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 9h14a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3h-6l-5 4v-4H5a3 3 0 0 1-3-3v-6a3 3 0 0 1 3-3Z"/><path d="M22 13h4a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-1v3l-4-3"/></svg></span>
+          <div>
+            <h3 class="aa-reason__title">Доступ</h3>
+            <p class="aa-reason__text">Несколько часов живого общения с&nbsp;людьми, до&nbsp;которых обычно нужны недели встреч</p>
+          </div>
+        </div>
+        <div class="aa-reason__photo" data-media><img src="assets/img/gallery-1.jpg" alt="Разговор гостей у бара" loading="lazy"></div>
       </li>
       <li class="aa-reason" data-reveal style="--d:.24s">
-        <span class="aa-reason__num">03</span>
-        <h3 class="aa-reason__title">Определить видение и&nbsp;векторы развития своей компании</h3>
-        <p class="aa-reason__text">Тренды, решения и&nbsp;бизнес-модели, которые будут определять рынок коммерческой недвижимости в&nbsp;ближайшие годы.</p>
+        <div class="aa-reason__head">
+          <span class="aa-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 4h12v8a6 6 0 0 1-12 0V4Z"/><path d="M10 7H5v2a5 5 0 0 0 5 5M22 7h5v2a5 5 0 0 1-5 5M16 18v5M11 28h10M12.5 28l1-5h5l1 5"/></svg></span>
+          <div>
+            <h3 class="aa-reason__title">Событие</h3>
+            <p class="aa-reason__text">Финал профессионального сезона: именно здесь объявят победителей Arendator&nbsp;Awards&nbsp;2026</p>
+          </div>
+        </div>
+        <div class="aa-reason__photo" data-media><img src="assets/img/about-1.jpg" alt="Победители Arendator Awards на сцене" loading="lazy"></div>
       </li>
-    </ol>
+    </ul>
+
+    <div class="aa-more" data-reveal>
+      <a class="aa-btn aa-btn--gold" href="#scheme">Выбрать место</a>
+    </div>
   </div>
 </section>
 
 <!-- =========================================================
-     04 · С КЕМ ВЫ ПРОВЕДЁТЕ ЭТОТ ВЕЧЕР
+     03 · С КЕМ ВЫ ПРОВЕДЁТЕ ЭТОТ ВЕЧЕР
      Логотипы → assets/img/logos/*.svg (белые/монохромные).
-     Пока файла нет — показывается название компании.
+     Пока файла нет — выводится название компании.
      ========================================================= -->
-<section class="aa-section aa-guests" id="guests">
+<section class="aa-guests" id="guests">
   <div class="aa-container">
-    <div class="aa-section__head aa-section__head--row">
-      <div>
-        <p class="aa-eyebrow" data-reveal>[ Гости вечера ]</p>
-        <h2 class="aa-h2" data-split>С&nbsp;кем вы проведёте этот вечер</h2>
-      </div>
-      <p class="aa-lead aa-section__aside" data-reveal>Вы получите возможность лично познакомиться с&nbsp;лидерами индустрии.</p>
-    </div>
-  </div>
+    <h2 class="aa-h2" data-split>С&nbsp;кем вы проведёте этот вечер</h2>
 
-  <div class="aa-marquee" data-marquee>
-    <ul class="aa-marquee__track">
+    <div class="aa-stats" data-reveal>
+      <div class="aa-stat"><b><span data-count="85">85</span>+</b><span>компаний</span></div>
+      <div class="aa-stat"><b><span data-count="300">300</span>+</b><span>руководителей<br>и&nbsp;экспертов</span></div>
+      <p class="aa-stats__cats">Девелоперы · Инвесторы · Арендаторы<br>Управляющие компании · Архитекторы · Консультанты</p>
+    </div>
+
+    <ul class="aa-logos" data-reveal style="--d:.15s">
       <li class="aa-logo" data-media><img src="assets/img/logos/esve.svg" alt="ESVE"><span>ESVE</span></li>
       <li class="aa-logo" data-media><img src="assets/img/logos/stone.svg" alt="STONE"><span>STONE</span></li>
       <li class="aa-logo" data-media><img src="assets/img/logos/level-group.svg" alt="LEVEL GROUP"><span>LEVEL GROUP</span></li>
@@ -215,42 +189,40 @@
       <li class="aa-logo" data-media><img src="assets/img/logos/forma.svg" alt="FORMA"><span>FORMA</span></li>
       <li class="aa-logo" data-media><img src="assets/img/logos/valtari.svg" alt="VALTARI"><span>VALTARI</span></li>
       <li class="aa-logo" data-media><img src="assets/img/logos/donstroy.svg" alt="Донстрой"><span>Донстрой</span></li>
-      <li class="aa-logo" data-media><img src="assets/img/logos/mr.svg" alt="MR Group"><span>MR</span></li>
+      <li class="aa-logo" data-media><img src="assets/img/logos/mr.svg" alt="MR Group"><span>MR Group</span></li>
     </ul>
   </div>
 </section>
 
 <!-- =========================================================
-     05 · ТАЙМИНГ
+     04 · ПРОГРАММА ВЕЧЕРА (тайминг из ТЗ)
      ========================================================= -->
-<section class="aa-section aa-timing" id="program">
-  <div class="aa-container aa-timing__grid">
-    <div class="aa-section__head">
-      <p class="aa-eyebrow" data-reveal>[ Программа · 8 октября ]</p>
-      <h2 class="aa-h2" data-split>Тайминг вечера</h2>
-      <p class="aa-lead" data-reveal>Приезжайте к&nbsp;сбору гостей — это лучшее время для знакомств до&nbsp;начала церемонии.</p>
+<section class="aa-section aa-light aa-program" id="program">
+  <div class="aa-container">
+    <div class="aa-head">
+      <h2 class="aa-h2" data-split>Один вечер. <br>Главные события рынка.</h2>
     </div>
 
-    <ol class="aa-timeline" data-timeline>
-      <li class="aa-timeline__item" data-reveal>
-        <time class="aa-timeline__time">17:00</time>
-        <div class="aa-timeline__body">
-          <h3>Сбор гостей</h3>
-          <p>Регистрация, welcome-зона, нетворкинг</p>
+    <ol class="aa-tl" style="--n:3" data-timeline>
+      <li class="aa-tl__item" data-reveal>
+        <span class="aa-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 5h6l-1 9a2 2 0 0 1-4 0L9 5ZM12 16v11M8 27h8M19 5h5l-.5 10h-4L19 5ZM21.5 15v12M18.5 27h6"/></svg></span>
+        <div>
+          <p class="aa-tl__time">17:00</p>
+          <p class="aa-tl__text">Сбор гостей, welcome-зона и&nbsp;нетворкинг</p>
         </div>
       </li>
-      <li class="aa-timeline__item" data-reveal style="--d:.1s">
-        <time class="aa-timeline__time">18:00</time>
-        <div class="aa-timeline__body">
-          <h3>Начало основной программы</h3>
-          <p>Открытие вечера</p>
+      <li class="aa-tl__item" data-reveal style="--d:.12s">
+        <span class="aa-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4 5 28h22L16 4Z"/><path d="M11 17h10M9 22h14"/></svg></span>
+        <div>
+          <p class="aa-tl__time">18:00</p>
+          <p class="aa-tl__text">Начало основной программы</p>
         </div>
       </li>
-      <li class="aa-timeline__item" data-reveal style="--d:.2s">
-        <time class="aa-timeline__time">19:00</time>
-        <div class="aa-timeline__body">
-          <h3>Церемония и&nbsp;вечерняя программа</h3>
-          <p>Награждение победителей и&nbsp;праздничный вечер</p>
+      <li class="aa-tl__item" data-reveal style="--d:.24s">
+        <span class="aa-ico"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 4h12v8a6 6 0 0 1-12 0V4Z"/><path d="M10 7H5v2a5 5 0 0 0 5 5M22 7h5v2a5 5 0 0 1-5 5M16 18v5M11 28h10M12.5 28l1-5h5l1 5"/></svg></span>
+        <div>
+          <p class="aa-tl__time">19:00</p>
+          <p class="aa-tl__text">Церемония награждения и&nbsp;вечерняя программа</p>
         </div>
       </li>
     </ol>
@@ -258,85 +230,67 @@
 </section>
 
 <!-- =========================================================
-     06 · СХЕМА ЗАЛА — только просмотр, выбирается ЗОНА (категория), а не стол.
-     План зала перенесён 1:1 с утверждённой схемы. Клик по любому столу
-     выделяет все столы этого цвета и показывает общую информацию о формате.
-     Статичная часть (стены, бар, сцена, вход, легенда) — здесь, в SVG.
-     Столы и подписи «до N чел» рисуются из assets/js/seating.js.
+     05 · СХЕМА ЗАЛА — только просмотр
+     Клик по столу выделяет ВСЮ зону этого цвета: цена за гостя, что входит.
+     Номер стола нигде не показывается и в заявку не уходит.
+     Столы, координаты и зоны — assets/js/seating.js
      ========================================================= -->
 <section class="aa-section aa-scheme" id="scheme">
   <div class="aa-container">
-    <div class="aa-section__head aa-section__head--center">
-      <p class="aa-eyebrow" data-reveal>[ Схема зала ]</p>
+    <div class="aa-head">
       <h2 class="aa-h2" data-split>Выберите, где вы хотите быть</h2>
-      <p class="aa-lead aa-scheme__lead" data-reveal>Цвет на&nbsp;схеме — это формат участия. Нажмите на&nbsp;любой стол, чтобы увидеть всю зону, стоимость и&nbsp;что входит.</p>
+      <p class="aa-sub" data-reveal>Расположение места определяет не&nbsp;только обзор сцены, но&nbsp;и&nbsp;ваше окружение в&nbsp;течение вечера. Нажмите на&nbsp;стол&nbsp;— покажем всю зону, стоимость и&nbsp;что входит.</p>
     </div>
 
     <div class="aa-seat" data-reveal>
       <div class="aa-seat__plan">
-        <div class="aa-seat__tools">
-          <div class="aa-chips" role="group" aria-label="Показать зону" data-seat-filters>
-            <button type="button" class="aa-chip is-on" data-filter="all">Все зоны</button>
-            <button type="button" class="aa-chip" data-filter="vip"><i style="--c:#ADC898"></i>ВИП</button>
-            <button type="button" class="aa-chip" data-filter="business"><i style="--c:#E8A0A5"></i>Бизнес</button>
-            <button type="button" class="aa-chip" data-filter="personal"><i style="--c:#FEF1AF"></i>Персональные</button>
-            <button type="button" class="aa-chip" data-filter="soldout"><i style="--c:#B9A3E3"></i>Места закончились</button>
-          </div>
-          <div class="aa-zoom" role="group" aria-label="Масштаб схемы">
-            <button type="button" class="aa-zoom__btn" data-zoom="-1" aria-label="Уменьшить">−</button>
-            <button type="button" class="aa-zoom__btn" data-zoom="1" aria-label="Увеличить">+</button>
-          </div>
+        <div class="aa-zoom" role="group" aria-label="Масштаб схемы">
+          <button type="button" class="aa-zoom__btn" data-zoom="1" aria-label="Увеличить">+</button>
+          <button type="button" class="aa-zoom__btn" data-zoom="-1" aria-label="Уменьшить">−</button>
         </div>
 
         <div class="aa-seat__viewport" data-plan-viewport>
-          <svg class="aa-plan" viewBox="15 105 690 1150" role="img" aria-label="Схема рассадки зала" data-plan>
-            <!-- welcome-зона -->
-            <path class="aa-plan__welcome" d="M157,115 H522 L540,146 H558 V258 H605 V500 L593,516 L470,512 L430,495 L360,448 L300,386 L239,322 L192,305 L150,327 H90 V257 H142 V260 H157 Z"/>
-            <text class="aa-plan__zone" x="320" y="195" text-anchor="middle">ЗОНА WELCOME</text>
-            <text class="aa-plan__zone" x="408" y="428" text-anchor="middle" transform="rotate(27 408 428)">ЗОНА WELCOME</text>
+          <svg class="aa-plan" viewBox="15 100 630 1090" role="img" aria-label="Схема рассадки зала" data-plan>
+            <defs>
+              <linearGradient id="aaStageGrad" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#F1DDB3"/>
+                <stop offset="1" stop-color="#C39A58"/>
+              </linearGradient>
+            </defs>
+      <!-- welcome-зона -->
+      <path class="aa-plan__welcome" d="M157,115 H522 L540,146 H558 V258 H605 V500 L593,516 L470,512 L430,495 L360,448 L300,386 L239,322 L192,305 L150,327 H90 V257 H142 V260 H157 Z"/>
+      <text class="aa-plan__zone" x="320" y="195" text-anchor="middle">ЗОНА WELCOME</text>
+      <text class="aa-plan__zone" x="408" y="428" text-anchor="middle" transform="rotate(27 408 428)">ЗОНА WELCOME</text>
 
-            <!-- бар -->
-            <path class="aa-plan__bar" d="M294,296 L349,256 H410 L460,297 L521,364 L522,398 L505,409 Z"/>
-            <path class="aa-plan__thin" d="M306,300 L350,265 H407 L452,299 L513,370 L512,396 L500,400 Z"/>
-            <text class="aa-plan__big" x="412" y="321" text-anchor="middle">БАР</text>
+      <!-- бар -->
+      <path class="aa-plan__bar" d="M294,296 L349,256 H410 L460,297 L521,364 L522,398 L505,409 Z"/>
+      <path class="aa-plan__thin" d="M306,300 L350,265 H407 L452,299 L513,370 L512,396 L500,400 Z"/>
+      <text class="aa-plan__big" x="412" y="321" text-anchor="middle">БАР</text>
 
-            <!-- стены -->
-            <path class="aa-plan__wall" d="M157,260 V115 H522 L540,146 H558 V258 H605 V500 L593,516 V727 L605,750 V1060 H571 V1138 H278 V1106 L158,1084 V669 H130 V659"/>
-            <path class="aa-plan__wall" d="M157,260 H142 V257 H90 V327 H150 L192,305 L239,322 L234,398 L202,437 V524 L170,549 H82"/>
-            <path class="aa-plan__wall" d="M157,327 V402 H82 V560 H137 V602"/>
-            <path class="aa-plan__thin" d="M191,316 L226,332 L219,422 L199,441 M175,536 L191,523"/>
+      <!-- стены -->
+      <path class="aa-plan__wall" d="M157,260 V115 H522 L540,146 H558 V258 H605 V500 L593,516 V727 L605,750 V1060 H571 V1138 H278 V1106 L158,1084 V669 H130 V659"/>
+      <path class="aa-plan__wall" d="M157,260 H142 V257 H90 V327 H150 L192,305 L239,322 L234,398 L202,437 V524 L170,549 H82"/>
+      <path class="aa-plan__wall" d="M157,327 V402 H82 V560 H137 V602"/>
+      <path class="aa-plan__thin" d="M191,316 L226,332 L219,422 L199,441 M175,536 L191,523"/>
 
-            <!-- колонна -->
-            <circle class="aa-plan__wall" cx="198" cy="568" r="14"/>
-            <circle class="aa-plan__thin" cx="198" cy="568" r="10"/>
+      <!-- колонна -->
+      <circle class="aa-plan__wall" cx="198" cy="568" r="14"/>
+      <circle class="aa-plan__thin" cx="198" cy="568" r="10"/>
 
-            <!-- вход -->
-            <rect class="aa-plan__wall" x="130" y="602" width="170" height="57"/>
-            <path class="aa-plan__arrow" d="M152,631 H178 M172,626 L178,631 L172,636"/>
-            <text class="aa-plan__big aa-plan__big--sm" x="233" y="637" text-anchor="middle">ВХОД</text>
-            <path class="aa-plan__arrow" d="M269,600 V585 M264,590 L269,585 L274,590"/>
+      <!-- вход -->
+      <rect class="aa-plan__wall" x="130" y="602" width="170" height="57"/>
+      <path class="aa-plan__arrow" d="M152,631 H178 M172,626 L178,631 L172,636"/>
+      <text class="aa-plan__big aa-plan__big--sm" x="233" y="637" text-anchor="middle">ВХОД</text>
+      <path class="aa-plan__arrow" d="M269,600 V585 M264,590 L269,585 L274,590"/>
 
-            <!-- сцена -->
-            <path class="aa-plan__wall" d="M456,548 L457,536 H562 V552 H548 V705 H536 V717 H464 V704 H456 Z"/>
-            <rect class="aa-plan__thin" x="467" y="550" width="41" height="159"/>
-            <path class="aa-plan__thin" d="M462,553 H475 M462,557 H475 M462,561 H475 M462,565 H475"/>
-            <text class="aa-plan__stage" x="487" y="630" text-anchor="middle" transform="rotate(90 487 630)">СЦЕНА</text>
-
+      <!-- сцена -->
+      <path class="aa-plan__stage-fill" d="M456,548 L457,536 H562 V552 H548 V705 H536 V717 H464 V704 H456 Z"/>
+      <rect class="aa-plan__thin" x="467" y="550" width="41" height="159"/>
+      <path class="aa-plan__thin" d="M462,553 H475 M462,557 H475 M462,561 H475 M462,565 H475"/>
+      <text class="aa-plan__stage" x="487" y="630" text-anchor="middle" transform="rotate(90 487 630)">СЦЕНА</text>
             <!-- подписи «до N чел» и столы — из seating.js -->
             <g data-plan-labels></g>
             <g data-plan-tables></g>
-
-            <!-- легенда (как на утверждённой схеме) -->
-            <g class="aa-plan__legend">
-              <circle cx="46" cy="1113" r="14" fill="#FEF1AF"/>
-              <text x="75" y="1110">Персональные</text><text x="75" y="1121">билеты</text>
-              <circle cx="46" cy="1153" r="14" fill="#ADC898"/>
-              <text x="75" y="1156">ВИП</text>
-              <circle cx="46" cy="1195" r="14" fill="#E8A0A5"/>
-              <text x="75" y="1198">БИЗНЕС</text>
-              <circle cx="46" cy="1238" r="14" fill="#B9A3E3"/>
-              <text x="75" y="1235">Места</text><text x="75" y="1246">закончились</text>
-            </g>
           </svg>
         </div>
         <div class="aa-plan-tip" data-plan-tip hidden></div>
@@ -344,352 +298,364 @@
       </div>
 
       <aside class="aa-seat__side">
+        <div class="aa-legend" role="group" aria-label="Зоны зала">
+          <button type="button" class="aa-legend__item" data-filter="vip"><i style="--c:#D4AE6A"></i>VIP-зона<small data-price="vip">140 000 ₽</small></button>
+          <button type="button" class="aa-legend__item" data-filter="business"><i style="--c:#EEDDB9"></i>Business-зона<small data-price="business">115 500 ₽</small></button>
+          <button type="button" class="aa-legend__item" data-filter="personal"><i style="--c:#A89378"></i>Персональная зона<small data-price="personal">49 000 ₽</small></button>
+          <button type="button" class="aa-legend__item" data-filter="soldout"><i style="--c:#8E7BC2"></i>Места закончились<small>аншлаг</small></button>
+        </div>
+
         <div class="aa-pick" data-seat-panel>
           <div class="aa-pick__empty" data-pick-empty>
             <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="9"/><circle cx="24" cy="24" r="19" stroke-dasharray="3 5"/></svg>
-            <p><b>Нажмите на&nbsp;зону на&nbsp;схеме</b>Выделим все места этого формата и&nbsp;покажем стоимость и&nbsp;что входит.</p>
+            <p><b>Нажмите на&nbsp;стол на&nbsp;схеме</b>Выделим все места этого формата и&nbsp;покажем стоимость и&nbsp;что входит.</p>
           </div>
+
           <div class="aa-pick__full" data-pick-full hidden>
-            <span class="aa-pick__zone"><i data-pick-dot></i><span data-pick-zone></span></span>
-            <p class="aa-pick__title"><span data-pick-price></span><small>за гостя</small></p>
-            <dl class="aa-pick__list">
-              <div><dt>Столы</dt><dd data-pick-cap></dd></div>
-              <div><dt>Что входит</dt><dd data-pick-inc></dd></div>
-            </dl>
-            <button type="button" class="aa-btn aa-btn--primary aa-btn--block" data-seat-book data-book="vip">Забронировать</button>
-            <button type="button" class="aa-pick__reset" data-seat-clear>Закрыть</button>
+            <button type="button" class="aa-pick__close" data-seat-clear aria-label="Закрыть"><svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3 3 13"/></svg></button>
+            <p class="aa-pick__title" data-pick-zone></p>
+            <span class="aa-pick__zone"><i data-pick-dot></i><span data-pick-cap></span></span>
+            <p class="aa-pick__line" data-pick-inc></p>
+            <p class="aa-pick__price"><span data-pick-price></span> <small>/ место</small></p>
+            <button type="button" class="aa-btn aa-btn--gold aa-btn--block" data-seat-book data-book="vip">Забронировать</button>
           </div>
+
           <div class="aa-pick__sold" data-pick-sold hidden>
+            <button type="button" class="aa-pick__close" data-seat-clear aria-label="Закрыть"><svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3 3 13"/></svg></button>
             <span class="aa-soldtag">Аншлаг</span>
-            <p class="aa-pick__title aa-pick__title--sold">Места закончились<small>Все места в&nbsp;этой зоне уже забронированы. Посмотрите другие форматы — там ещё есть места.</small></p>
+            <p class="aa-pick__title">Места закончились</p>
+            <p class="aa-pick__line">Все места в&nbsp;этой зоне уже забронированы. В&nbsp;других форматах места ещё есть.</p>
             <button type="button" class="aa-btn aa-btn--block aa-btn--disabled" disabled>Бронирование недоступно</button>
             <a class="aa-pick__more" href="#packages" data-seat-clear>Посмотреть свободные форматы&nbsp;→</a>
           </div>
         </div>
-
-        <ul class="aa-zlist">
-          <li><i style="--c:#ADC898"></i><div><b>ВИП</b><small>Банкет, закреплённый официант, безлимитный алкоголь</small></div><span>140 000 ₽</span></li>
-          <li><i style="--c:#E8A0A5"></i><div><b>Бизнес</b><small>Фуршет, алкоголь за&nbsp;баром</small></div><span>115 500 ₽</span></li>
-          <li><i style="--c:#FEF1AF"></i><div><b>Персональные билеты</b><small>Место в&nbsp;зале на&nbsp;церемонии</small></div><span>49 000 ₽</span></li>
-          <li class="aa-zlist__sold"><i style="--c:#B9A3E3"></i><div><b>Места закончились</b><small>Эта зона полностью забронирована</small></div><span class="aa-soldtag">Аншлаг</span></li>
-        </ul>
       </aside>
     </div>
   </div>
 
-  <!-- мобильная панель выбранного стола -->
+  <!-- мобильная панель выбранной зоны -->
   <div class="aa-seatbar" data-seatbar>
     <div><small data-seatbar-meta></small><b data-seatbar-title></b></div>
-    <button type="button" class="aa-btn aa-btn--primary aa-btn--sm" data-seat-book data-book="vip">Забронировать</button>
+    <button type="button" class="aa-btn aa-btn--gold aa-btn--sm" data-seat-book data-book="vip">Забронировать</button>
     <span class="aa-soldtag" data-seatbar-sold hidden>Недоступно</span>
   </div>
 </section>
 
 <!-- =========================================================
-     07 · ВЫБЕРИТЕ ФОРМАТ УЧАСТИЯ (4 пакета) + СРАВНИТЕЛЬНАЯ ТАБЛИЦА
-     Кнопки: data-book="vip|business|personal|table" — открывают форму бронирования
-             с уже выбранным форматом
+     06 · ФОРМАТ УЧАСТИЯ
+     data-book="vip|business|personal|table" — ведут к форме бронирования с выбранным форматом
+     data-show-zone="vip|business|personal" — показывают зону на схеме
      ========================================================= -->
-<section class="aa-section aa-packages" id="packages">
+<section class="aa-section aa-light aa-packages" id="packages">
   <div class="aa-container">
-    <div class="aa-section__head aa-section__head--center">
-      <p class="aa-eyebrow" data-reveal>[ Билеты ]</p>
+    <div class="aa-head">
       <h2 class="aa-h2" data-split>Выберите формат участия</h2>
     </div>
 
-    <div class="aa-cards" data-cards>
-
-      <!-- VIP -->
-      <article class="aa-card aa-card--featured" data-package="vip" data-reveal>
-        <div class="aa-card__glow" aria-hidden="true"></div>
-        <header class="aa-card__head">
-          <span class="aa-card__tag">Лучший выбор</span>
-          <h3 class="aa-card__name">VIP билет</h3>
-          <p class="aa-card__price"><span>140 000</span>&nbsp;₽</p>
-        </header>
-        <ul class="aa-card__list">
-          <li><span>Еда</span><b>Банкет</b></li>
-          <li><span>Сектор</span><b><i class="aa-sdot" style="--c:var(--green)"></i>Зелёный</b></li>
-          <li><span>Обслуживание</span><b>Закреплённый официант</b></li>
-          <li><span>Алкоголь</span><b>Безлимит</b></li>
+    <div class="aa-plans">
+      <article class="aa-plan-card" data-reveal>
+        <h3 class="aa-plan-card__name">Business</h3>
+        <p class="aa-plan-card__price"><span data-price="business">115 500 ₽</span> <small>/ место</small></p>
+        <ul class="aa-checks">
+          <li>Business-зона</li>
+          <li>Фуршет</li>
+          <li>Алкоголь за&nbsp;баром</li>
+          <li>Вся программа церемонии</li>
+          <li>Networking</li>
         </ul>
-        <button class="aa-btn aa-btn--primary aa-btn--block" type="button" data-book="vip">Забронировать</button>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="business">Забронировать место</button>
+        <a class="aa-plan-card__link" href="#scheme" data-show-zone="business">Посмотреть на&nbsp;схеме зала</a>
       </article>
 
-      <!-- Бизнес -->
-      <article class="aa-card" data-package="business" data-reveal style="--d:.08s">
-        <div class="aa-card__glow" aria-hidden="true"></div>
-        <header class="aa-card__head">
-          <span class="aa-card__tag aa-card__tag--muted">Популярный</span>
-          <h3 class="aa-card__name">Бизнес</h3>
-          <p class="aa-card__price"><span>115 500</span>&nbsp;₽</p>
-        </header>
-        <ul class="aa-card__list">
-          <li><span>Еда</span><b>Фуршет</b></li>
-          <li><span>Сектор</span><b><i class="aa-sdot" style="--c:var(--red)"></i>Красный</b></li>
-          <li><span>Обслуживание</span><b class="is-no">Нет</b></li>
-          <li><span>Алкоголь</span><b>За баром</b></li>
+      <article class="aa-plan-card aa-plan-card--featured" data-reveal style="--d:.12s">
+        <span class="aa-plan-card__tag">Рекомендуем</span>
+        <h3 class="aa-plan-card__name">VIP</h3>
+        <p class="aa-plan-card__price"><span data-price="vip">140 000 ₽</span> <small>/ место</small></p>
+        <ul class="aa-checks">
+          <li>VIP-зона, приоритетное расположение</li>
+          <li>Место за&nbsp;столом, банкет</li>
+          <li>Закреплённый официант</li>
+          <li>Безлимитный алкоголь</li>
+          <li>Вся программа церемонии</li>
+          <li>Networking</li>
         </ul>
-        <button class="aa-btn aa-btn--light aa-btn--block" type="button" data-book="business">Забронировать</button>
-      </article>
-
-      <!-- Стол -->
-      <article class="aa-card aa-card--table" data-package="table" data-reveal style="--d:.16s">
-        <div class="aa-card__glow" aria-hidden="true"></div>
-        <header class="aa-card__head">
-          <span class="aa-card__tag aa-card__tag--muted">Для компаний</span>
-          <h3 class="aa-card__name">Стол</h3>
-          <p class="aa-card__price aa-card__price--req">По запросу</p>
-        </header>
-        <div class="aa-card__req">
-          <p>Вся информация по&nbsp;запросу</p>
-          <small>Рассадка, состав стола, брендирование и&nbsp;сервис — подберём под вашу компанию.</small>
-        </div>
-        <button class="aa-btn aa-btn--outline aa-btn--block" type="button" data-book="table">Запрос</button>
-      </article>
-
-      <!-- Персональный -->
-      <article class="aa-card" data-package="personal" data-reveal style="--d:.24s">
-        <div class="aa-card__glow" aria-hidden="true"></div>
-        <header class="aa-card__head">
-          <span class="aa-card__tag aa-card__tag--muted">Базовый</span>
-          <h3 class="aa-card__name">Персональный билет</h3>
-          <p class="aa-card__price"><span>49 000</span>&nbsp;₽</p>
-        </header>
-        <ul class="aa-card__list">
-          <li><span>Еда</span><b class="is-no">—</b></li>
-          <li><span>Сектор</span><b><i class="aa-sdot" style="--c:var(--yellow)"></i>Жёлтый</b></li>
-          <li><span>Обслуживание</span><b class="is-no">Нет</b></li>
-          <li><span>Алкоголь</span><b class="is-no">—</b></li>
-        </ul>
-        <button class="aa-btn aa-btn--light aa-btn--block" type="button" data-book="personal">Забронировать</button>
+        <button class="aa-btn aa-btn--gold aa-btn--block" type="button" data-book="vip">Забронировать VIP-место</button>
+        <a class="aa-plan-card__link" href="#scheme" data-show-zone="vip">Посмотреть на&nbsp;схеме зала</a>
       </article>
     </div>
 
-    <!-- Сравнительная таблица -->
-    <div class="aa-compare" data-reveal>
-      <h3 class="aa-compare__title">Сравнение форматов</h3>
-      <div class="aa-compare__scroll">
-        <table class="aa-compare__table">
+    <div class="aa-plans-extra">
+      <div class="aa-plan-mini" data-reveal>
+        <div class="aa-plan-mini__body">
+          <p class="aa-plan-mini__name">Персональный</p>
+          <p class="aa-plan-mini__meta">Место в&nbsp;зале на&nbsp;церемонии</p>
+        </div>
+        <span class="aa-plan-mini__price" data-price="personal">49 000 ₽</span>
+        <button class="aa-btn aa-btn--outline aa-btn--sm" type="button" data-book="personal">Забронировать</button>
+      </div>
+      <div class="aa-plan-mini" data-reveal style="--d:.12s">
+        <div class="aa-plan-mini__body">
+          <p class="aa-plan-mini__name">Стол для компании</p>
+          <p class="aa-plan-mini__meta">Условия и&nbsp;стоимость — по&nbsp;запросу</p>
+        </div>
+        <button class="aa-btn aa-btn--outline aa-btn--sm" type="button" data-book="table">Запрос</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     07 · СРАВНЕНИЕ ФОРМАТОВ
+     ========================================================= -->
+<section class="aa-section aa-compare">
+  <div class="aa-container aa-compare__grid">
+    <div data-reveal>
+      <h2 class="aa-h2">Не&nbsp;знаете, какой формат выбрать?</h2>
+      <div class="aa-table-wrap">
+        <table class="aa-table">
           <thead>
             <tr>
-              <th scope="col"></th>
-              <th scope="col" class="is-featured">VIP</th>
-              <th scope="col">Бизнес</th>
-              <th scope="col">Стол</th>
+              <th scope="col"><span class="aa-visually-hidden">Что входит</span></th>
               <th scope="col">Персональный</th>
+              <th scope="col">Business</th>
+              <th scope="col" class="is-vip">VIP</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <th scope="row">Стоимость</th>
-              <td class="is-featured"><b>140 000 ₽</b></td>
-              <td><b>115 500 ₽</b></td>
-              <td rowspan="5" class="aa-compare__req"><span>Вся информация<br>по&nbsp;запросу</span></td>
-              <td><b>49 000 ₽</b></td>
-            </tr>
-            <tr>
-              <th scope="row">Еда</th>
-              <td class="is-featured">Банкет</td>
-              <td>Фуршет</td>
-              <td class="is-no">—</td>
-            </tr>
-            <tr>
-              <th scope="row">Сектор</th>
-              <td class="is-featured"><i class="aa-sdot" style="--c:var(--green)"></i>Зелёный</td>
-              <td><i class="aa-sdot" style="--c:var(--red)"></i>Красный</td>
-              <td><i class="aa-sdot" style="--c:var(--yellow)"></i>Жёлтый</td>
-            </tr>
-            <tr>
-              <th scope="row">Обслуживание</th>
-              <td class="is-featured">Закреплённый официант</td>
-              <td class="is-no">Нет</td>
-              <td class="is-no">Нет</td>
-            </tr>
-            <tr>
-              <th scope="row">Алкоголь</th>
-              <td class="is-featured">Безлимит</td>
-              <td>За баром</td>
-              <td class="is-no">—</td>
-            </tr>
+            <tr><th scope="row">Участие в&nbsp;церемонии</th><td class="yes"></td><td class="yes"></td><td class="yes is-vip"></td></tr>
+            <tr><th scope="row">Питание</th><td class="no">—</td><td>Фуршет</td><td class="is-vip">Банкет</td></tr>
+            <tr><th scope="row">Алкоголь</th><td class="no">—</td><td>За&nbsp;баром</td><td class="is-vip">Безлимит</td></tr>
+            <tr><th scope="row">Закреплённый официант</th><td class="no">—</td><td class="no">—</td><td class="yes is-vip"></td></tr>
+            <tr><th scope="row">Расположение</th><td>Персональная зона</td><td>Business-зона</td><td class="is-vip">VIP-зона</td></tr>
+            <tr class="is-price"><th scope="row">Цена</th><td data-price="personal">49 000 ₽</td><td data-price="business">115 500 ₽</td><td class="is-vip" data-price="vip">140 000 ₽</td></tr>
           </tbody>
-          <tfoot>
-            <tr>
-              <th scope="row"></th>
-              <td class="is-featured"><button class="aa-btn aa-btn--primary aa-btn--sm" type="button" data-book="vip">Забронировать</button></td>
-              <td><button class="aa-btn aa-btn--light aa-btn--sm" type="button" data-book="business">Забронировать</button></td>
-              <td><button class="aa-btn aa-btn--outline aa-btn--sm" type="button" data-book="table">Запрос</button></td>
-              <td><button class="aa-btn aa-btn--light aa-btn--sm" type="button" data-book="personal">Забронировать</button></td>
-            </tr>
-          </tfoot>
         </table>
       </div>
+    </div>
+    <div class="aa-compare__photo" data-media data-reveal style="--d:.12s">
+      <img src="assets/img/gallery-2.jpg" alt="Гости за банкетным столом" loading="lazy">
+      <a class="aa-btn aa-btn--gold" href="#scheme">Посмотреть схему зала</a>
     </div>
   </div>
 </section>
 
 <!-- =========================================================
      08 · КАК ПРОХОДИТ ARENDATOR AWARDS
-     Фото → assets/img/gallery-1.jpg … gallery-4.jpg, обложка видео — video-poster.jpg
-     Оригиналы без сжатия — assets/img/originals/
+     Видео грузится только по клику. Фото → assets/img/
      ========================================================= -->
-<section class="aa-section aa-gallery" id="gallery">
+<section class="aa-section aa-light aa-gallery" id="gallery">
   <div class="aa-container">
-    <div class="aa-section__head aa-section__head--row">
-      <div>
-        <p class="aa-eyebrow" data-reveal>[ Атмосфера ]</p>
-        <h2 class="aa-h2" data-split>Как проходит Arendator Awards</h2>
-      </div>
-      <p class="aa-lead aa-section__aside" data-reveal>Торжественная церемония, сцена, статуэтки и&nbsp;вечер, после которого остаются контакты и&nbsp;договорённости.</p>
+    <div class="aa-head">
+      <h2 class="aa-h2" data-split>Как проходит Arendator Awards</h2>
     </div>
 
-    <div class="aa-bento">
-      <figure class="aa-bento__item aa-bento__item--video" data-media data-label="Видео" data-reveal="clip">
-        <video data-lazy-video muted loop playsinline preload="none" poster="assets/img/video-poster.jpg">
-          <source data-src="https://aawards.ru/videos/apply/aaw_apply_2025.mp4" type="video/mp4">
-        </video>
-        <figcaption>Arendator Awards 2025</figcaption>
+    <div class="aa-gallery__grid">
+      <figure class="aa-gallery__item aa-gallery__item--video" data-video data-reveal>
+        <video playsinline preload="none" poster="assets/img/video-poster.jpg" data-src="https://aawards.ru/videos/apply/aaw_apply_2025.mp4"></video>
+        <button type="button" class="aa-gallery__play" aria-label="Смотреть видео"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5-13-7.5Z"/></svg></button>
       </figure>
-      <figure class="aa-bento__item" data-media data-label="Фото" data-reveal="clip" style="--d:.06s">
-        <img src="assets/img/gallery-1.jpg" alt="Гости общаются у бара" loading="lazy">
-      </figure>
-      <figure class="aa-bento__item" data-media data-label="Фото" data-reveal="clip" style="--d:.12s">
-        <img src="assets/img/gallery-2.jpg" alt="Гостьи за банкетным столом" loading="lazy">
-      </figure>
-      <figure class="aa-bento__item" data-media data-label="Фото" data-reveal="clip" style="--d:.18s">
-        <img src="assets/img/gallery-3.jpg" alt="Неформальное общение участников премии" loading="lazy">
-      </figure>
-      <figure class="aa-bento__item aa-bento__item--portrait" data-media data-label="Фото" data-reveal="clip" style="--d:.24s">
-        <img src="assets/img/gallery-4.jpg" alt="Разговор у бара на вечерней программе" loading="lazy">
-      </figure>
+      <figure class="aa-gallery__item" data-media data-reveal style="--d:.06s"><img src="assets/img/about-2.jpg" alt="Гости на террасе" loading="lazy"></figure>
+      <figure class="aa-gallery__item" data-media data-reveal style="--d:.12s"><img src="assets/img/gallery-1.jpg" alt="Общение у бара" loading="lazy"></figure>
+      <figure class="aa-gallery__item" data-media data-reveal style="--d:.18s"><img src="assets/img/about-1.jpg" alt="Награждение победителей" loading="lazy"></figure>
+      <figure class="aa-gallery__item" data-media data-reveal style="--d:.24s"><img src="assets/img/gallery-2.jpg" alt="Гости за банкетным столом" loading="lazy"></figure>
+      <figure class="aa-gallery__item" data-media data-reveal style="--d:.30s"><img src="assets/img/gallery-3.jpg" alt="Неформальное общение участников" loading="lazy"></figure>
+      <figure class="aa-gallery__item" data-media data-reveal style="--d:.36s"><img src="assets/img/gallery-4.jpg" alt="Разговор у бара на вечерней программе" loading="lazy"></figure>
     </div>
   </div>
 </section>
 
 <!-- =========================================================
      09 · ЧТО ГОВОРЯТ УЧАСТНИКИ
-     Реальные отзывы с aawards.ru/about/reviews (члены жюри), фото — assets/img/reviews/
+     Реальные отзывы с aawards.ru/about/reviews, фото — assets/img/reviews/.
+     Новый отзыв — скопировать карточку.
      ========================================================= -->
 <section class="aa-section aa-reviews" id="reviews">
   <div class="aa-container">
-    <div class="aa-section__head aa-section__head--row">
-      <div>
-        <p class="aa-eyebrow" data-reveal>[ Отзывы ]</p>
-        <h2 class="aa-h2" data-split>Что говорят участники</h2>
-      </div>
-      <div class="aa-slider-nav" data-reveal>
-        <button class="aa-slider-nav__btn" type="button" aria-label="Назад" data-slide="-1">
-          <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
-        </button>
-        <button class="aa-slider-nav__btn" type="button" aria-label="Вперёд" data-slide="1">
-          <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-      </div>
+    <div class="aa-head">
+      <h2 class="aa-h2" data-split>Что говорят участники</h2>
     </div>
-  </div>
 
-  <div class="aa-reviews__track" data-slider>
-    <!-- Отзывы с aawards.ru/about/reviews. Фото — assets/img/reviews/. Новый отзыв — скопировать карточку. -->
-    <blockquote class="aa-review" data-reveal>
-      <svg class="aa-review__q" viewBox="0 0 32 24" aria-hidden="true"><path d="M0 24V14C0 6 4 1 12 0l1 3c-4 1-6 4-6 8h6v13H0Zm19 0V14c0-8 4-13 12-14l1 3c-4 1-6 4-6 8h6v13H19Z"/></svg>
-      <p class="aa-review__text">Динамика премии поражает — каждый год номинации становятся сложнее, претенденты готовят все более подробные материалы и&nbsp;активно конкурируют за&nbsp;взятие первого места. Тем интереснее участвовать в&nbsp;оценке номинантов и&nbsp;все сложнее выбирать победителя среди прекрасных проектов!!! Желаем развития и&nbsp;готовы всегда поддержать новые начинания!!!</p>
-      <footer class="aa-review__author">
-        <span class="aa-review__ava" data-media><img src="assets/img/reviews/oshurko.jpg" alt="Александр Ошурко" loading="lazy" width="48" height="48"></span>
-        <span><b>Александр Ошурко</b><small>Президент, Ассоциация КОКОН</small></span>
-      </footer>
-    </blockquote>
-    <blockquote class="aa-review" data-reveal style="--d:0.08s">
-      <svg class="aa-review__q" viewBox="0 0 32 24" aria-hidden="true"><path d="M0 24V14C0 6 4 1 12 0l1 3c-4 1-6 4-6 8h6v13H0Zm19 0V14c0-8 4-13 12-14l1 3c-4 1-6 4-6 8h6v13H19Z"/></svg>
-      <p class="aa-review__text">Прекрасная премия, отличные объекты! Заметно, как с&nbsp;каждым годом организация и&nbsp;проекты становятся лучше. Выступать в&nbsp;качестве члена жюри все интереснее :) С&nbsp;нетерпением жду следующего года!</p>
-      <footer class="aa-review__author">
-        <span class="aa-review__ava" data-media><img src="assets/img/reviews/petrova.jpg" alt="Дарья Петрова" loading="lazy" width="48" height="48"></span>
-        <span><b>Дарья Петрова</b><small>CORE.XP</small></span>
-      </footer>
-    </blockquote>
-    <blockquote class="aa-review" data-reveal style="--d:0.16s">
-      <svg class="aa-review__q" viewBox="0 0 32 24" aria-hidden="true"><path d="M0 24V14C0 6 4 1 12 0l1 3c-4 1-6 4-6 8h6v13H0Zm19 0V14c0-8 4-13 12-14l1 3c-4 1-6 4-6 8h6v13H19Z"/></svg>
-      <p class="aa-review__text">Благодарю организаторов премии за&nbsp;их&nbsp;труд и&nbsp;приглашение в&nbsp;жюри. Прежде всего — прекрасный уровень организации и&nbsp;четкий тайминг. Также правильное, на&nbsp;мой взгляд, решение — что номинации в&nbsp;торговой недвижимости оценивают не&nbsp;только девелоперы и&nbsp;консультанты, но&nbsp;и&nbsp;представители ритейла, ведь именно от&nbsp;них в&nbsp;дальнейшем зависит успех проекта. Для голосующих всё организовано очень удобно, за&nbsp;что отдельное спасибо. Прекрасна и&nbsp;организация торжественного вручения наград, очень понравилась идея дресскода.</p>
-      <footer class="aa-review__author">
-        <span class="aa-review__ava" data-media><img src="assets/img/reviews/kotova.jpg" alt="Александра Котова" loading="lazy" width="48" height="48"></span>
-        <span><b>Александра Котова</b><small>Mall tales</small></span>
-      </footer>
-    </blockquote>
-    <blockquote class="aa-review" data-reveal style="--d:0.24s">
-      <svg class="aa-review__q" viewBox="0 0 32 24" aria-hidden="true"><path d="M0 24V14C0 6 4 1 12 0l1 3c-4 1-6 4-6 8h6v13H0Zm19 0V14c0-8 4-13 12-14l1 3c-4 1-6 4-6 8h6v13H19Z"/></svg>
-      <p class="aa-review__text">Благодарю Arendator Awards за&nbsp;приглашение в&nbsp;жюри важной отраслевой премии. Высокий уровень организации, четкие критерии оценки и&nbsp;внимательный отбор проектов задают качественные стандарты развития рынка. Особенно ценен обмен опытом с&nbsp;коллегами, в&nbsp;том числе из&nbsp;смежных сегментов, который формирует комплексную и&nbsp;справедливую оценку проектов.</p>
-      <footer class="aa-review__author">
-        <span class="aa-review__ava" data-media><img src="assets/img/reviews/papaskiri.jpg" alt="Анна Папаскири" loading="lazy" width="48" height="48"></span>
-        <span><b>Анна Папаскири</b><small>RETEX</small></span>
-      </footer>
-    </blockquote>
+    <div class="aa-reviews__track" data-slider>
+      <figure class="aa-review" data-reveal>
+        <span class="aa-review__ava" data-media><img src="assets/img/reviews/oshurko.jpg" alt="" loading="lazy" width="64" height="64"></span>
+        <div>
+          <blockquote class="aa-review__text">«Динамика премии поражает — каждый год номинации становятся сложнее, претенденты готовят все более подробные материалы и&nbsp;активно конкурируют за&nbsp;взятие первого места. Тем интереснее участвовать в&nbsp;оценке номинантов и&nbsp;все сложнее выбирать победителя среди прекрасных проектов! Желаем развития и&nbsp;готовы всегда поддержать новые начинания!»</blockquote>
+          <figcaption><b class="aa-review__name">Александр Ошурко</b><span class="aa-review__role">Президент, Ассоциация КОКОН</span></figcaption>
+        </div>
+      </figure>
+      <figure class="aa-review" data-reveal style="--d:.08s">
+        <span class="aa-review__ava" data-media><img src="assets/img/reviews/petrova.jpg" alt="" loading="lazy" width="64" height="64"></span>
+        <div>
+          <blockquote class="aa-review__text">«Прекрасная премия, отличные объекты! Заметно, как с&nbsp;каждым годом организация и&nbsp;проекты становятся лучше. Выступать в&nbsp;качестве члена жюри все интереснее :) С&nbsp;нетерпением жду следующего года!»</blockquote>
+          <figcaption><b class="aa-review__name">Дарья Петрова</b><span class="aa-review__role">CORE.XP</span></figcaption>
+        </div>
+      </figure>
+      <figure class="aa-review" data-reveal style="--d:.16s">
+        <span class="aa-review__ava" data-media><img src="assets/img/reviews/kotova.jpg" alt="" loading="lazy" width="64" height="64"></span>
+        <div>
+          <blockquote class="aa-review__text">«Благодарю организаторов премии за&nbsp;их&nbsp;труд и&nbsp;приглашение в&nbsp;жюри. Прежде всего — прекрасный уровень организации и&nbsp;четкий тайминг. Также правильное, на&nbsp;мой взгляд, решение — что номинации в&nbsp;торговой недвижимости оценивают не&nbsp;только девелоперы и&nbsp;консультанты, но&nbsp;и&nbsp;представители ритейла, ведь именно от&nbsp;них в&nbsp;дальнейшем зависит успех проекта. Для голосующих всё организовано очень удобно, за&nbsp;что отдельное спасибо. Прекрасна и&nbsp;организация торжественного вручения наград, очень понравилась идея дресскода.»</blockquote>
+          <figcaption><b class="aa-review__name">Александра Котова</b><span class="aa-review__role">Mall tales</span></figcaption>
+        </div>
+      </figure>
+      <figure class="aa-review" data-reveal style="--d:.24s">
+        <span class="aa-review__ava" data-media><img src="assets/img/reviews/papaskiri.jpg" alt="" loading="lazy" width="64" height="64"></span>
+        <div>
+          <blockquote class="aa-review__text">«Благодарю Arendator Awards за&nbsp;приглашение в&nbsp;жюри важной отраслевой премии. Высокий уровень организации, четкие критерии оценки и&nbsp;внимательный отбор проектов задают качественные стандарты развития рынка. Особенно ценен обмен опытом с&nbsp;коллегами, в&nbsp;том числе из&nbsp;смежных сегментов, который формирует комплексную и&nbsp;справедливую оценку проектов.»</blockquote>
+          <figcaption><b class="aa-review__name">Анна Папаскири</b><span class="aa-review__role">RETEX</span></figcaption>
+        </div>
+      </figure>
+    </div>
+
+    <div class="aa-slider-nav">
+      <button type="button" aria-label="Предыдущий отзыв" data-slide="-1"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <button type="button" aria-label="Следующий отзыв" data-slide="1"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
   </div>
 </section>
 
 <!-- =========================================================
-     10 · ДО ЦЕРЕМОНИИ ОСТАЛОСЬ (таймер)
-     Дата — LANDING_CONFIG.event.startsAt
+     10 · ДО ЦЕРЕМОНИИ ОСТАЛОСЬ
+     Дата — LANDING_CONFIG.event.startsAt, остаток мест — LANDING_CONFIG.seatsLeft
      ========================================================= -->
 <section class="aa-countdown" id="countdown">
-  <div class="aa-countdown__bg" aria-hidden="true"></div>
-  <div class="aa-container aa-countdown__inner">
-    <p class="aa-eyebrow aa-eyebrow--light" data-reveal>[ 8 октября 2026 · 17:00 ]</p>
-    <h2 class="aa-h2 aa-countdown__title" data-split>До церемонии осталось</h2>
-
-    <div class="aa-timer" data-countdown role="timer" aria-live="off">
-      <div class="aa-timer__cell"><span class="aa-timer__num" data-unit="d">00</span><span class="aa-timer__lbl" data-lbl="d">дней</span></div>
-      <span class="aa-timer__sep">:</span>
-      <div class="aa-timer__cell"><span class="aa-timer__num" data-unit="h">00</span><span class="aa-timer__lbl" data-lbl="h">часов</span></div>
-      <span class="aa-timer__sep">:</span>
-      <div class="aa-timer__cell"><span class="aa-timer__num" data-unit="m">00</span><span class="aa-timer__lbl" data-lbl="m">минут</span></div>
-      <span class="aa-timer__sep">:</span>
-      <div class="aa-timer__cell"><span class="aa-timer__num" data-unit="s">00</span><span class="aa-timer__lbl" data-lbl="s">секунд</span></div>
+  <div class="aa-countdown__bg" aria-hidden="true"><img src="assets/img/hero.jpg" alt="" loading="lazy"></div>
+  <div class="aa-container aa-countdown__grid">
+    <div class="aa-countdown__left" data-reveal>
+      <p class="aa-eyebrow">8 октября · Москва · Бериот, Новый Арбат,&nbsp;21</p>
+      <h2 class="aa-h2">До&nbsp;церемонии осталось</h2>
+      <div class="aa-timer" data-countdown role="timer" aria-live="off">
+        <div class="aa-timer__cell"><span class="aa-timer__num" data-unit="d">00</span><span class="aa-timer__lbl" data-lbl="d">дней</span></div>
+        <div class="aa-timer__cell"><span class="aa-timer__num" data-unit="h">00</span><span class="aa-timer__lbl" data-lbl="h">часов</span></div>
+        <div class="aa-timer__cell"><span class="aa-timer__num" data-unit="m">00</span><span class="aa-timer__lbl" data-lbl="m">минут</span></div>
+        <div class="aa-timer__cell"><span class="aa-timer__num" data-unit="s">00</span><span class="aa-timer__lbl" data-lbl="s">секунд</span></div>
+      </div>
     </div>
 
-    <a class="aa-btn aa-btn--white aa-btn--lg" href="#packages" data-reveal>
-      Успеть забронировать
-      <svg class="aa-btn__arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-    </a>
+    <div class="aa-seatsbox" data-reveal style="--d:.12s">
+      <p class="aa-seatsbox__title">Осталось мест</p>
+      <!-- цифры появятся, если заполнить seatsLeft в config.js -->
+      <div class="aa-seatsbox__nums" data-seats-nums hidden>
+        <div><b data-seats-left="vip">—</b><small>в&nbsp;VIP-зоне</small></div>
+        <div><b data-seats-left="business">—</b><small>в&nbsp;Business-зоне</small></div>
+      </div>
+      <p class="aa-seatsbox__text" data-seats-text>Места в&nbsp;VIP- и&nbsp;Business-зонах разбирают первыми — часть зала уже забронирована.</p>
+      <a class="aa-btn aa-btn--gold aa-btn--block" href="#scheme">Выбрать место</a>
+    </div>
   </div>
 </section>
 
 <!-- =========================================================
-     11 · ОФОРМЛЕНИЕ БИЛЕТА
-     Кнопки ведут к пакетам; «Задать вопрос» → форма (intent=question).
+     11 · ОФОРМЛЕНИЕ БИЛЕТА — бронирование, без оплаты на сайте
+     Заявка → endpoints.lead (config.js) → лид в Битрикс24.
+     Любая кнопка data-book="vip|business|personal|table|question" прокручивает сюда
+     и выставляет формат (question — режим «Задать вопрос»).
      ========================================================= -->
-<section class="aa-section aa-order" id="order">
+<section class="aa-section aa-light aa-order" id="order">
   <div class="aa-container">
-    <div class="aa-section__head">
-      <p class="aa-eyebrow" data-reveal>[ Оформление ]</p>
+    <div class="aa-order__head">
       <h2 class="aa-h2" data-split>Оформление билета</h2>
+      <ol class="aa-steps" data-steps>
+        <li class="is-on"><b>1</b>Формат</li>
+        <li><b>2</b>Контакты</li>
+        <li><b>3</b>Подтверждение</li>
+      </ol>
     </div>
 
-    <ol class="aa-steps">
-      <li class="aa-step" data-reveal>
-        <span class="aa-step__num">1</span>
-        <h3>Выберите формат</h3>
-        <p>VIP, Бизнес, Персональный билет или стол для компании.</p>
-      </li>
-      <li class="aa-step" data-reveal style="--d:.1s">
-        <span class="aa-step__num">2</span>
-        <h3>Оставьте заявку</h3>
-        <p>Имя, телефон и&nbsp;количество гостей — это займёт минуту. Оплачивать на&nbsp;сайте ничего не&nbsp;нужно.</p>
-      </li>
-      <li class="aa-step" data-reveal style="--d:.2s">
-        <span class="aa-step__num">3</span>
-        <h3>Менеджер подтвердит бронь</h3>
-        <p>Свяжется с&nbsp;вами, ответит на&nbsp;вопросы и&nbsp;пришлёт договор и&nbsp;счёт.</p>
-      </li>
-    </ol>
+    <form class="aa-rform" data-book-form novalidate>
+      <input type="hidden" name="intent" value="booking">
+      <input type="hidden" name="source" value="tickets-landing">
+      <!-- антиспам: поле должно остаться пустым -->
+      <input type="text" name="website" class="aa-rform__hp" tabindex="-1" autocomplete="off" aria-hidden="true">
 
-    <div class="aa-order__cta" data-reveal>
-      <div>
-        <h3>Остались вопросы?</h3>
-        <p>Менеджер поможет подобрать формат, оформить документы и&nbsp;забронировать места для команды.</p>
+      <div class="aa-order__grid">
+        <div class="aa-box aa-order__choice" data-reveal>
+          <p class="aa-box__title">Ваш выбор</p>
+          <fieldset class="aa-packs">
+            <legend class="aa-visually-hidden">Формат участия</legend>
+            <label class="aa-pack"><input type="radio" name="package" value="vip" checked><span><i style="--c:#D4AE6A"></i><b>VIP</b><small data-price="vip">140 000 ₽</small></span></label>
+            <label class="aa-pack"><input type="radio" name="package" value="business"><span><i style="--c:#EEDDB9"></i><b>Business</b><small data-price="business">115 500 ₽</small></span></label>
+            <label class="aa-pack"><input type="radio" name="package" value="personal"><span><i style="--c:#A89378"></i><b>Персональный</b><small data-price="personal">49 000 ₽</small></span></label>
+            <label class="aa-pack"><input type="radio" name="package" value="table"><span><i style="--c:transparent"></i><b>Стол для компании</b><small>по&nbsp;запросу</small></span></label>
+          </fieldset>
+
+          <div class="aa-gcount">
+            <span class="aa-gcount__label">Количество гостей</span>
+            <div class="aa-stepper">
+              <button type="button" data-guests="-1" aria-label="Меньше гостей">−</button>
+              <input name="guests" id="bookGuests" type="text" inputmode="numeric" value="1" aria-label="Количество гостей">
+              <button type="button" data-guests="1" aria-label="Больше гостей">+</button>
+            </div>
+          </div>
+          <div class="aa-total">
+            <span>Ориентировочно</span>
+            <b data-book-total>140 000 ₽</b>
+          </div>
+          <p class="aa-total__note" data-book-total-note>1 × 140 000 ₽</p>
+        </div>
+
+        <div class="aa-box" data-book-box data-reveal style="--d:.1s">
+          <div class="aa-form__mode">
+            <p class="aa-box__title" data-book-title>Контактные данные</p>
+            <button type="button" data-book-mode>Просто задать вопрос</button>
+          </div>
+
+          <div class="aa-rform__grid">
+            <label class="aa-field">
+              <input name="name" id="bookName" type="text" required autocomplete="name" placeholder=" ">
+              <span>ФИО *</span>
+            </label>
+            <label class="aa-field">
+              <input name="phone" id="bookPhone" type="tel" required autocomplete="tel" placeholder=" " data-phone>
+              <span>Телефон *</span>
+            </label>
+            <label class="aa-field">
+              <input name="email" id="bookEmail" type="email" required autocomplete="email" placeholder=" ">
+              <span>Email *</span>
+            </label>
+            <label class="aa-field">
+              <input name="company" id="bookCompany" type="text" autocomplete="organization" placeholder=" ">
+              <span>Компания</span>
+            </label>
+            <label class="aa-field aa-field--full">
+              <input name="position" id="bookPosition" type="text" autocomplete="organization-title" placeholder=" ">
+              <span>Должность</span>
+            </label>
+            <label class="aa-field aa-field--full">
+              <textarea name="comment" id="bookComment" rows="2" placeholder=" "></textarea>
+              <span>Комментарий</span>
+            </label>
+          </div>
+
+          <!--
+            152-ФЗ (ред. 156-ФЗ, с 01.09.2025): согласие на обработку ПД — отдельным действием и отдельным документом.
+            Галочки НЕ проставлены заранее. Согласие на рассылки (ст. 18 38-ФЗ «О рекламе») — отдельно и необязательно.
+          -->
+          <div class="aa-consents">
+            <label class="aa-check aa-check--req">
+              <input type="checkbox" name="consent_pd" id="bookConsentPd" value="1" required>
+              <i></i>
+              <span>Даю <a href="legal/consent.html" target="_blank" rel="noopener">согласие на&nbsp;обработку персональных данных</a>&nbsp;*</span>
+            </label>
+            <label class="aa-check">
+              <input type="checkbox" name="consent_ads" id="bookConsentAds" value="1">
+              <i></i>
+              <span>Согласен получать <a href="legal/consent-ads.html" target="_blank" rel="noopener">новости и&nbsp;предложения Arendator Awards</a> — необязательно</span>
+            </label>
+            <p class="aa-consents__note">Как мы обращаемся с&nbsp;данными — в&nbsp;<a href="legal/privacy.html" target="_blank" rel="noopener">Политике обработки персональных данных</a>. Данные хранятся на&nbsp;серверах в&nbsp;России. * — обязательно для отправки заявки.</p>
+          </div>
+
+          <p class="aa-rform__error" data-book-error hidden></p>
+          <button class="aa-btn aa-btn--gold aa-btn--block aa-btn--lg" type="submit" data-book-submit>Забронировать</button>
+          <p class="aa-rform__fine">Оплата на&nbsp;сайте не&nbsp;нужна. Менеджер свяжется с&nbsp;вами, подтвердит бронь и&nbsp;пришлёт документы.</p>
+        </div>
       </div>
-      <div class="aa-order__actions">
-        <a class="aa-btn aa-btn--primary aa-btn--lg" href="#packages">Забронировать</a>
-        <button class="aa-btn aa-btn--ghost aa-btn--lg" type="button" data-book="question">Задать вопрос</button>
-      </div>
+    </form>
+
+    <div class="aa-box aa-rform__done" data-book-done hidden>
+      <div class="aa-rform__check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+      <h3>Спасибо! Заявка отправлена</h3>
+      <p>Менеджер свяжется с&nbsp;вами в&nbsp;ближайшее время и&nbsp;подтвердит бронь.</p>
+      <button class="aa-btn aa-btn--outline" type="button" data-book-again>Отправить ещё одну заявку</button>
     </div>
   </div>
 </section>
@@ -698,7 +664,10 @@
 
 <footer class="aa-footer">
   <div class="aa-container aa-footer__inner">
-    <a class="aa-nav__logo" href="https://aawards.ru/"><span class="aa-nav__logo-text"><b>Arendator</b> Awards</span></a>
+    <a class="aa-logo-mark" href="https://aawards.ru/" aria-label="Arendator Awards — на главную">
+      <span class="aa-logo-mark__a" aria-hidden="true">A</span>
+      <span class="aa-logo-mark__t">Arendator<br>Awards</span>
+    </a>
     <p class="aa-footer__copy">© Arendator Awards, 2026. Федеральная премия в&nbsp;области коммерческой недвижимости.</p>
     <nav class="aa-footer__docs" aria-label="Документы">
       <a href="legal/privacy.html">Политика обработки персональных данных</a>
@@ -711,120 +680,17 @@
   </div>
 </footer>
 
-<!-- Плавающая кнопка на мобильных -->
-<div class="aa-sticky-cta" data-sticky-cta>
-  <div>
-    <small>8 октября · Москва</small>
-    <b>от 49 000 ₽</b>
-  </div>
-  <a class="aa-btn aa-btn--primary aa-btn--sm" href="#packages">Забронировать</a>
-</div>
-
-<!-- =========================================================
-     ПОПАП: БРОНИРОВАНИЕ (все кнопки data-book="…")
-     Заявка → endpoints.lead → лид в Битрикс24.
-     ========================================================= -->
-<div class="aa-modal" id="bookModal" data-modal aria-hidden="true">
-  <div class="aa-modal__overlay" data-close></div>
-  <div class="aa-modal__dialog" role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="bookTitle">
-    <button class="aa-modal__close" type="button" aria-label="Закрыть" data-close>
-      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-
-    <div class="aa-modal__content">
-      <form class="aa-rform" data-book-form novalidate>
-        <p class="aa-eyebrow" data-book-eyebrow>[ Бронирование ]</p>
-        <h3 class="aa-rform__title" id="bookTitle" data-book-title>Забронировать билет</h3>
-        <p class="aa-rform__sub" data-book-sub>Оставьте контакты — менеджер свяжется с&nbsp;вами, подтвердит бронь и&nbsp;пришлёт документы.</p>
-
-        <input type="hidden" name="intent" value="booking">
-        <input type="hidden" name="source" value="tickets-landing">
-        <!-- антиспам: поле должно остаться пустым -->
-        <input type="text" name="website" class="aa-rform__hp" tabindex="-1" autocomplete="off" aria-hidden="true">
-
-        <div class="aa-rform__booking">
-          <fieldset class="aa-packs">
-            <legend class="aa-rform__label">Формат</legend>
-            <label class="aa-pack"><input type="radio" name="package" value="vip" checked><span><i style="--c:#ADC898"></i><b>VIP</b><small>140 000 ₽</small></span></label>
-            <label class="aa-pack"><input type="radio" name="package" value="business"><span><i style="--c:#E8A0A5"></i><b>Бизнес</b><small>115 500 ₽</small></span></label>
-            <label class="aa-pack"><input type="radio" name="package" value="personal"><span><i style="--c:#FEF1AF"></i><b>Персональный</b><small>49 000 ₽</small></span></label>
-            <label class="aa-pack"><input type="radio" name="package" value="table"><span><i class="is-table"></i><b>Стол</b><small>по запросу</small></span></label>
-          </fieldset>
-
-          <div class="aa-gcount">
-            <div>
-              <span class="aa-rform__label">Гостей</span>
-              <div class="aa-stepper">
-                <button type="button" data-guests="-1" aria-label="Меньше гостей">−</button>
-                <input name="guests" id="bookGuests" type="text" inputmode="numeric" value="1" aria-label="Количество гостей">
-                <button type="button" data-guests="1" aria-label="Больше гостей">+</button>
-              </div>
-            </div>
-            <div class="aa-gcount__total">
-              <span class="aa-rform__label">Ориентировочно</span>
-              <b data-book-total>140 000 ₽</b>
-              <small data-book-total-note>1 × 140 000 ₽</small>
-            </div>
-          </div>
-        </div>
-
-        <div class="aa-rform__grid">
-          <label class="aa-field">
-            <input name="name" id="bookName" type="text" required autocomplete="name" placeholder=" ">
-            <span>ФИО *</span>
-          </label>
-          <label class="aa-field">
-            <input name="phone" id="bookPhone" type="tel" required autocomplete="tel" placeholder=" " data-phone>
-            <span>Телефон *</span>
-          </label>
-          <label class="aa-field">
-            <input name="email" id="bookEmail" type="email" required autocomplete="email" placeholder=" ">
-            <span>Email *</span>
-          </label>
-          <label class="aa-field">
-            <input name="company" id="bookCompany" type="text" autocomplete="organization" placeholder=" ">
-            <span>Компания</span>
-          </label>
-          <label class="aa-field aa-field--full">
-            <input name="position" id="bookPosition" type="text" autocomplete="organization-title" placeholder=" ">
-            <span>Должность</span>
-          </label>
-          <label class="aa-field aa-field--full">
-            <textarea name="comment" id="bookComment" rows="3" placeholder=" "></textarea>
-            <span>Комментарий</span>
-          </label>
-        </div>
-
-        <!--
-          152-ФЗ (ред. 156-ФЗ, с 01.09.2025): согласие на обработку ПД — отдельным действием и отдельным документом.
-          Галочки НЕ проставлены заранее. Согласие на рассылки (ст. 18 38-ФЗ «О рекламе») — отдельно и необязательно.
-        -->
-        <div class="aa-consents">
-          <label class="aa-check aa-check--req">
-            <input type="checkbox" name="consent_pd" id="bookConsentPd" value="1" required>
-            <i></i>
-            <span>Даю <a href="legal/consent.html" target="_blank" rel="noopener">согласие на&nbsp;обработку персональных данных</a> *</span>
-          </label>
-          <label class="aa-check">
-            <input type="checkbox" name="consent_ads" id="bookConsentAds" value="1">
-            <i></i>
-            <span>Согласен получать <a href="legal/consent-ads.html" target="_blank" rel="noopener">новости и&nbsp;предложения Arendator Awards</a> — необязательно</span>
-          </label>
-          <p class="aa-consents__note">Как мы обращаемся с&nbsp;данными — в&nbsp;<a href="legal/privacy.html" target="_blank" rel="noopener">Политике обработки персональных данных</a>. Данные хранятся на&nbsp;серверах в&nbsp;России. * — обязательно для отправки заявки.</p>
-        </div>
-
-        <p class="aa-rform__error" data-book-error hidden></p>
-        <button class="aa-btn aa-btn--primary aa-btn--block aa-btn--lg" type="submit">Отправить заявку</button>
-        <p class="aa-rform__fine">Оплата не требуется. Менеджер свяжется с&nbsp;вами, чтобы подтвердить бронь.</p>
-      </form>
-
-      <div class="aa-rform__done" data-book-done hidden>
-        <div class="aa-rform__check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-        <h3>Спасибо! Заявка отправлена</h3>
-        <p>Менеджер свяжется с&nbsp;вами в&nbsp;ближайшее время.</p>
-        <button class="aa-btn aa-btn--light" type="button" data-close>Закрыть</button>
-      </div>
-    </div>
+<!-- Закреплённая панель внизу: появляется после первого экрана -->
+<div class="aa-sticky" data-sticky>
+  <div class="aa-container aa-sticky__inner">
+    <span class="aa-logo-mark" aria-hidden="true"><span class="aa-logo-mark__a">A</span></span>
+    <span class="aa-sticky__name">Arendator Awards 2026</span>
+    <span class="aa-sticky__meta">8 октября · Москва</span>
+    <span class="aa-sticky__price">Билеты от<b data-price="personal">49 000 ₽</b></span>
+    <a class="aa-btn aa-btn--gold aa-btn--sm" href="#scheme">
+      Выбрать место
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
   </div>
 </div>
 

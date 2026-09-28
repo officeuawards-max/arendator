@@ -143,7 +143,7 @@
         'Подробнее — в&nbsp;<a href="' + legalBase + 'cookies.html">Политике cookie</a>.</p>' +
       '<div class="aa-cookie__actions">' +
         // кнопки называют действие прямо («Принять все cookie»), шутка — мелкой подписью
-        '<button type="button" class="aa-btn aa-btn--primary aa-cookie__yes" data-cookie="all">' +
+        '<button type="button" class="aa-btn aa-btn--gold aa-cookie__yes" data-cookie="all">' +
           '<span class="aa-cookie__yes-main"><span class="aa-cookie__key" aria-hidden="true">🔑</span>Принять все cookie</span>' +
           '<span class="aa-cookie__yes-sub">и&nbsp;' + j.ok + '</span></button>' +
         '<button type="button" class="aa-btn aa-btn--ghost aa-cookie__no" data-cookie="necessary">' +

@@ -22,13 +22,14 @@
 window.SEATING = {
 
   zones: {
-    vip:      { name: 'ВИП',                 color: '#ADC898', ticket: 'vip',      includes: 'Банкет, закреплённый официант, безлимитный алкоголь' },
-    business: { name: 'Бизнес',              color: '#E8A0A5', ticket: 'business', includes: 'Фуршет, алкоголь за баром' },
-    personal: { name: 'Персональные билеты', color: '#FEF1AF', ticket: 'personal', includes: 'Место в зале на церемонии' },
+    // цвета — в золотой гамме макета (на утверждённой схеме: ВИП — зелёный, Бизнес — красный, Персональные — жёлтый)
+    vip:      { name: 'VIP-зона',           color: '#D4AE6A', ticket: 'vip',      includes: 'Банкет, закреплённый официант, безлимитный алкоголь' },
+    business: { name: 'Business-зона',      color: '#EEDDB9', ticket: 'business', includes: 'Фуршет, алкоголь за баром' },
+    personal: { name: 'Персональная зона',  color: '#A89378', ticket: 'personal', includes: 'Место в зале на церемонии' },
   },
 
   /* Столы, где места закончились (booked: true) */
-  soldout: { name: 'Места закончились', color: '#B9A3E3' },
+  soldout: { name: 'Места закончились', color: '#8E7BC2' },
 
   tables: [
     /* ---------- Верхняя лаунж-зона ---------- */

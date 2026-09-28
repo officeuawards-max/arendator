@@ -1,7 +1,6 @@
 /* ==========================================================================
    ARENDATOR AWARDS — лендинг билетов
-   Без зависимостей. Если на странице есть jQuery (layout основного сайта),
-   форма оплаты вставляется через $.html(), чтобы отработали её скрипты.
+   Без зависимостей. Оплаты на сайте нет — только бронирование (лид в Битрикс24).
    ========================================================================== */
 (function () {
   'use strict';
@@ -22,6 +21,9 @@
     if (!window.aaConsent || !window.aaConsent.analytics) return;   // без согласия на аналитику — никаких целей (152-ФЗ)
     try { if (typeof window.ym === 'function') window.ym(a.metrikaId, 'reachGoal', name, params || {}); } catch (e) {}
   }
+
+  var fmtRub = function (n) { return new Intl.NumberFormat('ru-RU').format(n) + ' ₽'; };
+  function packPrice(key) { var t = (CFG.tickets || {})[key]; return t && t.price ? t.price : null; }
 
   /* ------------------------------------------------------------------
      Разбивка заголовков на слова (для анимации «из-под маски»)
@@ -100,15 +102,14 @@
   }
 
   /* ------------------------------------------------------------------
-     Навигация, прогресс чтения, таймлайн, мобильная кнопка
+     Навигация, таймлайн, закреплённая панель внизу
      ------------------------------------------------------------------ */
   var nav = $('[data-nav]');
-  var bar = $('.aa-progress span');
   var hero = $('.aa-hero');
   var timeline = $('[data-timeline]');
-  var tlItems = $$('.aa-timeline__item');
-  var sticky = $('[data-sticky-cta]');
-  var packages = $('#packages');
+  var tlItems = $$('.aa-tl__item');
+  var sticky = $('[data-sticky]');
+  var orderSec = $('#order');
   var footer = $('.aa-footer');
   var lastY = window.scrollY;
   var ticking = false;
@@ -116,9 +117,6 @@
   function onScroll() {
     var y = window.scrollY;
     var vh = window.innerHeight;
-    var docH = document.documentElement.scrollHeight - vh;
-
-    if (bar) bar.style.setProperty('--p', docH > 0 ? (y / docH).toFixed(4) : 0);
 
     if (nav) {
       nav.classList.toggle('is-scrolled', y > 30);
@@ -127,19 +125,20 @@
     }
 
     if (timeline) {
+      // золотая линия дорисовывается слева направо по мере прокрутки
       var r = timeline.getBoundingClientRect();
-      var mid = vh * 0.6;
-      var p = Math.max(0, Math.min(1, (mid - r.top) / r.height));
+      var p = Math.max(0, Math.min(1, (vh * 0.85 - r.top) / (vh * 0.45)));
       timeline.style.setProperty('--tl', p.toFixed(4));
-      tlItems.forEach(function (it) { it.classList.toggle('is-active', it.getBoundingClientRect().top < mid); });
+      var n = tlItems.length;
+      tlItems.forEach(function (it, i) { it.classList.toggle('is-active', n > 1 ? p >= i / (n - 1) - 0.001 : p > 0); });
     }
 
     if (sticky) {
       var past = hero ? y > hero.offsetHeight * 0.8 : y > 600;
-      var inPack = false, nearEnd = false;
-      if (packages) { var pr = packages.getBoundingClientRect(); inPack = pr.top < vh * 0.8 && pr.bottom > vh * 0.2; }
+      var inOrder = false, nearEnd = false;
+      if (orderSec) { var orr = orderSec.getBoundingClientRect(); inOrder = orr.top < vh * 0.85 && orr.bottom > 0; }
       if (footer) nearEnd = footer.getBoundingClientRect().top < vh;
-      sticky.classList.toggle('is-visible', past && !inPack && !nearEnd);
+      sticky.classList.toggle('is-visible', past && !inOrder && !nearEnd && !activeZoneBar());
     }
 
     lastY = y;
@@ -164,22 +163,6 @@
     });
   }
 
-  /* ------------------------------------------------------------------
-     Бегущая строка логотипов: дублируем набор для бесшовной прокрутки
-     ------------------------------------------------------------------ */
-  $$('[data-marquee]').forEach(function (m) {
-    var track = $('.aa-marquee__track', m);
-    if (!track || reduceMotion) return;
-    $$('li', track).forEach(function (li) {
-      var c = li.cloneNode(true);
-      c.setAttribute('aria-hidden', 'true');
-      track.appendChild(c);
-    });
-    // скорость ~ 60px/сек независимо от количества логотипов
-    requestAnimationFrame(function () {
-      track.style.setProperty('--dur', Math.max(20, track.scrollWidth / 2 / 60) + 's');
-    });
-  });
   // если картинка логотипа ещё не загружена/битая — показываем название
   $$('.aa-logo img').forEach(function (img) {
     if (img.complete && img.naturalWidth === 0) img.closest('.aa-logo').classList.add('is-missing');
@@ -193,32 +176,16 @@
   });
 
   /* ------------------------------------------------------------------
-     Видео в галерее: грузим только когда блок виден
+     Видео в галерее: грузится только по клику (не тратим трафик заранее)
      ------------------------------------------------------------------ */
-  $$('[data-lazy-video]').forEach(function (v) {
-    if (!('IntersectionObserver' in window)) return;
-    var loaded = false;
-    new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (e.isIntersecting) {
-          if (!loaded) {
-            $$('source[data-src]', v).forEach(function (s) { s.src = s.getAttribute('data-src'); });
-            v.load(); loaded = true;
-          }
-          if (!reduceMotion) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
-        } else if (loaded) { v.pause(); }
-      });
-    }, { threshold: 0.25 }).observe(v);
-  });
-
-  /* ------------------------------------------------------------------
-     Карточки пакетов: световое пятно за курсором
-     ------------------------------------------------------------------ */
-  $$('.aa-card').forEach(function (card) {
-    card.addEventListener('pointermove', function (e) {
-      var r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-      card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  $$('[data-video]').forEach(function (box) {
+    var v = $('video', box);
+    box.addEventListener('click', function () {
+      if (box.classList.contains('is-playing')) return;
+      if (!v.getAttribute('src')) v.src = v.getAttribute('data-src');
+      v.controls = true;
+      box.classList.add('is-playing');
+      var pr = v.play(); if (pr && pr.catch) pr.catch(function () {});
     });
   });
 
@@ -228,7 +195,7 @@
   var slider = $('[data-slider]');
   if (slider) {
     var navBtns = $$('[data-slide]');
-    var step = function () { var c = $('.aa-review', slider); return c ? c.getBoundingClientRect().width + 16 : 400; };
+    var step = function () { var c = $('.aa-review', slider); return c ? c.getBoundingClientRect().width + 18 : 400; };
     navBtns.forEach(function (b) {
       b.addEventListener('click', function () {
         slider.scrollBy({ left: step() * parseInt(b.getAttribute('data-slide'), 10), behavior: reduceMotion ? 'auto' : 'smooth' });
@@ -285,47 +252,34 @@
   }
 
   /* ------------------------------------------------------------------
-     Попапы
+     Цены и остаток мест — из config.js (правятся в одном месте)
      ------------------------------------------------------------------ */
-  var lastFocus = null;
-  function openModal(m) {
-    lastFocus = document.activeElement;
-    m.classList.add('is-open');
-    m.setAttribute('aria-hidden', 'false');
-    root.classList.add('aa-modal-lock');
-    // фокус на сам диалог (не в поле ввода — иначе на телефоне сразу выскакивает клавиатура)
-    setTimeout(function () { $('.aa-modal__dialog', m).focus({ preventScroll: true }); }, 60);
-  }
-  function closeModal(m) {
-    m.classList.remove('is-open');
-    m.setAttribute('aria-hidden', 'true');
-    if (!$('.aa-modal.is-open')) root.classList.remove('aa-modal-lock');
-    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
-  }
-  $$('[data-modal]').forEach(function (m) {
-    m.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) closeModal(m); });
-  });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') { var m = $('.aa-modal.is-open'); if (m) closeModal(m); }
-  });
+  function fmtPrice(key) { var p = packPrice(key); return p ? fmtRub(p) : null; }
+  $$('[data-price]').forEach(function (el) { var v = fmtPrice(el.getAttribute('data-price')); if (v) el.textContent = v; });
+  (function () {
+    var left = CFG.seatsLeft || {};
+    var nums = $('[data-seats-nums]');
+    if (!nums || (left.vip == null && left.business == null)) return;
+    $$('[data-seats-left]', nums).forEach(function (el) { var v = left[el.getAttribute('data-seats-left')]; el.textContent = v == null ? '—' : v; });
+    nums.hidden = false;
+    var t = $('[data-seats-text]'); if (t) t.hidden = true;
+  })();
 
   /* ------------------------------------------------------------------
      Бронирование → лид в Битрикс24
      Любая кнопка с data-book="vip|business|personal|table|question"
-     открывает одну форму. Отправка — POST на endpoints.lead (наш бэкенд),
+     прокручивает к форме (блок «Оформление билета») и выставляет формат. Отправка — POST на endpoints.lead (наш бэкенд),
      бэкенд создаёт лид в Битрикс24 (см. backend/ и README).
      ------------------------------------------------------------------ */
-  var bookModal = $('#bookModal');
   var bookForm = $('[data-book-form]');
   var bookDone = $('[data-book-done]');
   var bookErr = $('[data-book-error]');
   var PACK = {
     vip:      'VIP билет',
-    business: 'Бизнес',
+    business: 'Business',
     personal: 'Персональный билет',
     table:    'Стол'
   };
-  var fmtRub = function (n) { return new Intl.NumberFormat('ru-RU').format(n) + ' ₽'; };
 
   // UTM-метки: запоминаем на время визита, чтобы менеджер в Битриксе видел источник
   var UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
@@ -362,7 +316,6 @@
   readYmId();
   document.addEventListener('aa:consent', function (e) { if (e.detail && e.detail.analytics) setTimeout(readYmId, 1500); else ymClientId = ''; });
 
-  function packPrice(key) { var t = (CFG.tickets || {})[key]; return t && t.price ? t.price : null; }
 
   function syncTotal() {
     if (!bookForm) return;
@@ -373,23 +326,32 @@
     $('[data-book-total-note]').textContent = price ? guests + ' × ' + fmtRub(price) : 'менеджер пришлёт условия';
   }
 
-  function openBook(key) {
-    var isQuestion = key === 'question';
-    bookForm.hidden = false; bookDone.hidden = true; bookErr.hidden = true;
+  // режим формы: бронирование или «просто задать вопрос»
+  function setMode(isQuestion) {
+    if (!bookForm) return;
     bookForm.classList.toggle('is-question', isQuestion);
-    $('[data-book-eyebrow]').textContent = isQuestion ? '[ Вопрос ]' : '[ Бронирование ]';
-    $('[data-book-title]').textContent = isQuestion ? 'Остались вопросы?' : key === 'table' ? 'Запрос на стол' : 'Забронировать билет';
-    $('[data-book-sub]').textContent = isQuestion
-      ? 'Оставьте контакты — менеджер ответит и поможет подобрать формат.'
-      : 'Оставьте контакты — менеджер свяжется с вами, подтвердит бронь и пришлёт документы.';
     bookForm.elements['intent'].value = isQuestion ? 'question' : 'booking';
-    if (!isQuestion && PACK[key]) {
+    $('[data-book-title]').textContent = isQuestion ? 'Ваш вопрос' : 'Контактные данные';
+    $('[data-book-mode]').textContent = isQuestion ? '← Вернуться к бронированию' : 'Просто задать вопрос';
+    $('[data-book-submit]').textContent = isQuestion ? 'Отправить вопрос' : 'Забронировать';
+  }
+  function setStep(n) { $$('[data-steps] li').forEach(function (li, i) { li.classList.toggle('is-on', i < n); }); }
+
+  // key: vip|business|personal|table — выбрать формат; question — режим вопроса; '' — просто к форме
+  function openBook(key) {
+    if (!bookForm) return;
+    bookForm.hidden = false; bookDone.hidden = true; bookErr.hidden = true;
+    setMode(key === 'question');
+    if (PACK[key]) {
       var r = bookForm.querySelector('[name="package"][value="' + key + '"]');
       if (r) r.checked = true;
     }
     syncTotal();
-    goal('bookOpen', { package: key });
-    openModal(bookModal);
+    goal('bookOpen', { package: key || 'any' });
+    var box = $('[data-book-box]');
+    var target = PACK[key] ? $('.aa-order__choice') : box;
+    (target || bookForm).scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+    if (box) { box.classList.remove('aa-box--flash'); void box.offsetWidth; box.classList.add('aa-box--flash'); }
   }
 
   // маска телефона +7 (___) ___-__-__
@@ -463,10 +425,11 @@
 
       var done = function () {
         submit.classList.remove('is-loading');
-        bookForm.hidden = true; bookDone.hidden = false;
+        bookForm.hidden = true; bookDone.hidden = false; setStep(3);
         goal('bookSubmit', { package: fd.get('package') || 'question' });
-        bookForm.reset(); gIn.value = 1;
+        bookForm.reset(); gIn.value = 1; setMode(false); syncTotal();
         $('.aa-check--req', bookForm).classList.remove('is-invalid');
+        bookDone.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
       };
       var fail = function () {
         submit.classList.remove('is-loading');
@@ -490,6 +453,9 @@
     $$('input', bookForm).forEach(function (inp) {
       inp.addEventListener('input', function () { var f = inp.closest('.aa-field'); if (f) f.classList.remove('is-invalid'); });
     });
+    $('[data-book-mode]').addEventListener('click', function () { setMode(!bookForm.classList.contains('is-question')); });
+    bookForm.addEventListener('focusin', function (e) { if (e.target.closest('[data-book-box]')) setStep(2); });
+    $('[data-book-again]').addEventListener('click', function () { bookDone.hidden = true; bookForm.hidden = false; setStep(1); });
     bookForm.elements['consent_pd'].addEventListener('change', function () {
       if (this.checked) { $('.aa-check--req', bookForm).classList.remove('is-invalid'); bookErr.hidden = true; }
     });
@@ -548,8 +514,10 @@
       var cx, cy, shape, ring;
       if (t.c) {
         cx = t.c[0]; cy = t.c[1];
-        shape = svgEl('circle', { cx: cx, cy: cy, r: 12.5 });
-        ring = svgEl('circle', { cx: cx, cy: cy, r: 16 });
+        shape = svgEl('circle', { cx: cx, cy: cy, r: 12 });
+        ring = svgEl('circle', { cx: cx, cy: cy, r: 19.5 });
+        // стулья — пунктирное кольцо цвета зоны
+        g.appendChild(svgEl('circle', { 'class': 'aa-t__chairs', cx: cx, cy: cy, r: 16, stroke: info.color }));
       } else {
         var r = t.r || t.rot;
         var tr = t.rot ? 'rotate(' + t.rot[4] + ' ' + r[0] + ' ' + r[1] + ')' : null;
@@ -621,6 +589,7 @@
     $('[data-pick-dot]').style.setProperty('--c', info.color || '#fff');
     $('[data-pick-zone]').textContent = info.name || '';
     $('[data-pick-price]').textContent = price ? fmtRub(price) : 'по запросу';
+    $('[data-pick-price]').parentNode.lastElementChild.hidden = !price;
     $('[data-pick-cap]').textContent = zoneCaps(z);
     $('[data-pick-inc]').textContent = info.includes || '—';
     $$('[data-seat-book]').forEach(function (b) { b.setAttribute('data-book', info.ticket); });
@@ -664,6 +633,7 @@
     seatbar.classList.toggle('is-visible', !!activeZone && inView);
     if (sticky && activeZone && inView) sticky.classList.remove('is-visible');
   }
+  function activeZoneBar() { return !!(seatbar && seatbar.classList.contains('is-visible')); }
   window.addEventListener('scroll', function () { requestAnimationFrame(syncSeatbar); }, { passive: true });
 
   var dragMoved = false;
@@ -711,7 +681,14 @@
     plan.addEventListener('focusout', hideTip);
 
     $$('[data-filter]').forEach(function (b) {
-      b.addEventListener('click', function () { selectZone(b.getAttribute('data-filter')); });
+      b.addEventListener('click', function () {
+        var z = b.getAttribute('data-filter');
+        z === activeZone ? closeInspect() : selectZone(z);
+      });
+    });
+    // «Посмотреть на схеме зала» в карточках форматов
+    $$('[data-show-zone]').forEach(function (a) {
+      a.addEventListener('click', function () { selectZone(a.getAttribute('data-show-zone')); });
     });
     $$('[data-seat-clear]').forEach(function (b) { b.addEventListener('click', closeInspect); });
   }
@@ -757,7 +734,11 @@
   /* ---------- делегирование кликов ---------- */
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-book]');
-    if (b) { e.preventDefault(); openBook(b.getAttribute('data-book')); }
+    if (b && !b.disabled) {
+      e.preventDefault();
+      if (nav) { nav.classList.remove('is-open'); if (burger) burger.setAttribute('aria-expanded', 'false'); }
+      openBook(b.getAttribute('data-book'));
+    }
   });
 
   // Прямая ссылка: /tickets#book-vip, #book-business, #book-personal, #book-table, #book-question
