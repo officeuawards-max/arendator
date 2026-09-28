@@ -52,8 +52,9 @@ assets/fonts/               ← Roboto (woff2) + исходный архив з�
 assets/img/                 ← фото (что где — assets/img/README.md), оригиналы в originals/
 legal/                      ← Политика ПД, Согласие на ПД, Согласие на рассылки, Политика cookie
 backend/laravel/TicketLeadController.php  ← заявка → лид в Битрикс24 (Laravel)
-backend/bitrix-lead.php     ← то же одним PHP-файлом без фреймворка
-legacy/                     ← старая страница (Blade) и утверждённая картинка схемы — для сверки
+backend/laravel/TicketSeatStatusController.php  ← занятые столы из базы сайта → схема (необязательно)
+backend/bitrix-lead.php     ← приём заявки одним PHP-файлом без фреймворка
+legacy/                     ← старые Blade-шаблоны страницы билетов (актуальная версия от IT) и утверждённая картинка схемы
 ИНСТРУКЦИЯ_ДЛЯ_ИГОРЯ.md     ← полная инструкция по запуску и подключению
 ```
 

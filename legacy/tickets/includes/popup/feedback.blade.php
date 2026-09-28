@@ -13,7 +13,7 @@
                 <div class="n-popup__title">Заявка на билет {{ $type->name }}</div>
             </div>--}}
 
-            <div class="modal-body text-danger" id="feedback_ajax_{{ $type->id }}"></div>
+            <div class="modal-body" id="feedback_ajax_{{ $type->id }}"></div>
         </div>
     </div>
 </div>

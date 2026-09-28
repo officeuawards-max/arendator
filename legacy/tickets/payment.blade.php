@@ -436,7 +436,7 @@
                             <div class="col-12 col-md-12">
                                 <div class="form-group">
                                     <label class="checkbox-text checkbox-text__agree">
-                                        <input type="checkbox" class="checkbox-text__input @if($errors->has('pol_agree')) input_form_err @endif" name="pol_agree" id="agree" checked>
+                                        <input type="checkbox" class="checkbox-text__input @if($errors->has('pol_agree')) input_form_err @endif" name="pol_agree" id="agree">
                                         <i class="checkbox-text__pseudo-input checkbox-text__pseudo-input-radio"></i>
                                         <span class="checkbox-text__text">Я согласен с положением об <a class="underline" href="/docs/privacy_policy.pdf" target="_blank">обработке персональных данных</a>.</span>
                                     </label>
